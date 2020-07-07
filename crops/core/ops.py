@@ -1,0 +1,222 @@
+# -*- coding: utf-8 -*-
+
+__prog__="CROPS"
+__description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
+__author__ = "J. Javier Burgos-Mármol"
+__date__ = "May 2020"
+__version__ = "0.3.0"
+
+from crops.rescodes import ressymbol
+#from .sequence import Sequence
+from crops.sequence import monomer_sequence
+#from .intervals import intinterval
+
+def renumberpdb(INSEQ,INSTR,seqback=False):
+    """
+    Returns modified gemmi structure with new residue numbers.
+
+    Parameters
+    ----------
+    INSEQ : :obj:`~crops.core.sequence.Sequence`
+        Input :obj:`~crops.core.sequence.Sequence`.
+    INSTR : gemmi structure
+        Input structure.
+    seqback : bool, optional
+        If True, it additionally returns the Sequence with the gaps found in the structure. The default is False.
+
+    Returns
+    -------
+    INSTR : gemmi structure
+        Renumbered structure.
+    INSEQ : :obj:`~crops.core.sequence.Sequence`, optional
+        Sequence with extra information about gaps.
+
+    """
+    n_chains = 0
+    n_resmax = 0
+    for model in INSTR:
+        n_chains += len(model)
+        for chain in model:
+            if len(chain) > n_resmax:
+                n_resmax = len(chain)
+   
+    pos = [[0 for j in range(n_resmax)] for i in range(n_chains)]
+    n_chains = 0
+    #NUMBER OF CHAINS PER MODEL ->> DO
+    if seqback:
+        for monomer in INSEQ.imer:
+            monomer.seqs['gapseq']=[]
+        
+    for model in INSTR:        
+        for chain in model:
+            original_seq=INSEQ.imer[chain.name].seqs['mainseq']
+            solved = False
+            for shift in range(int(len(chain)/2)):
+                cnt=0
+                gap=0
+                score=0
+                nligands=0
+                newseq=''
+                newseq += '-'*shift
+                for residue in chain:
+                    if residue == chain[0]:
+                        if ressymbol(residue.name) == original_seq[shift]:
+                            score += 1
+                            pos[n_chains][cnt]=1+shift
+                            newseq += ressymbol(residue.name)
+                    elif ressymbol(residue.name)==0:
+                        nligands+=1
+                        pos[n_chains][cnt]=-nligands
+                    else:
+                        if (chain[cnt].seqid.num-chain[cnt-1].seqid.num > 1):
+                            gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
+                            newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
+                        pos[n_chains][cnt]=cnt+1+gap+shift
+                        if ressymbol(residue.name) == original_seq[cnt+gap+shift]:
+                            score += 1
+                            newseq += ressymbol(residue.name)
+                        if residue==chain[-1]:
+                            if cnt+gap+shift+1 < len(original_seq):
+                                newseq += '-'*(len(original_seq)-(cnt+gap+shift+1))
+                    cnt += 1
+                if score == len(chain)-nligands:
+                    solved = True
+                    break
+            if solved:
+                cnt=0                  
+                for residue in chain:
+                    residue.seqid.num = pos[n_chains][cnt]
+                    cnt += 1
+            if seqback:
+                INSEQ.imer[chain.name].seqs['gapseq'].append(newseq)
+            n_chains += 1
+            solved = False
+
+    if seqback:
+        return INSTR, INSEQ
+    else:
+        return INSTR
+
+def crop_seq(INSEQ, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MONOMERS
+    """
+    Returns modified :obj:`~crops.core.sequence.Sequence` without specified elements.
+
+    Parameters
+    ----------
+    INSEQ : :obj:`~crops.core.sequence.Sequence`
+        Input :obj:`~crops.core.sequence.Sequence`.
+    segments : :obj:`~crops.core.intervals.intinterval`
+        Input :obj:`~crops.core.intervals.intinterval` to be preserved.
+    cut_type : str
+        Additional header information.
+    terms : bool, optional
+        If True, only terminal ends are removed. The default is False.
+
+    Raises
+    ------
+    ValueError
+        If intervals given lie out of the sequence.
+
+    Returns
+    -------
+    newchain : :obj:`~crops.core.sequence.Sequence`
+        Cropped :obj:`~crops.core.sequence.Sequence`.
+
+    """
+    if segments.subint[-1][-1] > INSEQ.length():
+        raise ValueError('One or many of the segment end values is outside the original sequence.')
+
+    newchain=monomer_sequence(chid=INSEQ.info['chain_id'],header=INSEQ.info['header'])
+    newchain.seqs['fullseq']=INSEQ.seqs['mainseq']
+    newchain.seqs['cropseq']=''
+    if 'gapseq' in INSEQ.seqs:
+        newchain.seqs['gapseq']=['' for i in range(len(INSEQ.seqs['gapseq']))]
+        newchain.seqs['cropgapseq']=['' for i in range(len(INSEQ.seqs['gapseq']))]
+    cropint=segments.deepcopy() if not terms else segments.union(segments.terminals())
+
+    for res in range(INSEQ.length()):
+        #print(res)
+        if cropint.contains(res+1):
+            #print(res)
+            newchain.seqs['mainseq'] += INSEQ.seqs['mainseq'][res]
+            if 'gapseq' in INSEQ.seqs:
+                for n in range(len(INSEQ.seqs['gapseq'])):
+                    newchain.seqs['gapseq'][n] += INSEQ.seqs['gapseq'][n][res]
+                    newchain.seqs['cropgapseq'][n] += INSEQ.seqs['gapseq'][n][res]
+            newchain.seqs['cropseq'] += INSEQ.seqs['main'][res]
+        else:
+            if 'gapseq' in INSEQ.seqs:
+                for n in range(len(INSEQ.seqs['gapseq'])):
+                    newchain.seqs['cropgapseq'][n] += '*'
+            newchain.seqs['cropseq'] += '*'
+            
+    if newchain.length()<len(newchain.seqs['cropseq']):
+        newchain.info['header'] += cut_type
+
+    return newchain
+
+def croppdb(INSTR, INSEQ, segments, terms=False):
+    """
+    Returns modified gemmi structure without specified elements.
+
+    Parameters
+    ----------
+    INSEQ : :obj:`~crops.core.sequence.Sequence`
+        Input :obj:`~crops.core.sequence.Sequence`.
+    INSTR : gemmi structure
+        Input structure.
+    segments : :obj:`~crops.core.intervals.intinterval`
+        Input :obj:`~crops.core.intervals.intinterval` to be preserved.
+    terms : bool, optional
+        If True, only terminal ends are removed. The default is False.
+
+    Returns
+    -------
+    INSTR : gemmi structure
+        Cropped structure.
+
+    """
+    
+    n_chains = 0
+    n_resmax = 0
+
+    for model in INSTR:
+        n_chains += len(model)
+        for chain in model:
+            if len(chain) > n_resmax:
+                n_resmax = len(chain)
+        delres = [[False for j in range(n_resmax)] for i in range(n_chains)]
+        n_chains = 0
+        
+    for model in INSTR:
+        for chain in model:
+            if chain.name in segments:
+                if not terms:
+                    cropint=segments[chain.name].deepcopy()
+                else:
+                    cropint=segments[chain.name].union(segments[chain.name].terminals())
+                original_seq=INSEQ.imer[chain.name].seqs['mainseq']
+            
+                r_bio=0
+                pos_chainlist=0
+                for r_original in range(len(original_seq)):
+                    if cropint.contains(r_original+1):
+                        r_bio+=1
+                        if chain[pos_chainlist].seqid.num == r_original+1:
+                            chain[pos_chainlist].seqid.num=r_bio
+                            pos_chainlist += 1
+                    else:
+                        if chain[pos_chainlist].seqid.num == r_original+1:
+                            delres[n_chains][pos_chainlist] = True
+                            pos_chainlist += 1
+                              
+        n_chains = 0
+        for model in INSTR:
+            for chain in model:
+                for res in reversed(range(len(chain))):
+                    if delres[n_chains][res]:
+                        del chain[res]
+                n_chains += 1
+
+    return INSTR
+
