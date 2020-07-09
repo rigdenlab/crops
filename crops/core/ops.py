@@ -3,8 +3,8 @@
 __prog__="CROPS"
 __description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
 __author__ = "J. Javier Burgos-Mármol"
-__date__ = "May 2020"
-__version__ = "0.3.0"
+__date__ = "Jul 2020"
+__version__ = "0.3.1"
 
 from crops.rescodes import ressymbol
 #from .sequence import Sequence
@@ -12,24 +12,16 @@ from crops.sequence import monomer_sequence
 #from .intervals import intinterval
 
 def renumberpdb(INSEQ,INSTR,seqback=False):
-    """
-    Returns modified gemmi structure with new residue numbers.
-
-    Parameters
-    ----------
-    INSEQ : :obj:`~crops.core.sequence.Sequence`
-        Input :obj:`~crops.core.sequence.Sequence`.
-    INSTR : gemmi structure
-        Input structure.
-    seqback : bool, optional
-        If True, it additionally returns the Sequence with the gaps found in the structure. The default is False.
-
-    Returns
-    -------
-    INSTR : gemmi structure
-        Renumbered structure.
-    INSEQ : :obj:`~crops.core.sequence.Sequence`, optional
-        Sequence with extra information about gaps.
+    """Returns modified :class:`gemmi.Structure` with new residue numbers.
+    
+    :param INSEQ: Input sequence.
+    :type INSEQ: :class:`~crops.core.sequence.Sequence`
+    :param INSTR: Gemmi structure.
+    :type INSTR: :class:`gemmi.Structure`
+    :param seqback: If True, it additionally returns the Sequence with the gaps found in the structure, defaults to False.
+    :type seqback: bool, optional
+    :return INSTR: Renumbered structure.
+    :return INSEQ: Sequence with extra information about gaps, only if seqback==True.
 
     """
     n_chains = 0
@@ -97,30 +89,20 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
     else:
         return INSTR
 
-def crop_seq(INSEQ, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MONOMERS
-    """
-    Returns modified :obj:`~crops.core.sequence.Sequence` without specified elements.
-
-    Parameters
-    ----------
-    INSEQ : :obj:`~crops.core.sequence.Sequence`
-        Input :obj:`~crops.core.sequence.Sequence`.
-    segments : :obj:`~crops.core.intervals.intinterval`
-        Input :obj:`~crops.core.intervals.intinterval` to be preserved.
-    cut_type : str
-        Additional header information.
-    terms : bool, optional
-        If True, only terminal ends are removed. The default is False.
-
-    Raises
-    ------
-    ValueError
-        If intervals given lie out of the sequence.
-
-    Returns
-    -------
-    newchain : :obj:`~crops.core.sequence.Sequence`
-        Cropped :obj:`~crops.core.sequence.Sequence`.
+def crop_seq(INSEQ, segments, cut_type, terms=False):
+    """Returns modified :class:`~crops.core.sequence.monomer_sequence` without specified elements.
+    
+    :param INSEQ: Input sequence.
+    :type INSEQ: :class:`~crops.core.sequence.monomer_sequence`
+    :param segments: Input preserving interval.
+    :type segments: :class:`~crops.core.intervals.intinterval`
+    :param cut_type: Additional header information.
+    :type cut_type: str
+    :param terms: If True, only terminal ends are removed, defaults to False.
+    :type terms: bool, optional
+    :raises ValueError: If intervals given lie out of the sequence.
+    :return newchain: Cropped sequence.
+    :rtype newchain: :class:`~crops.core.sequence.monomer_sequence`
 
     """
     if segments.subint[-1][-1] > INSEQ.length():
@@ -156,27 +138,20 @@ def crop_seq(INSEQ, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
     return newchain
 
 def croppdb(INSTR, INSEQ, segments, terms=False):
-    """
-    Returns modified gemmi structure without specified elements.
-
-    Parameters
-    ----------
-    INSEQ : :obj:`~crops.core.sequence.Sequence`
-        Input :obj:`~crops.core.sequence.Sequence`.
-    INSTR : gemmi structure
-        Input structure.
-    segments : :obj:`~crops.core.intervals.intinterval`
-        Input :obj:`~crops.core.intervals.intinterval` to be preserved.
-    terms : bool, optional
-        If True, only terminal ends are removed. The default is False.
-
-    Returns
-    -------
-    INSTR : gemmi structure
-        Cropped structure.
-
-    """
+    """Returns modified :class:`gemmi.Structure` without specified elements.
     
+    :param INSTR: Gemmi structure.
+    :type INSTR: :class:`gemmi.Structure`
+    :param INSEQ: Input sequence.
+    :type INSEQ: :class:`~crops.core.sequence.Sequence`
+    :param segments: Input preserving interval.
+    :type segments: :class:`~crops.core.intervals.intinterval`
+    :param terms: If True, only terminal ends are removed, defaults to False.
+    :type terms: bool, optional
+    :return INSTR: DESCRIPTION
+    :rtype INSTR: :class:`gemmi.Structure`
+
+    """    
     n_chains = 0
     n_resmax = 0
 

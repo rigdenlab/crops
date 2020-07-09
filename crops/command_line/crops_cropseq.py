@@ -9,8 +9,8 @@ in agreement to the intervals and other details supplied.
 __prog__="CROPS"
 __description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
 __author__ = "J. Javier Burgos-Mármol"
-__date__ = "May 2020"
-__version__ = "0.3.0"
+__date__ = "Jul 2020"
+__version__ = "0.3.1"
 
 import argparse
 import os

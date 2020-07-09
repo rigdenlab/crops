@@ -3,8 +3,8 @@
 __prog__="CROPS"
 __description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
 __author__ = "J. Javier Burgos-Mármol"
-__date__ = "May 2020"
-__version__ = "0.3.0"
+__date__ = "Jul 2020"
+__version__ = "0.3.1"
 
 import gemmi
 import os
@@ -20,60 +20,44 @@ from crops.intervals import intinterval
 
 
 def check_path(path,typeofpath=None):
-    """
-    Returns full path if correct.
-
-    Parameters
-    ----------
-    path : str
-        Input (local) path.
-    typeofpath : str, optional
-        The type of path, 'dir' or 'file'. The default is None.
-
-    Raises
-    ------
-    ValueError
-        When typeofpath is neither 'dir' nor 'file'.
-    argparse
-        If wrong path given.
-
-    Returns
-    -------
-    str
-        Complete path.
+    """Returns full path if correct.
+    
+    :param path: Input (local) path.
+    :type path: str
+    :param typeofpath: The type of path, 'dir' or 'file', defaults to None.
+    :type typeofpath: str, optional
+    :raises ValueError: When given typeofpath is neither 'dir' nor 'file'.
+    :raises argparse: If wrong path given.
+    :return: Complete checked path.
+    :rtype: str
 
     """
+
     pathok=False
+    if typeofpath is not None and typeofpath!='file' and typeofpath!='dir':
+        raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
     if typeofpath=='dir' or typeofpath is None:
        if os.path.isdir(path):
            pathok=True
-    elif typeofpath=='file' or typeofpath is None:
+    if typeofpath=='file' or typeofpath is None:
         if os.path.isfile(path):
            pathok=True
-    else:
-        raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
     if pathok:
         return os.path.abspath(path)
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
 def target_format(inpath,terms=False,th=0):
-    """
-    Returns extra information for .fasta headers
-
-    Parameters
-    ----------
-    inpath : str
-        Path to interval database used.
-    terms : bool, optional
-        Are only terminal ends discarded?. The default is False.
-    th : int, float, optional
-        Uniprot threshold. The default is 0.
-
-    Returns
-    -------
-    outcome : TYPE
-        DESCRIPTION.
+    """Returns extra information for .fasta headers.
+    
+    :param inpath: Path to interval database used.
+    :type inpath: str
+    :param terms: Are only terminal ends discarded?, defaults to False.
+    :type terms: bool, optional
+    :param th: Uniprot threshold, defaults to 0.
+    :type th: int, float, optional
+    :return: Extra information for .fasta headers
+    :rtype: str
 
     """
     
@@ -89,20 +73,14 @@ def target_format(inpath,terms=False,th=0):
     return outcome
 
 def infix_gen(inpath,terms=False):
-    """
-    Returns filename tag for outputs.
-
-    Parameters
-    ----------
-    inpath : str
-        Path to interval database used.
-    terms : bool, optional
-        Are only terminal ends discarded?. The default is False.
-
-    Returns
-    -------
-    infix_out : str
-        Filename tag.
+    """Returns filename tag for outputs.
+    
+    :param inpath: Path to interval database used.
+    :type inpath: str
+    :param terms: Are only terminal ends discarded?, defaults to False.
+    :type terms: bool, optional
+    :return: Filename tag.
+    :rtype: str
 
     """
     if os.path.basename(inpath)=='pdb_chain_uniprot.csv':
@@ -120,25 +98,15 @@ def infix_gen(inpath,terms=False):
     return infix_out
 
 def import_db(inpath,pdb_in=None):
-    """
-    Imports intervals database.
-
-    Parameters
-    ----------
-    inpath : str
-        Path to interval database used.
-    pdb_in : str, list, optional
-        Chain identifier. The default is None.
-
-    Raises
-    ------
-    TypeError
-        When pdb_in is given and is neither a string nor a list of strings.
-
-    Returns
-    -------
-    database_out : dict
-        A list of :obj:`~crops.core.intervals.intinterval`.
+    """Imports intervals database.
+    
+    :param inpath: Path to interval database used.
+    :type inpath: str
+    :param pdb_in: Chain ID, defaults to None.
+    :type pdb_in: str, list, optional
+    :raises TypeError: When pdb_in is given and is neither a string nor a list of strings.
+    :return: dict
+    :rtype: A dictionary of :obj:`~crops.core.intervals.intinterval`.
 
     """
     database_out={}
@@ -187,25 +155,15 @@ def import_db(inpath,pdb_in=None):
 
 
 def parsestrfile(STR_INPATH):
-    """
-    Returns dictionary containing gemmi structures and another one with the file names.
-
-    Parameters
-    ----------
-    STR_INPATH : str
-        Either a directory or file path.
-
-    Raises
-    ------
-    KeyError
-        More than one structure file containing same identifier.
-
-    Returns
-    -------
-    strdict : dict
-        A dictionary containing imported gemmi structures.
-    filedict : dict
-        A dictionary containing file names.
+    """Returns dictionary containing gemmi structures and another one with the file names.
+    
+    :param STR_INPATH: Either a directory or file path.
+    :type STR_INPATH: str
+    :raises KeyError: More than one structure file containing same identifier.
+    :return strdict: A dictionary containing imported gemmi structures.
+    :rtype strdict: dict
+    :return filedict: A dictionary containing file names.
+    :rtype filedict: dict
 
     """
     strdict={}
@@ -232,18 +190,12 @@ def parsestrfile(STR_INPATH):
     return strdict, filedict
 
 def parseseqfile(inpath):
-    """
-    Returns dictionary containing :obj:`~crops.core.sequence.Sequence`.
-
-    Parameters
-    ----------
-    inpath : str
-        File path.
-
-    Returns
-    -------
-    newseqs : dict
-        A dictionary containing parsed :obj:`~crops.core.sequence.Sequence`.
+    """Returns dictionary containing :class:`~crops.core.sequence.Sequence`.
+    
+    :param inpath: File path.
+    :type inpath: str
+    :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.
+    :rtype: dict
 
     """
     newseqs={}
@@ -295,32 +247,21 @@ def parseseqfile(inpath):
     return newseqs
 
 def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
-    """
-    Returns the desired output filepath.
-
-    Parameters
-    ----------
-    globaldir : str
-        General output dir.
-    subdir : str, optional
-        Additional subdirectory. The default is None.
-    filename : str, optional
-        File name. The default is None.
-    mksubdir : bool, optional
-        Create directory if not existing. The default is False.
-
-    Raises
-    ------
-    FileNotFoundError
-        Directory does not exist.
-
-    Returns
-    -------
-    newpath : str
-        Output filepath.
-
-    """
+    """Returns the desired output filepath.
     
+    :param globaldir: General output dir.
+    :type globaldir: str
+    :param subdir: Additional subdirectory, defaults to None.
+    :type subdir: str, optional
+    :param filename: File name, defaults to None.
+    :type filename: str, optional.
+    :param mksubdir: Create directory if not existing, defaults to False.
+    :type mksubdir: bool, optional
+    :raises FileNotFoundError: Directory does not exist.
+    :return: Output filepath.
+    :rtype: str
+
+    """
     newpath=check_path(globaldir,'dir')
     
     if subdir is not None:
