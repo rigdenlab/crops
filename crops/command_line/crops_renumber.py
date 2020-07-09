@@ -24,7 +24,7 @@ from crops.core import cio
 from crops.core import ops as cop
 
 
-def main():    
+def main():
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
 
@@ -47,12 +47,12 @@ def main():
         outdir=cio.check_path(os.path.dirname(inseq),'dir')
     else:
         outdir=cio.check_path(os.path.dirname(args.outdir[0]),'dir')
-        
+
     infixlbl=".crops.seq"
- 
+
     seqset=cio.parseseqfile(inseq)
     strset, fileset=cio.parsestrfile(instr)
-   
+
     for pdbid, structure in strset.items():
         if pdbid in seqset:
             newstructure=cop.renumberpdb(seqset[pdbid],structure)

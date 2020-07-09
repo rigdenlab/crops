@@ -13,7 +13,7 @@ from crops.sequence import monomer_sequence
 
 def renumberpdb(INSEQ,INSTR,seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
-    
+
     :param INSEQ: Input sequence.
     :type INSEQ: :class:`~crops.core.sequence.Sequence`
     :param INSTR: Gemmi structure.
@@ -31,15 +31,15 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
         for chain in model:
             if len(chain) > n_resmax:
                 n_resmax = len(chain)
-   
+
     pos = [[0 for j in range(n_resmax)] for i in range(n_chains)]
     n_chains = 0
     #NUMBER OF CHAINS PER MODEL ->> DO
     if seqback:
         for monomer in INSEQ.imer:
             monomer.seqs['gapseq']=[]
-        
-    for model in INSTR:        
+
+    for model in INSTR:
         for chain in model:
             original_seq=INSEQ.imer[chain.name].seqs['mainseq']
             solved = False
@@ -75,7 +75,7 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
                     solved = True
                     break
             if solved:
-                cnt=0                  
+                cnt=0
                 for residue in chain:
                     residue.seqid.num = pos[n_chains][cnt]
                     cnt += 1
@@ -91,7 +91,7 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
 
 def crop_seq(INSEQ, segments, cut_type, terms=False):
     """Returns modified :class:`~crops.core.sequence.monomer_sequence` without specified elements.
-    
+
     :param INSEQ: Input sequence.
     :type INSEQ: :class:`~crops.core.sequence.monomer_sequence`
     :param segments: Input preserving interval.
@@ -131,7 +131,7 @@ def crop_seq(INSEQ, segments, cut_type, terms=False):
                 for n in range(len(INSEQ.seqs['gapseq'])):
                     newchain.seqs['cropgapseq'][n] += '*'
             newchain.seqs['cropseq'] += '*'
-            
+
     if newchain.length()<len(newchain.seqs['cropseq']):
         newchain.info['header'] += cut_type
 
@@ -139,7 +139,7 @@ def crop_seq(INSEQ, segments, cut_type, terms=False):
 
 def croppdb(INSTR, INSEQ, segments, terms=False):
     """Returns modified :class:`gemmi.Structure` without specified elements.
-    
+
     :param INSTR: Gemmi structure.
     :type INSTR: :class:`gemmi.Structure`
     :param INSEQ: Input sequence.
@@ -151,7 +151,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
     :return INSTR: DESCRIPTION
     :rtype INSTR: :class:`gemmi.Structure`
 
-    """    
+    """
     n_chains = 0
     n_resmax = 0
 
@@ -162,7 +162,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
                 n_resmax = len(chain)
         delres = [[False for j in range(n_resmax)] for i in range(n_chains)]
         n_chains = 0
-        
+
     for model in INSTR:
         for chain in model:
             if chain.name in segments:
@@ -171,7 +171,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
                 else:
                     cropint=segments[chain.name].union(segments[chain.name].terminals())
                 original_seq=INSEQ.imer[chain.name].seqs['mainseq']
-            
+
                 r_bio=0
                 pos_chainlist=0
                 for r_original in range(len(original_seq)):
@@ -184,7 +184,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
                         if chain[pos_chainlist].seqid.num == r_original+1:
                             delres[n_chains][pos_chainlist] = True
                             pos_chainlist += 1
-                              
+
         n_chains = 0
         for model in INSTR:
             for chain in model:

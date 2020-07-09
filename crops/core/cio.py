@@ -21,7 +21,7 @@ from crops.intervals import intinterval
 
 def check_path(path,typeofpath=None):
     """Returns full path if correct.
-    
+
     :param path: Input (local) path.
     :type path: str
     :param typeofpath: The type of path, 'dir' or 'file', defaults to None.
@@ -49,7 +49,7 @@ def check_path(path,typeofpath=None):
 
 def target_format(inpath,terms=False,th=0):
     """Returns extra information for .fasta headers.
-    
+
     :param inpath: Path to interval database used.
     :type inpath: str
     :param terms: Are only terminal ends discarded?, defaults to False.
@@ -60,7 +60,7 @@ def target_format(inpath,terms=False,th=0):
     :rtype: str
 
     """
-    
+
     if os.path.basename(inpath)=='pdb_chain_uniprot.csv':
         outcome=' | CROPS | UNIPROT via SIFTS'
         if th>0:
@@ -74,7 +74,7 @@ def target_format(inpath,terms=False,th=0):
 
 def infix_gen(inpath,terms=False):
     """Returns filename tag for outputs.
-    
+
     :param inpath: Path to interval database used.
     :type inpath: str
     :param terms: Are only terminal ends discarded?, defaults to False.
@@ -87,19 +87,19 @@ def infix_gen(inpath,terms=False):
         cut=".to_uniprot"
     else:
         cut=".custom"
-    
+
     if terms:
         cut=".custom"
 
     infix_out={
         "crop" : ".crops"+cut,
         "renumber" : ".crops.seq"}
-    
+
     return infix_out
 
 def import_db(inpath,pdb_in=None):
     """Imports intervals database.
-    
+
     :param inpath: Path to interval database used.
     :type inpath: str
     :param pdb_in: Chain ID, defaults to None.
@@ -112,7 +112,7 @@ def import_db(inpath,pdb_in=None):
     database_out={}
     if isinstance(pdb_in,str):
         pdb_in=[pdb_in]
-    
+
     if isinstance(pdb_in,list):
         for element in pdb_in:
             if not isinstance(element,str):
@@ -133,7 +133,7 @@ def import_db(inpath,pdb_in=None):
         up=None
 
     csv_chain_file = open(inpath)
-    csv_chain = csv.reader(csv_chain_file)   
+    csv_chain = csv.reader(csv_chain_file)
 
     for entry in csv_chain:
         if entry[0][0] != "#" and entry[0] !="PDB":
@@ -156,7 +156,7 @@ def import_db(inpath,pdb_in=None):
 
 def parsestrfile(STR_INPATH):
     """Returns dictionary containing gemmi structures and another one with the file names.
-    
+
     :param STR_INPATH: Either a directory or file path.
     :type STR_INPATH: str
     :raises KeyError: More than one structure file containing same identifier.
@@ -191,7 +191,7 @@ def parsestrfile(STR_INPATH):
 
 def parseseqfile(inpath):
     """Returns dictionary containing :class:`~crops.core.sequence.Sequence`.
-    
+
     :param inpath: File path.
     :type inpath: str
     :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.
@@ -202,7 +202,7 @@ def parseseqfile(inpath):
     newid=[]
     head=''
     chain=''
-    with open(inpath,'r') as f:    
+    with open(inpath,'r') as f:
         indx=-1
         while True:
             line=f.readline().rstrip()
@@ -248,7 +248,7 @@ def parseseqfile(inpath):
 
 def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
     """Returns the desired output filepath.
-    
+
     :param globaldir: General output dir.
     :type globaldir: str
     :param subdir: Additional subdirectory, defaults to None.
@@ -263,7 +263,7 @@ def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
 
     """
     newpath=check_path(globaldir,'dir')
-    
+
     if subdir is not None:
         newpath=os.path.join(newpath,subdir)
         if not os.path.isdir(newpath):
@@ -273,6 +273,5 @@ def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
                 raise FileNotFoundError('Directory does not exist')
     if filename is not None:
         newpath=os.path.join(newpath,filename)
-    
+
     return newpath
-        

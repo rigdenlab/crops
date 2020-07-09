@@ -10,7 +10,7 @@ import copy
 
 def _intervalise(subject):
     """Turns any integer or list of two integers into a :class:`~crops.core.intervals.intinterval`.
-    
+
     :param subject: Input parameter.
     :type subject: int, list, :class:`~crops.core.intervals.intinterval`
     :raises TypeError: Argument must be an integer interval, an integer or a list of two integers.
@@ -59,7 +59,7 @@ class intinterval:
     non-connected sub-intervals making it up, extra information tags, and
     set operations for the intervals.
     It contains functions to organise intervals and make operations on them.
-    
+
     :param description: An interval ID, defaults to 'intinterval'.
     :type description: str, optional
     :param subint: A list of two-integer lists, defaults to [].
@@ -68,7 +68,7 @@ class intinterval:
     :type tags: dict
     :ivar subint: The list of sub-intervals in :class:`~crops.core.intervals.intinterval`.
     :type subint: list
-  
+
     :example:
 
     >>> from crops.core import intervals
@@ -88,11 +88,11 @@ class intinterval:
     >>> my_interval.contains(16)
     False
     >>> my_interval.contains(my_interval2)
-    False    
+    False
     >>> my_interval.contains([5,7])
     True
-    
-    
+
+
     """
     kind = 'Integer interval'
     __slots__= ['tags','subint']
@@ -100,15 +100,15 @@ class intinterval:
         self.tags={}
         self.tags['description']=description
         self.subint = subint
-        
+
     def __repr__(self):
         return self.kind+" object: (id="+ self.description()+", subsets="+str(self.subint)+")"
     def __iter__(self):
         return iter(self.subint)
-    
+
     def description(self, newdescription=None):
         """Returns or moifies the 'description' tag.
-        
+
         :param newdescription: If given, the value of 'description' in tags is replaced by 'newdescription', defaults to None
         :type newdescription: str, optional
         :return: If newdescription not given, the value of 'description' in tags is returned.
@@ -122,10 +122,10 @@ class intinterval:
             return self.tags['description']
         else:
             self.tags['description']=newdescription
-        
+
     def addtag(self, tag, value):
         """Adds a new tag to :class:`~crops.core.intervals.intinterval`.
-        
+
         :param tag: Key argument.
         :type tag: str
         :param value: Value argument.
@@ -137,10 +137,10 @@ class intinterval:
         if not isinstance(tag,str):
             raise TypeError('Keys must be strings')
         self.tags[tag]=value
-        
+
     def deltag(self, tag):
         """Deletes a tag from :class:`~crops.core.intervals.intinterval`.
-        
+
         :param tag: Key argument.
         :type tag: str
         :raises TypeError: If argument is not a string.
@@ -152,8 +152,8 @@ class intinterval:
         if tag=='description':
             self.tags['description']=None
         else:
-            self.tags.pop(tag)        
-       
+            self.tags.pop(tag)
+
     def copy(self):
 
         return copy.copy(self)
@@ -161,13 +161,13 @@ class intinterval:
     def deepcopy(self):
 
         return copy.deepcopy(self)
-    
+
     def terminals(self, other=None):
         """Returns the first and last element in the :class:`~crops.core.intervals.intinterval`.
-        
+
         :param other: Defaults to None.
         :type other: int, list, :class:`~crops.core.intervals.intinterval`, optional
-        :return: A list of two integers indicating lower and higher limits of the interval (self if other is None, other otherwise). 
+        :return: A list of two integers indicating lower and higher limits of the interval (self if other is None, other otherwise).
             If input is an empty interval, this function will return an empty list.
         :rtype: list
 
@@ -177,10 +177,10 @@ class intinterval:
             return [interval.subint[0][0],interval.subint[-1][-1]]
         else:
             return []
-        
+
     def n_elements(self,other=None):
         """ Returns the number of elements in the interval, subinterval, or any other set.
-        
+
         :param other: Input argument, defaults to None.
         :type other: int, list, :class:`~crops.core.intervals.intinterval`, optional
         :return: Number of elements in the interval (self if other is None, other otherwise).
@@ -191,12 +191,12 @@ class intinterval:
         interval=self if other is None else _intervalise(other)
         for A in interval.subint:
             n += A[1]-A[0]+1
-            
+
         return n
 
     def contains(self, other):
         """Checks if input interval is fully contained in self. B ⊂ A : A = self, B = other.
-        
+
         :param other: Another interval.
         :type other: int, list, :class:`~crops.core.intervals.intinterval`
         :return: Whether self contains other or not.
@@ -226,7 +226,7 @@ class intinterval:
 
     def union(self, other,newdesc=None):
         """A ⋃ B : A = self, B = other
-        
+
         :param other: Another interval.
         :type other: int, list, :class:`~crops.core.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.
@@ -241,7 +241,7 @@ class intinterval:
         other=_intervalise(other)
         if self.subint==[] or self.subint==other.subint:
             newint=other.deepcopy()
-            newint.description(newdesc)            
+            newint.description(newdesc)
             return newint
         elif other.subint==[] and self.subint!=[]:
             newint=self.deepcopy()
@@ -251,7 +251,7 @@ class intinterval:
         newint=self.deepcopy()
         # Use of distributive property:
         # A = (A1 ⋃ A2); B = (B1 ⋃ B2)
-        # A ⋃ B = (A ⋃ B1) ⋃ (A ⋃ B2)               
+        # A ⋃ B = (A ⋃ B1) ⋃ (A ⋃ B2)
         for B in other.subint:
             ingap=True
             newlist=[]
@@ -300,7 +300,7 @@ class intinterval:
 
     def intersection(self,other,newdesc=None):
         """A ⋂ B : A = self, B = other
-        
+
         :param other: Another interval.
         :type other: int, list, :class:`~crops.core.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.
@@ -347,7 +347,7 @@ class intinterval:
 
     def subtract(self, other,newdesc=None):
         """A \ B : A = self, B = other
-        
+
         :param other: Another interval.
         :type other: int, list, :class:`~crops.core.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.
@@ -413,7 +413,7 @@ class intinterval:
 
     def symdiff(self,other,newdesc=None):
         """A Δ B : A = self, B = other
-        
+
         :param other: Another interval.
         :type other: int, list, :class:`~crops.core.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.

@@ -63,7 +63,7 @@ _nuclist =	{
 
 def ressymbol(name):
     """Conversion from residue 3-letter symbol to 1-letter symbol.
-    
+
     :param name: Residue symbol (3-letter convention) or Nucleotide symbol (1,2-letter convention).
     :type name: str
     :return oneletter: Residue/Nucleotide symbol (1-letter convention).
