@@ -1,0 +1,7 @@
+# Spyder project
+/crops/.spyproject/
+
+# Sphinx docs
+/docs/source/
+/docs/_build/
+/docs/api/generated/
