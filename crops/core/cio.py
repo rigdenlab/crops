@@ -40,12 +40,15 @@ def check_path(path,typeofpath=None):
 
     """
     pathok=False
-    if typeofpath=='dir' or typeofpath is None:
-       if os.path.isdir(path):
-           pathok=True
-    elif typeofpath=='file' or typeofpath is None:
+    if typeofpath=='dir':
+        if os.path.isdir(path):
+            pathok=True
+    elif typeofpath=='file':
         if os.path.isfile(path):
-           pathok=True
+            pathok=True
+    elif typeofpath is None:
+        if os.path.isfile(path) or os.path.isdir(path):
+            pathok=True
     else:
         raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
     if pathok:
@@ -72,7 +75,7 @@ def target_format(inpath,terms=False,th=0):
         DESCRIPTION.
 
     """
-    
+
     if os.path.basename(inpath)=='pdb_chain_uniprot.csv':
         outcome=' | CROPS | UNIPROT via SIFTS'
         if th>0:
@@ -105,14 +108,14 @@ def infix_gen(inpath,terms=False):
         cut=".to_uniprot"
     else:
         cut=".custom"
-    
+
     if terms:
         cut=".custom"
 
     infix_out={
         "crop" : ".crops"+cut,
         "renumber" : ".crops.seq"}
-    
+
     return infix_out
 
 def import_db(inpath,pdb_in=None):
@@ -140,7 +143,7 @@ def import_db(inpath,pdb_in=None):
     database_out={}
     if isinstance(pdb_in,str):
         pdb_in=[pdb_in]
-    
+
     if isinstance(pdb_in,list):
         for element in pdb_in:
             if not isinstance(element,str):
@@ -161,7 +164,7 @@ def import_db(inpath,pdb_in=None):
         up=None
 
     csv_chain_file = open(inpath)
-    csv_chain = csv.reader(csv_chain_file)   
+    csv_chain = csv.reader(csv_chain_file)
 
     for entry in csv_chain:
         if entry[0][0] != "#" and entry[0] !="PDB":
@@ -207,9 +210,10 @@ def parsestrfile(STR_INPATH):
     strdict={}
     filedict={}
     if os.path.isfile(STR_INPATH):
+
         structure=gemmi.read_structure(STR_INPATH)
         pdbid=structure.name.lower()
-        strdict[pdbid]=copy.deepcopy(structure)
+        strdict[pdbid]=structure
         filedict[pdbid]=os.path.basename(STR_INPATH)
     elif os.path.isdir(STR_INPATH):
         filelist=os.listdir(STR_INPATH)
@@ -220,7 +224,7 @@ def parsestrfile(STR_INPATH):
                     pdbid=structure.name.lower()
                     if pdbid in strdict:
                         raise KeyError('Structure '+pdbid+' loaded more than once. Check files in directory and remove duplicates.')
-                    strdict[pdbid]=copy.deepcopy(structure)
+                    strdict[pdbid]=structure
                     filedict[pdbid]=os.path.basename(STR_INPATH)
                 except:
                     pass
@@ -246,47 +250,32 @@ def parseseqfile(inpath):
     newid=[]
     head=''
     chain=''
-    with open(inpath,'r') as f:    
+    with open(inpath,'r') as f:
         indx=-1
         while True:
             line=f.readline().rstrip()
-            if not line:
-                try:
-                    line=f.readline().rstrip()
-                    if not line:
+            if not line or line.startswith(">"):
+                if indx>=0:
+                    if newid[0].lower() not in newseqs:
+                        newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
+                    for iid in newid[1]:
+                        newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid)
+                if not line:
+                    try:
+                        line=f.readline().rstrip()
+                        if not line:
+                            break
+                    except:
                         break
-                    else:
-                        if line.startswith(">"):
-                            if indx >= 0:
-                                if newid[0] not in newseqs:
-                                    newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
-                                for iid in newid[1]:
-                                    newseqs[newid[0].lower()].add_monomer(head,chain,iid)
-                            newid=retrieve_id(line)
-                            head=line
-                            indx += 1
-                            chain = ''
-                        elif line.startswith("#") or line.startswith(' #'):
-                            pass
-                        else:
-                            chain += str(line)
-                except:
-                    break
+            if line.startswith(">"):
+                newid=retrieve_id(line)
+                head=line
+                indx += 1
+                chain = ''
+            elif line.startswith("#") or line.startswith(' #'):
+                pass
             else:
-                if line.startswith(">"):
-                    if indx >= 0:
-                        if newid[0] not in newseqs:
-                            newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
-                        for iid in newid[1]:
-                            newseqs[newid[0].lower()].add_monomer(head,chain,iid)
-                    newid=retrieve_id(line)
-                    head=line
-                    indx += 1
-                    chain = ''
-                elif line.startswith("#") or line.startswith(' #'):
-                    pass
-                else:
-                    chain += str(line)
+                chain += str(line)
 
     return newseqs
 
@@ -316,18 +305,17 @@ def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
         Output filepath.
 
     """
-    
+
     newpath=check_path(globaldir,'dir')
-    
+
     if subdir is not None:
         newpath=os.path.join(newpath,subdir)
         if not os.path.isdir(newpath):
             if mksubdir:
-                os.path.mkdir(newpath)
+                os.mkdir(newpath)
             else:
                 raise FileNotFoundError('Directory does not exist')
     if filename is not None:
         newpath=os.path.join(newpath,filename)
-    
+
     return newpath
-        

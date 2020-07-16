@@ -28,6 +28,7 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
         Sequence with extra information about gaps.
 
     """
+
     n_chains = 0
     n_resmax = 0
     for model in INSTR:
@@ -35,15 +36,14 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
         for chain in model:
             if len(chain) > n_resmax:
                 n_resmax = len(chain)
-   
     pos = [[0 for j in range(n_resmax)] for i in range(n_chains)]
     n_chains = 0
     #NUMBER OF CHAINS PER MODEL ->> DO
     if seqback:
-        for monomer in INSEQ.imer:
+        for monomer in INSEQ.imer.values():
             monomer.seqs['gapseq']=[]
-        
-    for model in INSTR:        
+
+    for model in INSTR:
         for chain in model:
             original_seq=INSEQ.imer[chain.name].seqs['mainseq']
             solved = False
@@ -79,7 +79,7 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
                     solved = True
                     break
             if solved:
-                cnt=0                  
+                cnt=0
                 for residue in chain:
                     residue.seqid.num = pos[n_chains][cnt]
                     cnt += 1
@@ -131,9 +131,7 @@ def crop_seq(INSEQ, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
     cropint=segments.deepcopy() if not terms else segments.union(segments.terminals())
 
     for res in range(INSEQ.length()):
-        #print(res)
         if cropint.contains(res+1):
-            #print(res)
             newchain.seqs['mainseq'] += INSEQ.seqs['mainseq'][res]
             if 'gapseq' in INSEQ.seqs:
                 for n in range(len(INSEQ.seqs['gapseq'])):
@@ -145,7 +143,7 @@ def crop_seq(INSEQ, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
                 for n in range(len(INSEQ.seqs['gapseq'])):
                     newchain.seqs['cropgapseq'][n] += '*'
             newchain.seqs['cropseq'] += '*'
-            
+
     if newchain.length()<len(newchain.seqs['cropseq']):
         newchain.info['header'] += cut_type
 
@@ -172,7 +170,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
         Cropped structure.
 
     """
-    
+
     n_chains = 0
     n_resmax = 0
 
@@ -183,7 +181,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
                 n_resmax = len(chain)
         delres = [[False for j in range(n_resmax)] for i in range(n_chains)]
         n_chains = 0
-        
+
     for model in INSTR:
         for chain in model:
             if chain.name in segments:
@@ -192,7 +190,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
                 else:
                     cropint=segments[chain.name].union(segments[chain.name].terminals())
                 original_seq=INSEQ.imer[chain.name].seqs['mainseq']
-            
+
                 r_bio=0
                 pos_chainlist=0
                 for r_original in range(len(original_seq)):
@@ -205,7 +203,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
                         if chain[pos_chainlist].seqid.num == r_original+1:
                             delres[n_chains][pos_chainlist] = True
                             pos_chainlist += 1
-                              
+
         n_chains = 0
         for model in INSTR:
             for chain in model:

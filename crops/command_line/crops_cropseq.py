@@ -17,7 +17,7 @@ from crops.core import cio
 from crops.core import ops as cop
 #from core import seq as csq
 
-def main():    
+def main():
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
 
@@ -41,12 +41,12 @@ def main():
     inseq=cio.check_path(args.input_seqpath,'file')
     indb=cio.check_path(args.input_database,'file')
     insprot=cio.check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
-    
+
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
     targetlbl=cio.target_format(indb,terms=args.terminals, th=minlen)
-    
+
     infixlbl=cio.infix_gen(indb,terms=args.terminals)
-        
+
     if args.outdir is None:
         outdir=cio.check_path(os.path.dirname(inseq),'dir')
     else:
@@ -61,7 +61,7 @@ def main():
         intervals=cio.import_db(indb)
     else:
         raise ValueError('No chains were imported from sequence file.')
-    
+
     if insprot is not None and minlen>0.0:
         uniprotset=cio.parseseqfile(insprot)
 
@@ -90,7 +90,7 @@ def main():
             for key2,monomer in S.imer.items():
                 outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
-                
+
 if __name__ == "__main__":
     import sys
     #import traceback

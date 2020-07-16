@@ -84,10 +84,10 @@ class intinterval:
     >>> my_interval.contains(16)
     False
     >>> my_interval.contains(my_interval2)
-    False    
+    False
     >>> my_interval.contains([5,7])
     True
-    
+
     Attributes
     ----------
     tags : dict
@@ -101,12 +101,12 @@ class intinterval:
         self.tags={}
         self.tags['description']=description
         self.subint = subint
-        
+
     def __repr__(self):
         return self.kind+" object: (id="+ self.description()+", subsets="+str(self.subint)+")"
     def __iter__(self):
         return iter(self.subint)
-    
+
     def description(self, newdescription=None):
         """
         Returns or edits the 'description' tag.
@@ -128,7 +128,7 @@ class intinterval:
             return self.tags['description']
         else:
             self.tags['description']=newdescription
-        
+
     def addtag(self, tag, value):
         """
         Adds a new tag to :obj:`~crops.core.intervals.intinterval`.
@@ -153,7 +153,7 @@ class intinterval:
         if not isinstance(tag,str):
             raise TypeError('Keys must be strings')
         self.tags[tag]=value
-        
+
     def deltag(self, tag):
         """
         Deletes a tag from :obj:`~crops.core.intervals.intinterval`.
@@ -179,8 +179,8 @@ class intinterval:
             raise TypeError('Tags must be strings')
         if tag=='description':
             raise ValueError('Key "description" cannot be removed.')
-        self.tags.remove(tag)        
-       
+        self.tags.remove(tag)
+
     def copy(self):
 
         return copy.copy(self)
@@ -188,7 +188,7 @@ class intinterval:
     def deepcopy(self):
 
         return copy.deepcopy(self)
-    
+
     def terminals(self, other=None):
         """
         Returns the first and last element in the interval.
@@ -200,7 +200,7 @@ class intinterval:
         Returns
         -------
         list
-            A list of two integers indicating lower and higher limits of the interval (self if other is None, other otherwise). 
+            A list of two integers indicating lower and higher limits of the interval (self if other is None, other otherwise).
             If input is an empty interval, this function will return an empty list.
 
         """
@@ -209,7 +209,7 @@ class intinterval:
             return [interval.subint[0][0],interval.subint[-1][-1]]
         else:
             return []
-        
+
     def n_elements(self,other=None):
         """
         Returns the number of elements in the interval, subinterval, or any other set.
@@ -224,12 +224,12 @@ class intinterval:
             Number of elements in the interval (self if other is None, other otherwise).
 
         """
-        
+
         n=0
         interval=self if other is None else _intervalise(other)
         for A in interval.subint:
             n += A[1]-A[0]+1
-            
+
         return n
 
     def contains(self, other):
@@ -276,7 +276,7 @@ class intinterval:
             Another interval.
         newdesc : str, optional
             If given, description of returned interval. The default is None (description will be imported from self).
-            
+
         Returns
         -------
         newint : :obj:`~crops.core.intervals.intinterval`
@@ -289,7 +289,7 @@ class intinterval:
         other=_intervalise(other)
         if self.subint==[] or self.subint==other.subint:
             newint=other.deepcopy()
-            newint.description(newdesc)            
+            newint.description(newdesc)
             return newint
         elif other.subint==[] and self.subint!=[]:
             newint=self.deepcopy()
@@ -299,7 +299,7 @@ class intinterval:
         newint=self.deepcopy()
         # Use of distributive property:
         # A = (A1 ⋃ A2); B = (B1 ⋃ B2)
-        # A ⋃ B = (A ⋃ B1) ⋃ (A ⋃ B2)               
+        # A ⋃ B = (A ⋃ B1) ⋃ (A ⋃ B2)
         for B in other.subint:
             ingap=True
             newlist=[]
@@ -356,7 +356,7 @@ class intinterval:
             Another interval.
         newdesc : str, optional
             If given, description of returned interval. The default is None (description will be imported from self).
-            
+
         Returns
         -------
         newint : :obj:`~crops.core.intervals.intinterval`
@@ -487,7 +487,7 @@ class intinterval:
         newint : :obj:`~crops.core.intervals.intinterval`
             The Symmetric difference of both intervals.
 
-        """ 
+        """
         if newdesc is None:
             newdesc=self.description()
         # A Δ B : A = self, B = other
