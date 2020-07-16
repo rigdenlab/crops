@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 
-__prog__="CROPS"
-__description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
-__author__ = "J. Javier Burgos-Mármol"
-__date__ = "Jul 2020"
-__version__ = "0.3.1"
+from crops.about import __prog__, __description__, __author__, __date__, __version__
 
-_reslist =	{
+reslist =	{
   "ALA": "A",
   "ARG": "R",
   "ASN": "N",
@@ -36,7 +32,7 @@ _reslist =	{
   "XLE": "J"
 }
 
-_nuclist =	{
+nuclist =	{
   "A":"A",
   "T":"T",
   "C":"C",
@@ -62,18 +58,41 @@ _nuclist =	{
 }
 
 def ressymbol(name):
-    """Conversion from residue 3-letter symbol to 1-letter symbol.
+    """
+    Conversion from residue 3-letter symbol to 1-letter symbol and nucleotide recognition
 
-    :param name: Residue symbol (3-letter convention) or Nucleotide symbol (1,2-letter convention).
-    :type name: str
-    :return oneletter: Residue/Nucleotide symbol (1-letter convention).
-    :rtype oneletter: str
+    Parameters
+    ----------
+    name : str
+        Residue symbol (3-letter convention) or Nucleotide symbol (1-letter convention)
+
+    Returns
+    -------
+    oneletter : str
+        Residue/Nucleotide symbol (1-letter convention)
 
     """
-    wholelist={**_reslist,**_nuclist}
+    wholelist={**reslist,**nuclist}
     try:
         oneletter=wholelist[name]
     except:
         oneletter=0
 
     return oneletter
+
+def fastachains(fasta_seq):
+    outdict={}
+    for i in range(len(fasta_seq)):
+        namechar=False
+        nameseq=''
+        for j in range(len(fasta_seq[i].id)):
+            if fasta_seq[i].id[j]==":":
+                namechar=True
+            elif fasta_seq[i].id[j]=="|":
+                if namechar:
+                    break
+            else:
+                if namechar:
+                    nameseq += fasta_seq[i].id[j]
+        outdict[nameseq]=i
+    return outdict

@@ -1,66 +1,78 @@
 # -*- coding: utf-8 -*-
 
-__prog__="CROPS"
-__description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
-__author__ = "J. Javier Burgos-Mármol"
-__date__ = "Jul 2020"
-__version__ = "0.3.1"
+from crops.about import __prog__, __description__, __author__, __date__, __version__
 
 import gemmi
 import os
 import argparse
 import csv
 import copy
-from crops.sequence import Sequence
-from crops.sequence import retrieve_id
-from crops.intervals import intinterval
+from crops.core.sequence import Sequence
+from crops.core.sequence import retrieve_id
+from crops.core.intervals import intinterval
 
 #import sys
 #from io import StringIO  # Python3
 
 
 def check_path(path,typeofpath=None):
-    """Returns full path if correct.
+    """
+    Returns full path if correct.
 
-    :param path: Input (local) path.
-    :type path: str
-    :param typeofpath: The type of path, 'dir' or 'file', defaults to None.
-    :type typeofpath: str, optional
-    :raises ValueError: When given typeofpath is neither 'dir' nor 'file'.
-    :raises argparse: If wrong path given.
-    :return: Complete checked path.
-    :rtype: str
+    Parameters
+    ----------
+    path : str
+        Input (local) path.
+    typeofpath : str, optional
+        The type of path, 'dir' or 'file'. The default is None.
+
+    Raises
+    ------
+    ValueError
+        When typeofpath is neither 'dir' nor 'file'.
+    argparse
+        If wrong path given.
+
+    Returns
+    -------
+    str
+        Complete path.
 
     """
-
     pathok=False
-    if typeofpath is not None and typeofpath!='file' and typeofpath!='dir':
-        raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
     if typeofpath=='dir' or typeofpath is None:
        if os.path.isdir(path):
            pathok=True
-    if typeofpath=='file' or typeofpath is None:
+    elif typeofpath=='file' or typeofpath is None:
         if os.path.isfile(path):
            pathok=True
+    else:
+        raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
     if pathok:
         return os.path.abspath(path)
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
 def target_format(inpath,terms=False,th=0):
-    """Returns extra information for .fasta headers.
+    """
+    Returns extra information for .fasta headers
 
-    :param inpath: Path to interval database used.
-    :type inpath: str
-    :param terms: Are only terminal ends discarded?, defaults to False.
-    :type terms: bool, optional
-    :param th: Uniprot threshold, defaults to 0.
-    :type th: int, float, optional
-    :return: Extra information for .fasta headers
-    :rtype: str
+    Parameters
+    ----------
+    inpath : str
+        Path to interval database used.
+    terms : bool, optional
+        Are only terminal ends discarded?. The default is False.
+    th : int, float, optional
+        Uniprot threshold. The default is 0.
+
+    Returns
+    -------
+    outcome : TYPE
+        DESCRIPTION.
 
     """
-
+    
     if os.path.basename(inpath)=='pdb_chain_uniprot.csv':
         outcome=' | CROPS | UNIPROT via SIFTS'
         if th>0:
@@ -73,46 +85,62 @@ def target_format(inpath,terms=False,th=0):
     return outcome
 
 def infix_gen(inpath,terms=False):
-    """Returns filename tag for outputs.
+    """
+    Returns filename tag for outputs.
 
-    :param inpath: Path to interval database used.
-    :type inpath: str
-    :param terms: Are only terminal ends discarded?, defaults to False.
-    :type terms: bool, optional
-    :return: Filename tag.
-    :rtype: str
+    Parameters
+    ----------
+    inpath : str
+        Path to interval database used.
+    terms : bool, optional
+        Are only terminal ends discarded?. The default is False.
+
+    Returns
+    -------
+    infix_out : str
+        Filename tag.
 
     """
     if os.path.basename(inpath)=='pdb_chain_uniprot.csv':
         cut=".to_uniprot"
     else:
         cut=".custom"
-
+    
     if terms:
         cut=".custom"
 
     infix_out={
         "crop" : ".crops"+cut,
         "renumber" : ".crops.seq"}
-
+    
     return infix_out
 
 def import_db(inpath,pdb_in=None):
-    """Imports intervals database.
+    """
+    Imports intervals database.
 
-    :param inpath: Path to interval database used.
-    :type inpath: str
-    :param pdb_in: Chain ID, defaults to None.
-    :type pdb_in: str, list, optional
-    :raises TypeError: When pdb_in is given and is neither a string nor a list of strings.
-    :return: dict
-    :rtype: A dictionary of :obj:`~crops.core.intervals.intinterval`.
+    Parameters
+    ----------
+    inpath : str
+        Path to interval database used.
+    pdb_in : str, list, optional
+        Chain identifier. The default is None.
+
+    Raises
+    ------
+    TypeError
+        When pdb_in is given and is neither a string nor a list of strings.
+
+    Returns
+    -------
+    database_out : dict
+        A list of :obj:`~crops.core.intervals.intinterval`.
 
     """
     database_out={}
     if isinstance(pdb_in,str):
         pdb_in=[pdb_in]
-
+    
     if isinstance(pdb_in,list):
         for element in pdb_in:
             if not isinstance(element,str):
@@ -133,7 +161,7 @@ def import_db(inpath,pdb_in=None):
         up=None
 
     csv_chain_file = open(inpath)
-    csv_chain = csv.reader(csv_chain_file)
+    csv_chain = csv.reader(csv_chain_file)   
 
     for entry in csv_chain:
         if entry[0][0] != "#" and entry[0] !="PDB":
@@ -155,15 +183,25 @@ def import_db(inpath,pdb_in=None):
 
 
 def parsestrfile(STR_INPATH):
-    """Returns dictionary containing gemmi structures and another one with the file names.
+    """
+    Returns dictionary containing gemmi structures and another one with the file names.
 
-    :param STR_INPATH: Either a directory or file path.
-    :type STR_INPATH: str
-    :raises KeyError: More than one structure file containing same identifier.
-    :return strdict: A dictionary containing imported gemmi structures.
-    :rtype strdict: dict
-    :return filedict: A dictionary containing file names.
-    :rtype filedict: dict
+    Parameters
+    ----------
+    STR_INPATH : str
+        Either a directory or file path.
+
+    Raises
+    ------
+    KeyError
+        More than one structure file containing same identifier.
+
+    Returns
+    -------
+    strdict : dict
+        A dictionary containing imported gemmi structures.
+    filedict : dict
+        A dictionary containing file names.
 
     """
     strdict={}
@@ -190,19 +228,25 @@ def parsestrfile(STR_INPATH):
     return strdict, filedict
 
 def parseseqfile(inpath):
-    """Returns dictionary containing :class:`~crops.core.sequence.Sequence`.
+    """
+    Returns dictionary containing :obj:`~crops.core.sequence.Sequence`.
 
-    :param inpath: File path.
-    :type inpath: str
-    :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.
-    :rtype: dict
+    Parameters
+    ----------
+    inpath : str
+        File path.
+
+    Returns
+    -------
+    newseqs : dict
+        A dictionary containing parsed :obj:`~crops.core.sequence.Sequence`.
 
     """
     newseqs={}
     newid=[]
     head=''
     chain=''
-    with open(inpath,'r') as f:
+    with open(inpath,'r') as f:    
         indx=-1
         while True:
             line=f.readline().rstrip()
@@ -247,23 +291,34 @@ def parseseqfile(inpath):
     return newseqs
 
 def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
-    """Returns the desired output filepath.
+    """
+    Returns the desired output filepath.
 
-    :param globaldir: General output dir.
-    :type globaldir: str
-    :param subdir: Additional subdirectory, defaults to None.
-    :type subdir: str, optional
-    :param filename: File name, defaults to None.
-    :type filename: str, optional.
-    :param mksubdir: Create directory if not existing, defaults to False.
-    :type mksubdir: bool, optional
-    :raises FileNotFoundError: Directory does not exist.
-    :return: Output filepath.
-    :rtype: str
+    Parameters
+    ----------
+    globaldir : str
+        General output dir.
+    subdir : str, optional
+        Additional subdirectory. The default is None.
+    filename : str, optional
+        File name. The default is None.
+    mksubdir : bool, optional
+        Create directory if not existing. The default is False.
+
+    Raises
+    ------
+    FileNotFoundError
+        Directory does not exist.
+
+    Returns
+    -------
+    newpath : str
+        Output filepath.
 
     """
+    
     newpath=check_path(globaldir,'dir')
-
+    
     if subdir is not None:
         newpath=os.path.join(newpath,subdir)
         if not os.path.isdir(newpath):
@@ -273,5 +328,6 @@ def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
                 raise FileNotFoundError('Directory does not exist')
     if filename is not None:
         newpath=os.path.join(newpath,filename)
-
+    
     return newpath
+        

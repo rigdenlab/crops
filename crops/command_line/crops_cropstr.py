@@ -6,11 +6,7 @@ in agreement to the intervals and other details supplied.
 
 """
 
-__prog__="CROPS"
-__description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
-__author__ = "J. Javier Burgos-Mármol"
-__date__ = "Jul 2020"
-__version__ = "0.3.1"
+from crops.about import __prog__, __description__, __author__, __date__, __version__
 
 import argparse
 import os
@@ -22,7 +18,7 @@ from crops.core import cio
 from crops.core import ops as cop
 #from core import seq as csq
 
-def main():
+def main():    
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
 
@@ -49,12 +45,12 @@ def main():
     indb=cio.check_path(args.input_database,'file')
     instr=cio.check_path(args.input_strpath)
     insprot=cio.check_path(args.uniprot_threshold[1],'file') if args.uniprot_threshold is not None else None
-
+    
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
     targetlbl=cio.target_format(indb,terms=args.terminals, th=minlen)
-
+    
     infixlbl=cio.infix_gen(indb,terms=args.terminals)
-
+        
     if args.outdir is None:
         outdir=cio.check_path(os.path.dirname(inseq),'dir')
     else:
@@ -62,7 +58,7 @@ def main():
     ###########################################
     seqset=cio.parseseqfile(inseq)
     strset, fileset=cio.parsestrfile(instr)
-
+    
     if len(seqset)==1:
         for key in seqset:
             pdbid=key
@@ -71,16 +67,16 @@ def main():
         intervals=cio.import_db(indb)
     else:
         raise ValueError('No chains were imported from sequence file.')
-
+    
     if insprot is not None and minlen>0.0:
         uniprotset=cio.parseseqfile(insprot)
-    ###########################################
+    ###########################################    
     for pdbid, structure in strset.items():
         if pdbid in seqset:
             newstructure,seqset[pdbid]=cop.renumberpdb(seqset[pdbid],structure,seqback=True)
             outstr=cio.outpath(outdir,subdir=pdbid,filename=pdbid+infixlbl+os.path.splitext(instr)[1],mksubdir=True)
             newstructure.write_pdb(outstr)
-
+    
     outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
     for pdbid, S in seqset.items():
         if pdbid in intervals:

@@ -11,15 +11,13 @@ same source (e.g. RCSB PDB) a source conflict might occur making the
 renumbering operation unsuccessful even if the program does not crash.
 """
 
-__prog__="CROPS"
-__description__="Cropping and Renumbering Operations for PDB structure and Sequence files"
-__author__ = "J. Javier Burgos-Mármol"
-__date__ = "Jul 2020"
-__version__ = "0.3.1"
+from crops.about import __prog__, __description__, __author__, __date__, __version__
 
 import argparse
 import os
 
+import sys
+print(sys.path)
 from crops.core import cio
 from crops.core import ops as cop
 
