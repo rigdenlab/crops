@@ -8,25 +8,15 @@ import copy
 from warnings import warn
 
 def retrieve_id(seqheader,extrainfo=False):
-    """
-    Extract sequence IDs from a standard .fasta header
+    """Extracts sequence IDs from a standard .fasta header.
 
-    Parameters
-    ----------
-    seqheader : str
-        Standard .fasta header, starting with ">"
-    extrainfo : bool, optional
-        If True, extra information string is returned instead of sequence IDs. The default is False.
-
-    Raises
-    ------
-    ValueError
-        If seqheader is not a string.
-
-    Returns
-    -------
-    TYPE
-        A list with the two sequence identifiers (e.g. [pdb ID, chain ID]) or a single string if extrainfo==True.
+    :param seqheader: Standard .fasta header, starting with ">".
+    :type seqheader: str
+    :param extrainfo: If True extra information string is returned, instead of sequence IDs, defaults to False.
+    :type extrainfo: bool, optional
+    :raises ValueError: If seqheader is not a string.
+    :return: A list with the two sequence identifiers (e.g. [pdb ID, chain ID]) or a single string if extrainfo==True.
+    :rtype: list, str
 
     """
 
@@ -96,8 +86,20 @@ class monomer_sequence:
     The monomer sequence class represents a data structure to hold all
     sequences and other useful information characterising the monomer.
     It contains functions to store, manipulate and organise sequences.
-    Examples
-    --------
+
+    :param chid: Chain ID.
+    :type chid: str
+    :param seq: Sequence string.
+    :type seq: str, optional
+    :param header: Standard .fasta header, starting with ">".
+    :type seqheader: str, optional
+    :ivar info: Useful information of the :class:`~crops.core.sequence.monomer_sequence`.
+    :type info: dict
+    :ivar seqs: The set of sequences, including default "mainseq", in :class:`~crops.core.sequence.monomer_sequence`.
+    :type seqs: dict
+
+    :example:
+
     >>> from crops.core import monomer_sequence
     >>> my_monomer = monomer_sequence('example_id')
     >>> my_monomer.mainseq('GATTACA')
@@ -112,12 +114,6 @@ class monomer_sequence:
     >>> print(my_monomer)
     Single chain sequence object: (id='example_id', seq='GATTACA', length=7)
 
-    Attributes
-    ----------
-    info : dict
-        Useful information of the :obj:`~crops.core.sequence.monomer_sequence`.
-    seqs : dict
-        The set of sequences, including default "mainseq", in :obj:`~crops.core.sequence.monomer_sequence`.
     """
 
     kind='Single chain sequence'
@@ -167,26 +163,14 @@ class monomer_sequence:
         return copy.deepcopy(self)
 
     def addseq(self,newid,newseq):
-        """
-        Add sequence to :obj:`~crops.core.sequence.monomer_sequence`.
+        """Add sequence to :class:`~crops.core.sequence.monomer_sequence`.
 
-        Parameters
-        ----------
-        newid : str
-            New sequence's identifier.
-        newseq : str
-            New sequence.
-
-        Raises
-        ------
-        TypeError
-            If newid is not a string.
-        KeyError
-            If sequence is not a string.
-
-        Returns
-        -------
-        None.
+        :param newid: New sequence's identifier.
+        :type newid: str
+        :param newseq: New sequence.
+        :type newseq: str
+        :raises TypeError: If newid is not a string.
+        :raises KeyError: If sequence is not a string.
 
         """
         if not isinstance(newid,str):
@@ -199,27 +183,13 @@ class monomer_sequence:
         self.seqs[newid]=newseq
 
     def delseq(self,delid=None,wipeall=False):
-        """
-        Deletes sequence(s) from :obj:`~crops.core.sequence.monomer_sequence`.
-        Note:
+        """Deletes sequence(s) from :class:`~crops.core.sequence.monomer_sequence`.
 
-        Parameters
-        ----------
-        delid : str, optional
-            ID of sequence to be deleted. The default is None.
-        wipeall : bool, optional
-            If True, all the sequences are deleted. The default is False.
-
-        Raises
-        ------
-        TypeError
-            If delid is not a string.
-        TypeError
-            If wipeall is not a boolean.
-
-        Returns
-        -------
-        None.
+        :param delid: ID of sequence to be deleted, defaults to None.
+        :type delid: str, optional
+        :param wipeall: If True, all the sequences are deleted, defaults to False.
+        :type wipeall: bool, optional
+        :raises TypeError: If delid is not a string.
 
         """
         if wipeall:
@@ -239,23 +209,13 @@ class monomer_sequence:
             self.seqs.pop(delid)
 
     def mainseq(self,add=None):
-        """
-        Returns or modifies the main sequence.
+        """Returns or modifies the main sequence.
 
-        Parameters
-        ----------
-        add : str, optional
-            If included, main sequence is changed to 'add' sequence instead of returned. The default is None.
-
-        Raises
-        ------
-        TypeError
-            If 'add' is not a string.
-
-        Returns
-        -------
-        str
-            If 'add' not included, the main sequence is returned.
+        :param add: If included, main sequence is changed to 'add' sequence instead of returned, defaults to None
+        :type add: str, optional
+        :raises TypeError: If 'add' is not a string
+        :return: If 'add' is None, the main sequence is returned.
+        :rtype: str
 
         """
         if not isinstance(add,str) and add is not None:
@@ -266,22 +226,11 @@ class monomer_sequence:
             self.seqs['mainseq']=add
 
     def dump(self, out):
-        """
-        Writes header and main sequence to a file. If file exists, output is appended.
+        """Writes header and main sequence to a file. If file exists, output is appended.
 
-        Parameters
-        ----------
-        out : str, file
-            An output filepath (str) or an open file.
-
-        Raises
-        ------
-        TypeError
-            If out is neither a string nor an open file.
-
-        Returns
-        -------
-        None.
+        :param out: An output filepath (str) or an open file.
+        :type out: str, file
+        :raises TypeError: If out is neither a string nor an open file.
 
         """
         if not isinstance(out,str) and not isinstance(out,io.IOBase):
@@ -316,35 +265,22 @@ class monomer_sequence:
 
     @property
     def length(self):
-        """
-        Returns the length of the main sequence.
+        """Returns the length of the main sequence.
 
-        Returns
-        -------
-        int
-            Length of the main sequence.
+        :return: Length of the main sequence.
+        :rtype: int
 
         """
         return len(self.seqs['mainseq'])
     @property
     def ngaps(self,seqid):
-        """
-        Returns the number of gaps ('-') in a sequence.
+        """Returns the number of gaps ('-') in a sequence.
 
-        Parameters
-        ----------
-        seqid : str
-            The ID of the sequence containing the gaps.
-
-        Raises
-        ------
-        TypeError
-            If seqid is not a string.
-
-        Returns
-        -------
-        n : int
-            Number of gaps in seqid.
+        :param seqid: The ID of the sequence containing the gaps.
+        :type seqid: str
+        :raises TypeError: If seqid is not a string.
+        :return: Number of gaps in seqid.
+        :rtype: int
 
         """
         if not isinstance(seqid,str):
@@ -357,23 +293,13 @@ class monomer_sequence:
 
     @property
     def ncrops(self,seqid):
-        """
-        Returns the number of cropped elements ('+','*') in a sequence.
+        """Returns the number of cropped elements ('+','*') in a sequence.
 
-        Parameters
-        ----------
-        seqid : str
-            The ID of the sequence containing the cropped elements.
-
-        Raises
-        ------
-        TypeError
-            If seqid is not a string.
-
-        Returns
-        -------
-        n : int
-            Number of cropped elements in seqid.
+        :param seqid: The ID of the sequence containing the cropped elements.
+        :type seqid: str
+        :raises TypeError: If seqid is not a string.
+        :return: Number of cropped elements in seqid.
+        :rtype: int
 
         """
         if not isinstance(seqid,str):
@@ -386,13 +312,10 @@ class monomer_sequence:
 
     @property
     def header(self):
-        """
-        Returns the header identifying the sequence in a fasta file.
+        """Returns the header identifying the sequence in a fasta file.
 
-        Returns
-        -------
-        str
-            Fasta format header.
+        :return: Fasta format header.
+        :rtype: str
 
         """
         if 'header' not in self.info:
@@ -401,13 +324,10 @@ class monomer_sequence:
 
     @property
     def oligomer_id(self):
-        """
-        Returns the oligomer ID.
+        """Returns the oligomer ID.
 
-        Returns
-        -------
-        str
-            Oligomer ID.
+        :return: Oligomer ID.
+        :rtype: str
 
         """
         if 'oligomer_id' not in self.info:
@@ -416,13 +336,10 @@ class monomer_sequence:
 
     @property
     def chain_id(self):
-        """
-        Returns the chain ID.
+        """Returns the chain ID.
 
-        Returns
-        -------
-        str
-            Chain ID.
+        :return: Chain ID.
+        :rtype: str
 
         """
         if 'chain_id' not in self.info:
@@ -432,10 +349,24 @@ class monomer_sequence:
 class Sequence:
     """A sequence object grouping several chain sequence objects.
     The Sequence class represents a data structure to hold all
-     :obj:`~crops.core.sequence.monomer_sequence` and other useful information
+     :class:`~crops.core.sequence.monomer_sequence` and other useful information
     characterising an oligomer.
-    Examples
-    --------
+
+    :param seq_id: Sequence identifier (e.g. PDB id).
+    :type seq_id: str
+    :param imer: Container of several :class:`~crops.core.sequence.monomer_sequence` making up the oligomer.
+    :type imer: dict, optional
+    :param source: Information concerning the source of the :class:`~crops.core.sequence.Sequence` (e.g. Uniprot).
+    :type source: str, optional
+    :ivar seq_id: Sequence identifier (e.g. PDB id).
+    :type seq_id: str
+    :ivar imer: Container of several :class:`~crops.core.sequence.monomer_sequence` making up the oligomer.
+    :type imer: dict
+    :ivar source: Information concerning the source of the :class:`~crops.core.sequence.Sequence` (e.g. Uniprot).
+    :type source: str
+
+    :example:
+
     >>> from crops.core import Sequence
     >>> my_sequence = Sequence(seq_id='example_id', source='docs')
     >>> my_sequence.add_monomer('header_example','GATTACA',nid='mychain')
@@ -451,14 +382,6 @@ class Sequence:
     >>> my_sequence.nchains()
     0
 
-    Attributes
-    ----------
-    seq_id : str
-        Sequence identifier
-    imer : dict
-        Container of several :obj:`~crops.core.sequence.monomer_sequence` making up the oligomer.
-    source : str
-        Information concerning the source of the :obj:`~crops.core.sequence.Sequence`.
     """
     kind='Protein/polynucleotide sequence'
     __slots__ = ['seq_id', 'imer', 'source']
@@ -493,12 +416,7 @@ class Sequence:
         return copy.deepcopy(self)
 
     def purge(self):
-        """
-        Empties the :obj:`~crops.core.sequence.Sequence` without deleting the object itself.
-
-        Returns
-        -------
-        None.
+        """Empties the :class:`~crops.core.sequence.Sequence` without deleting the object itself.
 
         """
         self.seq_id=None
@@ -506,28 +424,17 @@ class Sequence:
         self.imer.clear()
 
     def add_monomer(self, nheader, nseq,  nid=None,forceentry=False): # INCLUDE DEL_MONOMER
-        """
-        Adds a new :obj:`~crops.core.sequence.monomer_sequence` to the :obj:`~crops.core.sequence.Sequence`
+        """Adds a new :class:`~crops.core.sequence.monomer_sequence` to the :class:`~crops.core.sequence.Sequence`.
 
-        Parameters
-        ----------
-        nheader : str
-            Standard .fasta header, starting with ">".
-        nseq : str
-            New sequence.
-        nid : str, optional
-            New sequence's identifier. The default is None.
-        forceentry : bool, optional
-            Switch to force entry under a new ID if already in. The default is False.
-
-        Raises
-        ------
-        KeyError
-            When ID already in dictionary of :obj:`~crops.core.sequence.monomer_sequence` and forceentry=False.
-
-        Returns
-        -------
-        None.
+        :param nheader: Standard .fasta header, starting with ">".
+        :type nheader: str
+        :param nseq: New sequence.
+        :type nseq: str
+        :param nid: New chain's identifier, defaults to None
+        :type nid: str, optional
+        :param forceentry: Switch to force entry under a new ID if nid already in, defaults to False
+        :type forceentry: bool, optional
+        :raises KeyError: When ID already in dictionary of :class:`~crops.core.sequence.monomer_sequence` and forceentry=False.
 
         """
         if nid is None:
@@ -549,32 +456,35 @@ class Sequence:
 
             self.imer[iid]=monomer_sequence(chid=iid,seq=nseq,header=nheader)
 
-    def write(self, outdir, infix="",single=None):
+
+    def del_monomer(self, nid):
+        """Removes the selected :class:`~crops.core.sequence.monomer_sequence` from the :class:`~crops.core.sequence.Sequence`
+
+        :param nid: Doomed chain's identifier
+        :type nid: str
+        :raises TypeError: When nid is not a string.
+
         """
-        Write all :obj:`~crops.core.sequence.monomer_sequence` to .fasta file.
+        if not isinstance(nid,str):
+            raise TypeError('nid should be a string.')
 
-        Parameters
-        ----------
-        outdir : str
-            Output directory.
-        infix : str, optional
-            Mark to distinguish from original input file. The default is "".
-        single : str, optional
-            If not None, only :obj:`~crops.core.sequence.monomer_sequence` with ID given by single is written. The default is None.
+        if nid in self.imer:
+            self.pop(nid)
+        else:
+            warn('del_monomer WARNING: Chain named '+ nid+' not found in Sequence.')
 
-        Raises
-        ------
-        FileNotFoundError
-            Output directory not found.
-        TypeError
-            Argument 'single' should be a string.
-        KeyError
-            Specific single ID not found in :obj:`~crops.core.sequence.Sequence`.
+    def write(self, outdir, infix="",single=None):
+        """Writes all :class:`~crops.core.sequence.monomer_sequence` to .fasta file.
 
-        Returns
-        -------
-        None.
-
+        :param outdir: Output directory.
+        :type outdir: str
+        :param infix: Mark to distinguish from original input file, defaults to "".
+        :type infix: str, optional
+        :param single: If not None, only :class:`~crops.core.sequence.monomer_sequence` with ID given by single is written, defaults to None.
+        :type single: str, optional
+        :raises FileNotFoundError: Output directory not found.
+        :raises TypeError: Argument 'single' should be a string.
+        :raises KeyError: Specific single ID not found in :class:`~crops.core.sequence.Sequence`.
         """
 
         if not os.path.isdir(outdir):
@@ -597,25 +507,14 @@ class Sequence:
 
     @property
     def length(self,chain):
-        """
-        Returns the length of a certain sequence.
+        """Returns the length of a certain sequence.
 
-        Parameters
-        ----------
-        chain : str
-            ID of :obj:`~crops.core.sequence.monomer_sequence`.
-
-        Raises
-        ------
-        TypeError
-            When 'chain' is not a string.
-        KeyError
-            Specific single ID not found in :obj:`~crops.core.sequence.Sequence`.
-
-        Returns
-        -------
-        int
-            Length of :obj:`~crops.core.sequence.monomer_sequence`.
+        :param chain: ID of :class:`~crops.core.sequence.monomer_sequence`.
+        :type chain: str
+        :raises TypeError: When 'chain' is not a string.
+        :raises KeyError: Specific chain not found in :class:`~crops.core.sequence.Sequence`.
+        :return: Length of :class:`~crops.core.sequence.monomer_sequence`.
+        :rtype: int
 
         """
         if not isinstance(chain,str):
@@ -626,13 +525,9 @@ class Sequence:
             raise KeyError(chain+' monomer not found in sequence.')
     @property
     def nchains(self):
-        """
-        Returns number of :obj:`~crops.core.sequence.monomer_sequence` in :obj:`~crops.core.sequence.Sequence`.
+        """Returns number of :class:`~crops.core.sequence.monomer_sequence` in :class:`~crops.core.sequence.Sequence`.
 
-        Returns
-        -------
-        int
-            Number of :obj:`~crops.core.sequence.monomer_sequence` in :obj:`~crops.core.sequence.Sequence`.
-
+        :return: Number of :class:`~crops.core.sequence.monomer_sequence` in :class:`~crops.core.sequence.Sequence`.
+        :rtype: int
         """
         return len(self.imer)
