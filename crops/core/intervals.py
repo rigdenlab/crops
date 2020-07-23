@@ -230,8 +230,8 @@ class intinterval:
         # A ⋃ B : A = self, B = other
         other=_intervalise(other)
         if self.subint==[] or self.subint==other.subint:
-            newint=other.deepcopy()
-            newint.description(newdesc)
+            newint=self.deepcopy()
+            newint.subint=copy.deepcopy(other.subint)
             return newint
         elif other.subint==[] and self.subint!=[]:
             newint=self.deepcopy()
@@ -308,14 +308,16 @@ class intinterval:
             newint.description(newdesc)
             return newint
         elif other.subint==[] and self.subint!=[]:
-            newint=other.deepcopy()
+            newint=self.deepcopy()
+            newint.subint=[]
             newint.description(newdesc)
             return newint
 
         # Use of distributive property:
         # A = (A1 ⋃ A2); B = (B1 ⋃ B2)
         # A ⋂ B = (A1 ⋂ B1) ⋃ (A1 ⋂ B2) ⋃ (A2 ⋂ B1) ⋃ (A2 ⋂ B2)
-        newint=intinterval()
+        newint=self.deepcopy()
+        newint.subint=[]
         for A in self.subint:
             for B in other.subint:
                 partial_int=[]
@@ -355,7 +357,8 @@ class intinterval:
             newint.description(newdesc)
             return newint
         elif other.subint == self.subint:
-            newint=intinterval(description='subtraction')
+            newint=self.deepcopy()
+            newint.subint=[]
             newint.description(newdesc)
             return newint
 
@@ -421,10 +424,13 @@ class intinterval:
             newint.description(newdesc)
             return newint
         elif self.subint==[] and other.subint!=self.subint:
-            newint=other.deepcopy()
+            newint=self.deepcopy()
+            newint.subint=copy.deepcopy(other.subint)
             newint.description(newdesc)
             return newint
         elif other.subint == self.subint:
+            newint=self.deepcopy()
+            newint.subint=[]
             newint.description(newdesc)
             return newint
 
