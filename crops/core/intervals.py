@@ -152,7 +152,7 @@ class intinterval:
 
         return copy.deepcopy(self)
 
-    def terminals(self, other=None, altsubint=None):
+    def terminals(self, other=None):
         """Returns the first and last element in the :class:`~crops.core.intervals.intinterval`.
 
         :param other: Defaults to None.
