@@ -109,13 +109,14 @@ def import_db(inpath,pdb_in=None):
     """
     database_out={}
     if isinstance(pdb_in,str):
-        pdb_in=[pdb_in]
+        pdb_in=[pdb_in.lower()]
 
     if isinstance(pdb_in,list):
+        pdb_in_lower=[]
         for element in pdb_in:
             if not isinstance(element,str):
                 raise TypeError('Argument should be a list of strings or a string')
-            element=element.lower()
+            pdb_in_lower.append(element.lower())
 
     if os.path.basename(inpath)=='pdb_chain_uniprot.csv':
         mol=0
@@ -132,23 +133,22 @@ def import_db(inpath,pdb_in=None):
 
     csv_chain_file = open(inpath)
     csv_chain = csv.reader(csv_chain_file)
-
     for entry in csv_chain:
         if entry[0][0] != "#" and entry[0] !="PDB":
-            if pdb_in is None or entry[mol] in pdb_in:
+            if pdb_in is None or entry[mol] in pdb_in_lower:
                 if entry[mol] not in database_out:
                     database_out[entry[mol]]={}
                 if entry[chain] not in database_out[entry[mol]]:
                     database_out[entry[mol]][entry[chain]]=intinterval(description=entry[mol]+'_'+entry[chain])
                     if up is not None:
                         database_out[entry[mol]][entry[chain]].tags['uniprot']={}
-                database_out[entry[mol]][entry[chain]].union([int(entry[leftend]),int(entry[rightend])])
+                database_out[entry[mol]][entry[chain]]= \
+                database_out[entry[mol]][entry[chain]].union(other=[int(entry[leftend]),int(entry[rightend])])
                 if up is not None:
-                    if entry[up] in database_out[entry[mol]][entry[chain]].tags['uniprot']:
-                        database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]][1]=int(entry[rightend])
-                    else:
-                        database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]]=[int(entry[leftend]),int(entry[rightend])]
-
+                    if entry[up].upper() not in database_out[entry[mol]][entry[chain]].tags['uniprot']:
+                        database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]]=intinterval(description=entry[up].upper())
+                    database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]]=\
+                    database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]].union([int(entry[leftend]),int(entry[rightend])])  
     return database_out
 
 
