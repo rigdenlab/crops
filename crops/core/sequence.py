@@ -263,16 +263,16 @@ class monomer_sequence:
                 for n in range(nlines):
                     out.write(self.seqs['mainseq'][n*80:(n+1)*80]+'\n')
 
-    @property
     def length(self):
         """Returns the length of the main sequence.
 
-        :return: Length of the main sequence.
-        :rtype: int
+        :return n: Length of the main sequence.
+        :rtype n: int
 
         """
+
         return len(self.seqs['mainseq'])
-    @property
+
     def ngaps(self,seqid):
         """Returns the number of gaps ('-') in a sequence.
 
@@ -291,7 +291,6 @@ class monomer_sequence:
                 n+=1
         return n
 
-    @property
     def ncrops(self,seqid):
         """Returns the number of cropped elements ('+','*') in a sequence.
 
@@ -310,7 +309,6 @@ class monomer_sequence:
                 n+=1
         return n
 
-    @property
     def header(self):
         """Returns the header identifying the sequence in a fasta file.
 
@@ -322,7 +320,6 @@ class monomer_sequence:
             self.info['header']=None
         return self.info['header']
 
-    @property
     def oligomer_id(self):
         """Returns the oligomer ID.
 
@@ -334,7 +331,6 @@ class monomer_sequence:
             self.info['oligomer_id']=None
         return self.info['oligomer_id']
 
-    @property
     def chain_id(self):
         """Returns the chain ID.
 
@@ -505,7 +501,6 @@ class Sequence:
             outpath=os.path.join(outdir,self.seq_id+"_"+single+infix+".fasta")
             self.imer[single].dump(outpath)
 
-    @property
     def length(self,chain):
         """Returns the length of a certain sequence.
 
@@ -523,7 +518,7 @@ class Sequence:
             return self.imer[chain].length()
         else:
             raise KeyError(chain+' monomer not found in sequence.')
-    @property
+
     def nchains(self):
         """Returns number of :class:`~crops.core.sequence.monomer_sequence` in :class:`~crops.core.sequence.Sequence`.
 

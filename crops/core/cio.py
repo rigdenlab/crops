@@ -148,7 +148,7 @@ def import_db(inpath,pdb_in=None):
                     if entry[up].upper() not in database_out[entry[mol]][entry[chain]].tags['uniprot']:
                         database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]]=intinterval(description=entry[up].upper())
                     database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]]=\
-                    database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]].union([int(entry[leftend]),int(entry[rightend])])  
+                    database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]].union([int(entry[leftend]),int(entry[rightend])])
     return database_out
 
 
