@@ -20,26 +20,26 @@ from crops.core import ops as cop
 def main():
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
-
-    parser.add_argument("input_seqpath",nargs=1, metavar="Sequence filepath",
+    parser.add_argument("input_seqpath",nargs=1, metavar="Sequence_filepath",
                         help="Input sequence filepath.")
-    parser.add_argument("input_database",nargs=1, metavar="Intervals database",
+    parser.add_argument("input_database",nargs=1, metavar="Intervals_database",
                         help="Input intervals database filepath.")
 
-    parser.add_argument("-o","--outdir",nargs=1,metavar="Output Directory",
+    parser.add_argument("-o","--outdir",nargs=1,metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
 
     sections=parser.add_mutually_exclusive_group(required=False)
-    sections.add_argument("-t","--terminals",action='store_true',default=False, metavar="Crop terminals only",
+    sections.add_argument("-t","--terminals",action='store_true',default=False,
                           help="Ignore interval discontinuities and only crop the ends off.")
-    sections.add_argument("-u","--uniprot_threshold", nargs=2, metavar="Uniprot length threshold and fasta database",
-                          help='Act if SIFTS database is used as intervals source AND % residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniprot_sprot.fasta-path')
-
+    sections.add_argument("-u","--uniprot_threshold", nargs=2, metavar=("Uniprot_ratio_threshold","Sequence_database"),
+                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniprot_sprot.fasta-path')
+    parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
     args = parser.parse_args()
 
-    inseq=cio.check_path(args.input_seqpath,'file')
-    indb=cio.check_path(args.input_database,'file')
+
+    inseq=cio.check_path(args.input_seqpath[0],'file')
+    indb=cio.check_path(args.input_database[0],'file')
     insprot=cio.check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
 
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
@@ -74,7 +74,7 @@ def main():
                         newinterval.subint=[]
                         unilbl=' uniprot chains included: '
                         for unicode,uniends in intervals[key][key2].tags['uniprot'].items():
-                            if 100*(uniends[1]-uniends[0]+1)/uniprotset[unicode].length(unicode)>=minlen:
+                            if 100*uniends.n_elements()/uniprotset[unicode].length(unicode)>=minlen:
                                 newinterval=newinterval.union(intervals[key][key2].intersection(uniends))
                                 unilbl+=unicode +'|'
                         monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
@@ -82,7 +82,6 @@ def main():
                         monomer=cop.crop_seq(monomer,intervals[pdbid][key2],targetlbl,terms=args.terminals)
                 else:
                     warn('Chain name '+pdbid+'_'+str(key2)+' not found in database. Cropping not performed.')
-                monomer=cop.crop_seq(monomer,intervals[pdbid][key2],targetlbl,terms=args.terminals)
                 outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
         else:
