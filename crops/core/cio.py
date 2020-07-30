@@ -7,7 +7,7 @@ import os
 import argparse
 import csv
 import copy
-from crops.core.sequence import Sequence
+from crops.core.sequence import Sequence, monomer_sequence
 from crops.core.sequence import retrieve_id
 from crops.core.intervals import intinterval
 
@@ -188,29 +188,52 @@ def parsestrfile(STR_INPATH):
 
     return strdict, filedict
 
-def parseseqfile(inpath):
+def parseseqfile(inpath,uniprot=None):
     """Returns dictionary containing :class:`~crops.core.sequence.Sequence`.
 
     :param inpath: File path.
     :type inpath: str
+    :param uniprot: A list of Uniprot codes, defaults to None
+    :type uniprot: str, list, optional
     :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.
     :rtype: dict
 
     """
     newseqs={}
+    print('this is newseqs')
+    print(newseqs)
     newid=[]
     head=''
     chain=''
+    ignore=False
+    if uniprot is not None:
+        if not isinstance(uniprot,str) and not isinstance(uniprot,list):
+            raise TypeError('Input argument uniprot must be either a string or a list of strings.')
+        elif isinstance(uniprot,str):
+            uniprot=[uniprot]
+        for upcode in uniprot:
+            if not isinstance(upcode,str):
+                raise TypeError('Input argument uniprot must be either a string or a list of strings.')
+
     with open(inpath,'r') as f:
         indx=-1
         while True:
             line=f.readline().rstrip()
-            if not line or line.startswith(">"):
-                if indx>=0:
-                    if newid[0].lower() not in newseqs:
-                        newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
-                    for iid in newid[1]:
-                        newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid)
+            if (not line or line.startswith(">")) and not ignore:
+                if uniprot is not None:
+                    if indx>=0:
+                        if len(newseqs)==0:
+                            newseqs['uniprot']=Sequence(seq_id=newid[0].upper(),source=os.path.basename(inpath))
+                        if newid[0].upper() not in newseqs['uniprot'].imer:
+                            newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=newid[0].upper())
+                            if len(newseqs)==len(uniprot):
+                                break
+                else:
+                    if indx>=0:
+                        if newid[0].lower() not in newseqs:
+                            newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
+                        for iid in newid[1]:
+                            newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid)
                 if not line:
                     try:
                         line=f.readline().rstrip()
@@ -223,10 +246,14 @@ def parseseqfile(inpath):
                 head=line
                 indx += 1
                 chain = ''
+                if uniprot is not None:
+                    ignore=False if newid[0] in uniprot else True
+
             elif line.startswith("#") or line.startswith(' #'):
                 pass
             else:
-                chain += str(line)
+                if not ignore:
+                    chain += str(line)
 
     return newseqs
 
