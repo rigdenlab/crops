@@ -63,19 +63,28 @@ def main():
         raise ValueError('No chains were imported from sequence file.')
 
     if insprot is not None and minlen>0.0:
-        uniprotset=cio.parseseqfile(insprot)
+        uplist=[]
+        for seqncid, seqnc in seqset.items():
+            for monomerid, monomer in seqnc.imer.items():
+                if 'uniprot' in intervals[seqncid][monomerid].tags:
+                    for key in intervals[seqncid][monomerid].tags['uniprot']:
+                        if key not in uplist:
+                            uplist.append(key)
+
+        uniprotset=cio.parseseqfile(insprot, uniprot=uplist)['uniprot']
 
     for key, S in seqset.items():
         if key in intervals:
             for key2,monomer in S.imer.items():
                 if key2 in intervals[key]:
-                    if insprot is not None:
-                        newinterval=intervals[key][key2].deepcopy(newdescription=intervals[key][key2].tags['description'] + ' - Uniprot threshold')
+                    if insprot is not None and minlen>0.0:
+                        newinterval=intervals[key][key2].deepcopy()
+                        newinterval.tags['description']+=' - Uniprot threshold'
                         newinterval.subint=[]
                         unilbl=' uniprot chains included: '
-                        for unicode,uniends in intervals[key][key2].tags['uniprot'].items():
-                            if 100*uniends.n_elements()/uniprotset[unicode].length(unicode)>=minlen:
-                                newinterval=newinterval.union(intervals[key][key2].intersection(uniends))
+                        for unicode,uniintervals in intervals[key][key2].tags['uniprot'].items():
+                            if 100*uniintervals.n_elements()/uniprotset.imer[unicode].length()>=minlen:
+                                newinterval=newinterval.union(intervals[key][key2].intersection(uniintervals))
                                 unilbl+=unicode +'|'
                         monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
                     else:

@@ -101,15 +101,16 @@ def crop_seq(INSEQ, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
     :rtype newchain: :class:`~crops.core.sequence.monomer_sequence`
 
     """
+    if len(segments.subint)>0:
+        if segments.subint[-1][-1] > INSEQ.length():
+            raise ValueError('One or many of the segment end values is outside the original sequence.')
 
-    if segments.subint[-1][-1] > INSEQ.length():
-        raise ValueError('One or many of the segment end values is outside the original sequence.')
     newchain=monomer_sequence(chid=INSEQ.info['chain_id'],header=INSEQ.info['header'])
     newchain.seqs['fullseq']=INSEQ.seqs['mainseq']
     newchain.seqs['cropseq']=''
     if 'gapseq' in INSEQ.seqs:
-        newchain.seqs['gapseq']=['' for i in range(len(INSEQ.seqs['gapseq']))]
-        newchain.seqs['cropgapseq']=['' for i in range(len(INSEQ.seqs['gapseq']))]
+        newchain.seqs['gapseq']=''#['' for i in range(len(INSEQ.seqs['gapseq']))]
+        newchain.seqs['cropgapseq']=''#['' for i in range(len(INSEQ.seqs['gapseq']))]
     cropint=segments.deepcopy() if not terms else segments.union(segments.terminals())
 
     for res in range(INSEQ.length()):
