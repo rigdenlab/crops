@@ -37,14 +37,12 @@ def main():
 
     args = parser.parse_args()
 
-
     inseq=cio.check_path(args.input_seqpath[0],'file')
     indb=cio.check_path(args.input_database[0],'file')
     insprot=cio.check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
 
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
     targetlbl=cio.target_format(indb,terms=args.terminals, th=minlen)
-
     infixlbl=cio.infix_gen(indb,terms=args.terminals)
 
     if args.outdir is None:
@@ -52,7 +50,9 @@ def main():
     else:
         outdir=cio.check_path(os.path.dirname(args.outdir[0]),'dir')
     ###########################################
+
     seqset=cio.parseseqfile(inseq)
+
     if len(seqset)==1:
         for key in seqset:
             pdbid=key
