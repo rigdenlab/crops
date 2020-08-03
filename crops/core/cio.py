@@ -200,8 +200,6 @@ def parseseqfile(inpath,uniprot=None):
 
     """
     newseqs={}
-    print('this is newseqs')
-    print(newseqs)
     newid=[]
     head=''
     chain=''
