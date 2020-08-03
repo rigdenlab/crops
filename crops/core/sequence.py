@@ -381,18 +381,18 @@ class Sequence:
     """
     kind='Protein/polynucleotide sequence'
     __slots__ = ['seq_id', 'imer', 'source']
-    def __init__(self, seq_id=None, imer={}, source=None):
+    def __init__(self, seq_id=None, imer=None, source=None):
 
         if not isinstance(seq_id,str) and seq_id is not None:
             raise TypeError("Sequence ID 'seq_id' should be a string.")
-        if not isinstance(imer,dict):
+        if not isinstance(imer,dict) and imer is not None:
             raise TypeError("Monomer container 'imer' should be a dictionary.")
-        else:
+        elif isinstance(imer,dict):
             for val in imer.values():
                 if not isinstance(val,monomer_sequence):
                     raise TypeError("Monomer container 'imer' should only contain elements of monomer_sequence class.")
         self.seq_id = seq_id
-        self.imer = imer#.copy()
+        self.imer = imer if imer is not None else {}#.copy()
         self.source = source
 
     def __repr__(self):
