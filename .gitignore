@@ -2,6 +2,12 @@
 /crops/.spyproject/
 
 # Sphinx docs
-/docs/source/
-/docs/_build/
-/docs/api/generated/
+#/docs/source/
+#/docs/_build/
+#/docs/api/generated/
+
+#Compiled
+/__pychache__/
+/crops/__pycache__/
+/crops/core/__pycache__/
+*.pyc
