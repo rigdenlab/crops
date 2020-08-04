@@ -3,9 +3,9 @@
 from crops.about import __prog__, __description__, __author__, __date__, __version__
 
 from crops.core.rescodes import ressymbol
-#from .sequence import Sequence
 from crops.core.sequence import monomer_sequence
-#from .intervals import intinterval
+
+import copy
 
 def renumberpdb(INSEQ,INSTR,seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
@@ -81,7 +81,7 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
             solved = False
 
     if seqback:
-        return INSTR, INSEQ
+        return INSTR, copy.deepcopy(INSEQ)
     else:
         return INSTR
 

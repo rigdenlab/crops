@@ -6,7 +6,7 @@ import gemmi
 import os
 import argparse
 import csv
-import copy
+
 from crops.core.sequence import Sequence, monomer_sequence
 from crops.core.sequence import retrieve_id
 from crops.core.intervals import intinterval

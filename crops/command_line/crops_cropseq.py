@@ -50,7 +50,6 @@ def main():
     else:
         outdir=cio.check_path(os.path.dirname(args.outdir[0]),'dir')
     ###########################################
-
     seqset=cio.parseseqfile(inseq)
 
     if len(seqset)==1:
