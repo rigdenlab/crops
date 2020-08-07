@@ -87,9 +87,9 @@ def main():
                                 unilbl+=unicode +'|'
                         monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
                     else:
-                        monomer=cop.crop_seq(monomer,intervals[pdbid][key2],targetlbl,terms=args.terminals)
+                        monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
                 else:
-                    warn('Chain name '+pdbid+'_'+str(key2)+' not found in database. Cropping not performed.')
+                    warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
                 outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
         else:
