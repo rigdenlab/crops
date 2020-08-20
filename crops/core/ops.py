@@ -4,6 +4,7 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 
 from crops.core.rescodes import ressymbol
 from crops.core.sequence import monomer_sequence
+from crops.core.intervals import intinterval
 
 import copy
 
@@ -79,10 +80,7 @@ def renumberpdb(INSEQ,INSTR,seqback=False):
                 INSEQ.imer[chain.name].seqs['gapseq'].append(newseq)
             n_chains += 1
             solved = False
-    print('cool')
     if seqback:
-        print(INSTR)
-        print(INSEQ)
         return INSTR,INSEQ
     else:
         return INSTR
@@ -142,14 +140,21 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
     :type INSTR: :class:`gemmi.Structure`
     :param INSEQ: Input sequence.
     :type INSEQ: :class:`~crops.core.sequence.Sequence`
-    :param segments: Input preserving interval.
-    :type segments: :class:`~crops.core.intervals.intinterval`
+    :param segments: Input preserving intervals.
+    :type segments: dict of :class:`~crops.core.intervals.intinterval`
     :param terms: If True, only terminal ends are removed, defaults to False.
     :type terms: bool, optional
     :return INSTR: DESCRIPTION
     :rtype INSTR: :class:`gemmi.Structure`
 
     """
+    
+    if isinstance(segments,dict):
+        for interval in segments.values():
+            if not isinstance(interval,intinterval):
+                raise TypeError('Input argument segments should be a dictionary of integer intervals.')
+    else:
+        raise TypeError('Input argument segments should be a dictionary of integer intervals.')
 
     n_chains = 0
     n_resmax = 0
@@ -164,7 +169,7 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
     for model in INSTR:
         for chain in model:
             if chain.name in segments:
-                if not terms:
+                if not terms: #TAKE TERMINALS OUTSIDE
                     cropint=segments[chain.name].deepcopy()
                 else:
                     cropint=segments[chain.name].union(segments[chain.name].terminals())
@@ -181,6 +186,8 @@ def croppdb(INSTR, INSEQ, segments, terms=False):
                         if chain[pos_chainlist].seqid.num == r_original+1:
                             delres[n_chains][pos_chainlist] = True
                             pos_chainlist += 1
+            n_chains += 1
+
     n_chains = 0
     for model in INSTR:
         for chain in model:

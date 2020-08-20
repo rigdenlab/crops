@@ -60,25 +60,21 @@ def main():
     seqset=cio.parseseqfile(inseq)
     strset, fileset=cio.parsestrfile(instr)
 
-    if len(seqset)==1:
-        for key in seqset:
-            pdbid=key
-        intervals=cio.import_db(indb,pdbid)
-    elif len(seqset)>1:
-        intervals=cio.import_db(indb)
+    if len(seqset)>0:
+        intervals=cio.import_db(indb,pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
 
     if insprot is not None and minlen>0.0:
-        uplist=[]
+        uniprotset={}
         for seqncid, seqnc in seqset.items():
             for monomerid, monomer in seqnc.imer.items():
                 if 'uniprot' in intervals[seqncid][monomerid].tags:
                     for key in intervals[seqncid][monomerid].tags['uniprot']:
-                        if key not in uplist:
-                            uplist.append(key)
+                        if key.upper() not in uniprotset:
+                            uniprotset[key.upper()]=None
 
-        uniprotset=cio.parseseqfile(insprot, uniprot=uplist)['uniprot']
+        uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
 
     ###########################################
     gseqset={}
@@ -88,28 +84,32 @@ def main():
             outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["renumber"]+os.path.splitext(instr)[1],mksubdir=True)
             newstructure.write_pdb(outstr)
     outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
-
     for key, S in gseqset.items():
         if key in intervals:
+            if insprot is not None and minlen>0.0:
+                newinterval={}
             for key2,monomer in S.imer.items():
                 if key2 in intervals[key]:
-                    if insprot is not None:
-                        newinterval=intervals[key][key2].deepcopy()
-                        newinterval.tags['description']+=' - Uniprot threshold'
-                        newinterval.subint=[]
+                    if insprot is not None and minlen>0.0:
+                        newinterval[key2]=intervals[key][key2].deepcopy()
+                        newinterval[key2].tags['description']+=' - Uniprot threshold'
+                        newinterval[key2].subint=[]
                         unilbl=' uniprot chains included: '
                         for unicode,uniintervals in intervals[key][key2].tags['uniprot'].items():
                             if 100*uniintervals.n_elements()/uniprotset.imer[unicode].length()>=minlen:
-                                newinterval=newinterval.union(intervals[key][key2].intersection(uniintervals))
+                                newinterval[key2]=newinterval[key2].union(intervals[key][key2].intersection(uniintervals))
                                 unilbl+=unicode +'|'
-                        monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
+                        monomer=cop.crop_seq(monomer,newinterval[key2],targetlbl+unilbl,terms=args.terminals)
                     else:
                         monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
                 else:
                     warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
                 outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
-            cropped_str=cop.croppdb(strset[key],S,intervals[key],args.terminals)
+            if insprot is not None and minlen>0.0:
+                cropped_str=cop.croppdb(strset[key],S,newinterval,args.terminals)
+            else:
+                cropped_str=cop.croppdb(strset[key],S,intervals[key],args.terminals)
             outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(instr)[1],mksubdir=True)
             cropped_str.write_pdb(outstr)
         else:
