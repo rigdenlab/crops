@@ -50,39 +50,28 @@ def main():
     else:
         outdir=cio.check_path(os.path.dirname(args.outdir[0]),'dir')
     ###########################################
-    print('parsing1')
+
     seqset=cio.parseseqfile(inseq)
-    print(seqset)
     if len(seqset)>0:
-        print('wtf')
         intervals=cio.import_db(indb,pdb_in=seqset)
-        print('goood')
     else:
         raise ValueError('No chains were imported from sequence file.')
-    print(insprot)
+
     if insprot is not None and minlen>0.0:
         uniprotset={}
-        print('insprot loop')
         for seqncid, seqnc in seqset.items():
             for monomerid, monomer in seqnc.imer.items():
-                print(seqncid)
-                print(monomerid)
                 if 'uniprot' in intervals[seqncid][monomerid].tags:
                     for key in intervals[seqncid][monomerid].tags['uniprot']:
-                        print(key)
                         if key.upper() not in uniprotset:
                             uniprotset[key.upper()]=None
-        print(uniprotset)
-        print('parsing2')
+
         uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
-        print(uniprotset)
-    print('starting loop')
+
     for key, S in seqset.items():
         if key in intervals:
-            print(key)
             for key2,monomer in S.imer.items():
                 if key2 in intervals[key]:
-                    print(key2)
                     if insprot is not None and minlen>0.0:
                         newinterval=intervals[key][key2].deepcopy()
                         newinterval.tags['description']+=' - Uniprot threshold'
@@ -94,17 +83,21 @@ def main():
                                 unilbl+=unicode +'|'
                         monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
                     else:
-                        print('here we are')
                         monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
-                        print('monomer')
                 else:
                     warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
-                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                if len(seqset)>1:
+                    outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                else:
+                    outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                 monomer.dump(outseq)
         else:
             warn('PDB ID '+key+' not found in database. Cropping not performed.')
             for key2,monomer in S.imer.items():
-                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                if len(seqset)>1:
+                    outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                else:
+                    outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                 monomer.dump(outseq)
 
 if __name__ == "__main__":
@@ -113,10 +106,8 @@ if __name__ == "__main__":
 
     try:
         main()
-        print('done')
         sys.exit(0)
     except:
-        print('WRONG')
         sys.exit(1)
     #except Exception as e:
     #    if not isinstance(e, SystemExit):

@@ -283,6 +283,7 @@ def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
 
     if subdir is not None:
         newpath=os.path.join(newpath,subdir)
+
         if not os.path.isdir(newpath):
             if mksubdir:
                 os.mkdir(newpath)
