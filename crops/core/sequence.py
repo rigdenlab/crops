@@ -392,7 +392,7 @@ class Sequence:
                 if not isinstance(val,monomer_sequence):
                     raise TypeError("Monomer container 'imer' should only contain elements of monomer_sequence class.")
         self.seq_id = seq_id
-        self.imer = imer if imer is not None else {}#.copy()
+        self.imer = imer if imer is not None else {}
         self.source = source
 
     def __repr__(self):

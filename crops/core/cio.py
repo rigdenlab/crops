@@ -6,7 +6,7 @@ import gemmi
 import os
 import argparse
 import csv
-import copy
+
 from crops.core.sequence import Sequence, monomer_sequence
 from crops.core.sequence import retrieve_id
 from crops.core.intervals import intinterval
@@ -101,7 +101,7 @@ def import_db(inpath,pdb_in=None):
     :param inpath: Path to interval database used.
     :type inpath: str
     :param pdb_in: Chain ID, defaults to None.
-    :type pdb_in: str, list, optional
+    :type pdb_in: str, dict, optional
     :raises TypeError: When pdb_in is given and is neither a string nor a list of strings.
     :return: dict
     :rtype: A dictionary of :class:`~crops.core.intervals.intinterval`.
@@ -109,14 +109,18 @@ def import_db(inpath,pdb_in=None):
     """
     database_out={}
     if isinstance(pdb_in,str):
-        pdb_in=[pdb_in.lower()]
-
-    if isinstance(pdb_in,list):
-        pdb_in_lower=[]
+        pdb_in_lower={}
+        pdb_in_lower[pdb_in.lower()]=None
+    elif isinstance(pdb_in,dict):
+        pdb_in_lower={}
         for element in pdb_in:
             if not isinstance(element,str):
-                raise TypeError('Argument should be a list of strings or a string')
-            pdb_in_lower.append(element.lower())
+                raise TypeError('Argument should be either None, a string, or a dictionary with empty values.')
+            pdb_in_lower[element.lower()]=None
+    elif pdb_in is None:
+        pass
+    else:
+        raise TypeError('Argument should be either None, a string, or a dictionary with empty values.')
 
     if os.path.basename(inpath)=='pdb_chain_uniprot.csv':
         mol=0
@@ -135,20 +139,20 @@ def import_db(inpath,pdb_in=None):
     csv_chain = csv.reader(csv_chain_file)
     for entry in csv_chain:
         if entry[0][0] != "#" and entry[0] !="PDB":
-            if pdb_in is None or entry[mol] in pdb_in_lower:
-                if entry[mol] not in database_out:
-                    database_out[entry[mol]]={}
-                if entry[chain] not in database_out[entry[mol]]:
-                    database_out[entry[mol]][entry[chain]]=intinterval(description=entry[mol]+'_'+entry[chain])
+            if pdb_in is None or entry[mol].lower() in pdb_in_lower:
+                if entry[mol].lower() not in database_out:
+                    database_out[entry[mol].lower()]={}
+                if entry[chain] not in database_out[entry[mol].lower()]:
+                    database_out[entry[mol].lower()][entry[chain]]=intinterval(description=entry[mol].lower()+'_'+entry[chain])
                     if up is not None:
-                        database_out[entry[mol]][entry[chain]].tags['uniprot']={}
-                database_out[entry[mol]][entry[chain]]= \
-                database_out[entry[mol]][entry[chain]].union(other=[int(entry[leftend]),int(entry[rightend])])
+                        database_out[entry[mol].lower()][entry[chain]].tags['uniprot']={}
+                database_out[entry[mol].lower()][entry[chain]]= \
+                database_out[entry[mol].lower()][entry[chain]].union(other=[int(entry[leftend]),int(entry[rightend])])
                 if up is not None:
-                    if entry[up].upper() not in database_out[entry[mol]][entry[chain]].tags['uniprot']:
-                        database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]]=intinterval(description=entry[up].upper())
-                    database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]]=\
-                    database_out[entry[mol]][entry[chain]].tags['uniprot'][entry[up]].union([int(entry[leftend]),int(entry[rightend])])
+                    if entry[up].upper() not in database_out[entry[mol].lower()][entry[chain]].tags['uniprot']:
+                        database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]]=intinterval(description=entry[up].upper())
+                    database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]]=\
+                    database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]].union([int(entry[leftend]),int(entry[rightend])])
     return database_out
 
 
@@ -193,8 +197,8 @@ def parseseqfile(inpath,uniprot=None):
 
     :param inpath: File path.
     :type inpath: str
-    :param uniprot: A list of Uniprot codes, defaults to None
-    :type uniprot: str, list, optional
+    :param uniprot: A dictionary of Uniprot codes, defaults to None
+    :type uniprot: str, dict, optional
     :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.
     :rtype: dict
 
@@ -204,14 +208,17 @@ def parseseqfile(inpath,uniprot=None):
     head=''
     chain=''
     ignore=False
+
     if uniprot is not None:
-        if not isinstance(uniprot,str) and not isinstance(uniprot,list):
-            raise TypeError('Input argument uniprot must be either a string or a list of strings.')
+        if not isinstance(uniprot,str) and not isinstance(uniprot,dict):
+            raise TypeError('Input argument uniprot must be either a string or a dictionary.')
         elif isinstance(uniprot,str):
-            uniprot=[uniprot]
+            unitemp=uniprot
+            uniprot={}
+            uniprot[unitemp]=None
         for upcode in uniprot:
             if not isinstance(upcode,str):
-                raise TypeError('Input argument uniprot must be either a string or a list of strings.')
+                raise TypeError('Input argument uniprot must be either a string or a dictionary.')
 
     with open(inpath,'r') as f:
         indx=-1
@@ -224,7 +231,7 @@ def parseseqfile(inpath,uniprot=None):
                             newseqs['uniprot']=Sequence(seq_id=newid[0].upper(),source=os.path.basename(inpath))
                         if newid[0].upper() not in newseqs['uniprot'].imer:
                             newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=newid[0].upper())
-                            if len(newseqs)==len(uniprot):
+                            if len(newseqs['uniprot'].imer)==len(uniprot):
                                 break
                 else:
                     if indx>=0:
@@ -276,6 +283,7 @@ def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
 
     if subdir is not None:
         newpath=os.path.join(newpath,subdir)
+
         if not os.path.isdir(newpath):
             if mksubdir:
                 os.mkdir(newpath)

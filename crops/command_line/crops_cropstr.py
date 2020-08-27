@@ -19,36 +19,37 @@ from crops.core import ops as cop
 #from core import seq as csq
 
 def main():
+
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
-
-    parser.add_argument("input_seqpath",nargs=1, metavar="Sequence filepath",
+    parser.add_argument("input_seqpath",nargs=1, metavar="Sequence_filepath",
                         help="Input sequence filepath.")
-    parser.add_argument("input_strpath",nargs=1, metavar="Structure filepath",
-                        help="Input structure filepath.")
-    parser.add_argument("input_database",nargs=1, metavar="Intervals database",
+    parser.add_argument("input_strpath",nargs=1, metavar="Structure_filepath",
+                        help="Input structure filepath or dir. If a directory is inserted, it will act on all structure files in such directory.")
+    parser.add_argument("input_database",nargs=1, metavar="Intervals_database",
                         help="Input intervals database filepath.")
 
-    parser.add_argument("-o","--outdir",nargs=1,metavar="Output Directory",
+    parser.add_argument("-o","--outdir",nargs=1,metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
 
     sections=parser.add_mutually_exclusive_group(required=False)
-    sections.add_argument("-t","--terminals",action='store_true',default=False, metavar="Crop terminals only",
+    sections.add_argument("-t","--terminals",action='store_true',default=False,
                           help="Ignore interval discontinuities and only crop the ends off.")
-    sections.add_argument("-u","--uniprot_threshold", nargs=2, metavar="Uniprot length threshold and fasta database",
-                          help='Act if SIFTS database is used as intervals source AND % residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniprot_sprot.fasta-path')
+    sections.add_argument("-u","--uniprot_threshold", nargs=2, metavar=("Uniprot_ratio_threshold","Sequence_database"),
+                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniprot_sprot.fasta-path')
+
+    parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
 
     args = parser.parse_args()
 
-    inseq=cio.check_path(args.input_seqpath,'file')
-    indb=cio.check_path(args.input_database,'file')
-    instr=cio.check_path(args.input_strpath)
-    insprot=cio.check_path(args.uniprot_threshold[1],'file') if args.uniprot_threshold is not None else None
+    inseq=cio.check_path(args.input_seqpath[0],'file')
+    indb=cio.check_path(args.input_database[0],'file')
+    instr=cio.check_path(args.input_strpath[0])
+    insprot=cio.check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
 
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
     targetlbl=cio.target_format(indb,terms=args.terminals, th=minlen)
-
     infixlbl=cio.infix_gen(indb,terms=args.terminals)
 
     if args.outdir is None:
@@ -59,52 +60,62 @@ def main():
     seqset=cio.parseseqfile(inseq)
     strset, fileset=cio.parsestrfile(instr)
 
-    if len(seqset)==1:
-        for key in seqset:
-            pdbid=key
-        intervals=cio.import_db(indb,pdbid)
-    elif len(seqset)>1:
-        intervals=cio.import_db(indb)
+    if len(seqset)>0:
+        intervals=cio.import_db(indb,pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
 
     if insprot is not None and minlen>0.0:
-        uniprotset=cio.parseseqfile(insprot)
-    ###########################################
-    for pdbid, structure in strset.items():
-        if pdbid in seqset:
-            newstructure,seqset[pdbid]=cop.renumberpdb(seqset[pdbid],structure,seqback=True)
-            outstr=cio.outpath(outdir,subdir=pdbid,filename=pdbid+infixlbl+os.path.splitext(instr)[1],mksubdir=True)
-            newstructure.write_pdb(outstr)
+        uniprotset={}
+        for seqncid, seqnc in seqset.items():
+            for monomerid, monomer in seqnc.imer.items():
+                if 'uniprot' in intervals[seqncid][monomerid].tags:
+                    for key in intervals[seqncid][monomerid].tags['uniprot']:
+                        if key.upper() not in uniprotset:
+                            uniprotset[key.upper()]=None
 
+        uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
+
+    ###########################################
+    gseqset={}
+    for key, structure in strset.items():
+        if key in seqset:
+            newstructure,gseqset[key]=cop.renumberpdb(seqset[key],structure,seqback=True)
+            outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["renumber"]+os.path.splitext(instr)[1],mksubdir=True)
+            newstructure.write_pdb(outstr)
     outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
-    for pdbid, S in seqset.items():
-        if pdbid in intervals:
-            for chainid,monomer in S.imer.items():
-                if chainid in intervals[pdbid]:
-                    if insprot is not None:
-                        newinterval=intervals[pdbid][chainid].deepcopy(newdescription=intervals[pdbid][chainid].tags['description'] + ' - Uniprot threshold')
-                        newinterval.subint=[]
+    for key, S in gseqset.items():
+        if key in intervals:
+            if insprot is not None and minlen>0.0:
+                newinterval={}
+            for key2,monomer in S.imer.items():
+                if key2 in intervals[key]:
+                    if insprot is not None and minlen>0.0:
+                        newinterval[key2]=intervals[key][key2].deepcopy()
+                        newinterval[key2].tags['description']+=' - Uniprot threshold'
+                        newinterval[key2].subint=[]
                         unilbl=' uniprot chains included: '
-                        for unicode,uniends in intervals[pdbid][chainid].tags['uniprot'].items():
-                            if 100*(uniends[1]-uniends[0]+1)/uniprotset[unicode].length(unicode)>=minlen:
-                                newinterval=newinterval.union(intervals[pdbid][chainid].intersection(uniends))
+                        for unicode,uniintervals in intervals[key][key2].tags['uniprot'].items():
+                            if 100*uniintervals.n_elements()/uniprotset.imer[unicode].length()>=minlen:
+                                newinterval[key2]=newinterval[key2].union(intervals[key][key2].intersection(uniintervals))
                                 unilbl+=unicode +'|'
-                        monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
+                        monomer=cop.crop_seq(monomer,newinterval[key2],targetlbl+unilbl,terms=args.terminals)
                     else:
-                        monomer=cop.crop_seq(monomer,intervals[pdbid][chainid],targetlbl,terms=args.terminals)
+                        monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
                 else:
-                    warn('Chain name '+pdbid+'_'+str(chainid)+' not found in database. Cropping not performed.')
-                monomer=cop.crop_seq(monomer,intervals[pdbid][chainid],targetlbl,terms=args.terminals)
-                outseq=cio.outpath(outdir,subdir=pdbid,filename=pdbid+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                    warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
+                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
-            cropped_str=cop.croppdb(strset[pdbid],S,intervals[pdbid],args.terminals)
-            outstr=cio.outpath(outdir,subdir=pdbid,filename=pdbid+infixlbl["crop"]+os.path.splitext(instr)[1],mksubdir=True)
+            if insprot is not None and minlen>0.0:
+                cropped_str=cop.croppdb(strset[key],S,newinterval,args.terminals)
+            else:
+                cropped_str=cop.croppdb(strset[key],S,intervals[key],args.terminals)
+            outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(instr)[1],mksubdir=True)
             cropped_str.write_pdb(outstr)
         else:
-            warn('PDB ID '+pdbid+' not found in database. Cropping not performed.')
-            for chainid,monomer in S.imer.items():
-                outseq=cio.outpath(outdir,subdir=pdbid,filename=pdbid+os.path.splitext(os.path.basename(inseq))[1])
+            warn('PDB ID '+key+' not found in database. Cropping not performed.')
+            for key2,monomer in S.imer.items():
+                outseq=cio.outpath(outdir,subdir=key,filename=key+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
 
 if __name__ == "__main__":

@@ -52,26 +52,21 @@ def main():
     ###########################################
 
     seqset=cio.parseseqfile(inseq)
-
-    if len(seqset)==1:
-        for key in seqset:
-            pdbid=key
-        intervals=cio.import_db(indb,pdbid)
-    elif len(seqset)>1:
-        intervals=cio.import_db(indb)
+    if len(seqset)>0:
+        intervals=cio.import_db(indb,pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
 
     if insprot is not None and minlen>0.0:
-        uplist=[]
+        uniprotset={}
         for seqncid, seqnc in seqset.items():
             for monomerid, monomer in seqnc.imer.items():
                 if 'uniprot' in intervals[seqncid][monomerid].tags:
                     for key in intervals[seqncid][monomerid].tags['uniprot']:
-                        if key not in uplist:
-                            uplist.append(key)
+                        if key.upper() not in uniprotset:
+                            uniprotset[key.upper()]=None
 
-        uniprotset=cio.parseseqfile(insprot, uniprot=uplist)['uniprot']
+        uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
 
     for key, S in seqset.items():
         if key in intervals:
@@ -88,15 +83,21 @@ def main():
                                 unilbl+=unicode +'|'
                         monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
                     else:
-                        monomer=cop.crop_seq(monomer,intervals[pdbid][key2],targetlbl,terms=args.terminals)
+                        monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
                 else:
-                    warn('Chain name '+pdbid+'_'+str(key2)+' not found in database. Cropping not performed.')
-                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                    warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
+                if len(seqset)>1:
+                    outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                else:
+                    outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                 monomer.dump(outseq)
         else:
-            warn('PDB ID '+pdbid+' not found in database. Cropping not performed.')
+            warn('PDB ID '+key+' not found in database. Cropping not performed.')
             for key2,monomer in S.imer.items():
-                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                if len(seqset)>1:
+                    outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                else:
+                    outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                 monomer.dump(outseq)
 
 if __name__ == "__main__":
