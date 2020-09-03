@@ -272,12 +272,22 @@ class monomer_sequence:
         """
 
         return len(self.seqs['mainseq'])
+    
+    def full_length(self):
+        """Returns the length of the full sequence. If not found, the length of the main sequence is returned.'
 
-    def ngaps(self,seqid):
+        :return n: Length of the full sequence.
+        :rtype n: int
+
+        """
+        seqid='fullseq' if 'fullseq' in self.seqs else 'mainseq'
+        return len(self.seqs[seqid])        
+
+    def ngaps(self,seqid='gapseq'):
         """Returns the number of gaps ('-') in a sequence.
 
-        :param seqid: The ID of the sequence containing the gaps.
-        :type seqid: str
+        :param seqid: The ID of the sequence containing the gaps, defaults to 'gapseq'.
+        :type seqid: str, optional
         :raises TypeError: If seqid is not a string.
         :return: Number of gaps in seqid.
         :rtype: int
@@ -286,16 +296,17 @@ class monomer_sequence:
         if not isinstance(seqid,str):
             raise TypeError("Sequence ID 'seqid' should be a string.")
         n=0
-        for char in self.seqs[seqid]:
-            if char=='-':
-                n+=1
+        if seqid in self.seqs:
+            for char in self.seqs[seqid]:
+                if char=='-':
+                    n+=1
         return n
 
-    def ncrops(self,seqid):
+    def ncrops(self,seqid='cropseq'):
         """Returns the number of cropped elements ('+','*') in a sequence.
 
-        :param seqid: The ID of the sequence containing the cropped elements.
-        :type seqid: str
+        :param seqid: The ID of the sequence containing the cropped elements, defaults to 'cropseq'.
+        :type seqid: str, optional
         :raises TypeError: If seqid is not a string.
         :return: Number of cropped elements in seqid.
         :rtype: int
@@ -304,9 +315,10 @@ class monomer_sequence:
         if not isinstance(seqid,str):
             raise TypeError("Sequence ID 'seqid' should be a string.")
         n=0
-        for char in self.seqs[seqid]:
-            if char=='+' or char=='*':
-                n+=1
+        if seqid in self.seqs:
+            for char in self.seqs[seqid]:
+                if char=='+' or char=='*':
+                    n+=1
         return n
 
     def header(self):
