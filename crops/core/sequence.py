@@ -273,11 +273,23 @@ class monomer_sequence:
 
         return len(self.seqs['mainseq'])
 
-    def ngaps(self,seqid):
+    def full_length(self):
+        """Returns the length of the full sequence. If not found, the length of the main sequence is returned.'
+
+        :return n: Length of the full sequence.
+        :rtype n: int
+
+        """
+        if 'fullseq' not in self.seqs:
+            self.seqs['fullseq']=self.seqs['mainseq']
+
+        return len(self.seqs['fullseq'])
+
+    def ngaps(self,seqid='gapseq'):
         """Returns the number of gaps ('-') in a sequence.
 
-        :param seqid: The ID of the sequence containing the gaps.
-        :type seqid: str
+        :param seqid: The ID of the sequence containing the gaps, defaults to 'gapseq'.
+        :type seqid: str, optional
         :raises TypeError: If seqid is not a string.
         :return: Number of gaps in seqid.
         :rtype: int
@@ -286,28 +298,57 @@ class monomer_sequence:
         if not isinstance(seqid,str):
             raise TypeError("Sequence ID 'seqid' should be a string.")
         n=0
-        for char in self.seqs[seqid]:
-            if char=='-':
-                n+=1
+        if seqid in self.seqs:
+            for char in self.seqs[seqid]:
+                if char=='-':
+                    n+=1
         return n
 
-    def ncrops(self,seqid):
+    def ncrops(self,seqid='cropseq', offterminals=False, offmidseq=False):
+
         """Returns the number of cropped elements ('+','*') in a sequence.
 
-        :param seqid: The ID of the sequence containing the cropped elements.
-        :type seqid: str
+        :param seqid: The ID of the sequence containing the cropped elements, defaults to 'cropseq'.
+        :type seqid: str, optional
+        :param offterminals: Count those removed from terminals only, defaults to False
+        :type offterminals: bool, optional
+        :param offmidseq: Count those removed NOT from terminals only, defaults to False
+        :type offmidseq: bool, optional
         :raises TypeError: If seqid is not a string.
-        :return: Number of cropped elements in seqid.
+        :return: Number of cropped elements in seqid according to interval chosen.
         :rtype: int
 
         """
         if not isinstance(seqid,str):
             raise TypeError("Sequence ID 'seqid' should be a string.")
+
         n=0
+        if seqid not in self.seqs:
+            return n
+
         for char in self.seqs[seqid]:
             if char=='+' or char=='*':
                 n+=1
-        return n
+
+        if (offterminals==False and offmidseq==False) or (offterminals==True and offmidseq==True):
+            return n
+        else:
+            nterms=0
+            for char in self.seqs[seqid]:
+                if char=='+' or char=='*':
+                    nterms+=1
+                else:
+                    break
+            for char in reversed(self.seqs[seqid]):
+                if char=='+' or char=='*':
+                    nterms+=1
+                else:
+                    break
+
+        if offterminals==False and offmidseq==True:
+            return n-nterms
+        elif offterminals==True and offmidseq==False:
+            return nterms
 
     def header(self):
         """Returns the header identifying the sequence in a fasta file.

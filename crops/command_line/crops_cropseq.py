@@ -17,7 +17,10 @@ from crops.core import cio
 from crops.core import ops as cop
 #from core import seq as csq
 
+import time
+
 def main():
+    starttime=time.time()
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
     parser.add_argument("input_seqpath",nargs=1, metavar="Sequence_filepath",
@@ -27,6 +30,9 @@ def main():
 
     parser.add_argument("-o","--outdir",nargs=1,metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
+
+    parser.add_argument("-s","--sort",nargs=1, metavar="Sort_type",
+                        help="Sort output sequences in descending order by criteria provided - 'ncrops' or 'percent'. Add 'T' ('ncropsIN', 'percentIN') to ignore numbers from terminals. Only for multiple ID fasta inputs.")
 
     sections=parser.add_mutually_exclusive_group(required=False)
     sections.add_argument("-t","--terminals",action='store_true',default=False,
@@ -49,6 +55,15 @@ def main():
         outdir=cio.check_path(os.path.dirname(inseq),'dir')
     else:
         outdir=cio.check_path(os.path.dirname(args.outdir[0]),'dir')
+
+    if args.sort is not None:
+        if (args.sort[0].lower()!='ncrops' and args.sort[0].lower()!='percent' and
+            args.sort[0].lower()!='ncropsin' and args.sort[0].lower()!='percentin'):
+            raise ValueError("Arguments for sorting option can only be either 'ncrops' or 'percent'.")
+        else:
+            sorter=args.sort[0].lower()
+            sortTerms=True if sorter=='ncropsin' or sorter=='percentin' else False
+
     ###########################################
 
     seqset=cio.parseseqfile(inseq)
@@ -68,6 +83,9 @@ def main():
 
         uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
 
+    if len(seqset)>1 and args.sort is not None:
+        sorted_outseq={}
+
     for key, S in seqset.items():
         if key in intervals:
             for key2,monomer in S.imer.items():
@@ -84,21 +102,53 @@ def main():
                         monomer=cop.crop_seq(monomer,newinterval,targetlbl+unilbl,terms=args.terminals)
                     else:
                         monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
+                        if monomer.ncrops()>0:
+                            monomer.info['header'] += ' |'
+                    if monomer.ncrops()>0:
+                        monomer.info['header'] += ' Units cropped: ' + str(monomer.ncrops())
+                        monomer.info['header'] += ' (' + str(monomer.ncrops(offmidseq=True))+' not Terminal) '
+                        monomer.info['header'] += '; % cropped: '+str(round(100*monomer.ncrops()/len(monomer.seqs['cropseq']),2))
+                        monomer.info['header'] += ' (' +str(round(100*monomer.ncrops(offmidseq=True)/len(monomer.seqs['cropseq']),2))+' not Terminal) '
+
                 else:
-                    warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
-                if len(seqset)>1:
-                    outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
-                else:
-                    outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
-                monomer.dump(outseq)
+                    pass
+                    #warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
+                if len(seqset)==1 or args.sort is None:
+                    if len(seqset)>1:
+                        outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                    else:
+                        outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                    monomer.dump(outseq)
+                if len(seqset)>1 and args.sort is not None:
+                    sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
         else:
-            warn('PDB ID '+key+' not found in database. Cropping not performed.')
+            #warn('PDB ID '+key+' not found in database. Cropping not performed.')
             for key2,monomer in S.imer.items():
-                if len(seqset)>1:
-                    outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
-                else:
-                    outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
-                monomer.dump(outseq)
+                if len(seqset)==1 or args.sort is None:
+                    if len(seqset)>1:
+                        outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                    else:
+                        outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                    monomer.dump(outseq)
+                if len(seqset)>1 and args.sort is not None:
+                    sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
+    croptime=time.time()
+    print('Crop time = '+str(croptime-starttime)+ ' s')
+
+    if len(seqset)>1 and args.sort is not None:
+        outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
+        if sorter=='ncrops':
+            sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(),reverse=True)
+        elif sorter=='percent':
+            sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops()/x[1].full_length(), reverse=True)
+        elif sorter=='ncropsin':
+            sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(offmidseq=True),reverse=True)
+        elif sorter=='percentin':
+            sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(offmidseq=True)/x[1].full_length(), reverse=True)
+        del sorted_outseq
+        for monomer in sorted_outseq2:
+            monomer[1].dump(outseq)
+        print('Sort time = '+str(time.time()-croptime)+ ' s')
 
 if __name__ == "__main__":
     import sys
