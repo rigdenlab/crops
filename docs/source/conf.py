@@ -12,7 +12,7 @@
 #
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../crops/'))
+sys.path.insert(0, os.path.abspath('..'))
 from crops.about import __prog__, __description__, __author__, __date__, __version__, __copyright__
 
 # -- Project information -----------------------------------------------------
