@@ -106,9 +106,9 @@ def main():
                             monomer.info['header'] += ' |'
                     if monomer.ncrops()>0:
                         monomer.info['header'] += ' Units cropped: ' + str(monomer.ncrops())
-                        monomer.info['header'] += ' (' + str(monomer.ncrops(offmidseq=True))+' not Terminal) '
+                        monomer.info['header'] += ' (' + str(monomer.ncrops(offmidseq=True))+' not from terminals) '
                         monomer.info['header'] += '; % cropped: '+str(round(100*monomer.ncrops()/len(monomer.seqs['cropseq']),2))
-                        monomer.info['header'] += ' (' +str(round(100*monomer.ncrops(offmidseq=True)/len(monomer.seqs['cropseq']),2))+' not Terminal) '
+                        monomer.info['header'] += ' (' +str(round(100*monomer.ncrops(offmidseq=True)/len(monomer.seqs['cropseq']),2))+' not from terminals) '
 
                 else:
                     pass
