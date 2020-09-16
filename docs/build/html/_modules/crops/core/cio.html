@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>crops.core.cio &#8212; CROPS v0.3.1</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          CROPS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../install.html">Installation</a></li>
+                <li><a href="../../../examples.html">Examples</a></li>
+                <li><a href="../../../contents.html">Documentation</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Home <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for crops.core.cio</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">crops.about</span> <span class="kn">import</span> <span class="n">__prog__</span><span class="p">,</span> <span class="n">__description__</span><span class="p">,</span> <span class="n">__author__</span><span class="p">,</span> <span class="n">__date__</span><span class="p">,</span> <span class="n">__version__</span>
+
+<span class="kn">import</span> <span class="nn">gemmi</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="kn">from</span> <span class="nn">crops.core.sequence</span> <span class="kn">import</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">monomer_sequence</span>
+<span class="kn">from</span> <span class="nn">crops.core.sequence</span> <span class="kn">import</span> <span class="n">retrieve_id</span>
+<span class="kn">from</span> <span class="nn">crops.core.intervals</span> <span class="kn">import</span> <span class="n">intinterval</span>
+
+<span class="c1">#import sys</span>
+<span class="c1">#from io import StringIO  # Python3</span>
+
+
+<div class="viewcode-block" id="check_path"><a class="viewcode-back" href="../../../api/generated/crops.core.cio.html#crops.core.cio.check_path">[docs]</a><span class="k">def</span> <span class="nf">check_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">typeofpath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns full path if correct.</span>
+
+<span class="sd">    :param path: Input (local) path.</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :param typeofpath: The type of path, &#39;dir&#39; or &#39;file&#39;, defaults to None.</span>
+<span class="sd">    :type typeofpath: str, optional</span>
+<span class="sd">    :raises ValueError: When given typeofpath is neither &#39;dir&#39; nor &#39;file&#39;.</span>
+<span class="sd">    :raises argparse: If wrong path given.</span>
+<span class="sd">    :return: Complete checked path.</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">pathok</span><span class="o">=</span><span class="kc">False</span>
+    <span class="k">if</span> <span class="n">typeofpath</span><span class="o">==</span><span class="s1">&#39;dir&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">pathok</span><span class="o">=</span><span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">typeofpath</span><span class="o">==</span><span class="s1">&#39;file&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">pathok</span><span class="o">=</span><span class="kc">True</span>
+    <span class="k">elif</span> <span class="n">typeofpath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="ow">or</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="n">pathok</span><span class="o">=</span><span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Input string &#39;typeofpath&#39; should be either &#39;dir&#39; or &#39;file&#39;.&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pathok</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentTypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;readable_dir:</span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2"> is not a valid path&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="target_format"><a class="viewcode-back" href="../../../api/generated/crops.core.cio.html#crops.core.cio.target_format">[docs]</a><span class="k">def</span> <span class="nf">target_format</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span><span class="n">terms</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">th</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns extra information for .fasta headers.</span>
+
+<span class="sd">    :param inpath: Path to interval database used.</span>
+<span class="sd">    :type inpath: str</span>
+<span class="sd">    :param terms: Are only terminal ends discarded?, defaults to False.</span>
+<span class="sd">    :type terms: bool, optional</span>
+<span class="sd">    :param th: Uniprot threshold, defaults to 0.</span>
+<span class="sd">    :type th: int, float, optional</span>
+<span class="sd">    :return: Extra information for .fasta headers</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">inpath</span><span class="p">)</span><span class="o">==</span><span class="s1">&#39;pdb_chain_uniprot.csv&#39;</span><span class="p">:</span>
+        <span class="n">outcome</span><span class="o">=</span><span class="s1">&#39; | CROPS | UNIPROT via SIFTS&#39;</span>
+        <span class="k">if</span> <span class="n">th</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">outcome</span> <span class="o">+=</span> <span class="s1">&#39; - UNIPROT CHAIN INCLUDED THRESHOLD = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">th</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">outcome</span><span class="o">=</span><span class="s1">&#39; | CROPS | CUSTOM&#39;</span>
+    <span class="k">if</span> <span class="n">terms</span> <span class="ow">and</span> <span class="n">th</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">outcome</span> <span class="o">+=</span> <span class="s1">&#39; - ONLY TERMINALS REMOVED&#39;</span>
+
+    <span class="k">return</span> <span class="n">outcome</span></div>
+
+<div class="viewcode-block" id="infix_gen"><a class="viewcode-back" href="../../../api/generated/crops.core.cio.html#crops.core.cio.infix_gen">[docs]</a><span class="k">def</span> <span class="nf">infix_gen</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span><span class="n">terms</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns filename tag for outputs.</span>
+
+<span class="sd">    :param inpath: Path to interval database used.</span>
+<span class="sd">    :type inpath: str</span>
+<span class="sd">    :param terms: Are only terminal ends discarded?, defaults to False.</span>
+<span class="sd">    :type terms: bool, optional</span>
+<span class="sd">    :return: Filename tag.</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">inpath</span><span class="p">)</span><span class="o">==</span><span class="s1">&#39;pdb_chain_uniprot.csv&#39;</span><span class="p">:</span>
+        <span class="n">cut</span><span class="o">=</span><span class="s2">&quot;.to_uniprot&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cut</span><span class="o">=</span><span class="s2">&quot;.custom&quot;</span>
+
+    <span class="k">if</span> <span class="n">terms</span><span class="p">:</span>
+        <span class="n">cut</span><span class="o">=</span><span class="s2">&quot;.custom&quot;</span>
+
+    <span class="n">infix_out</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;crop&quot;</span> <span class="p">:</span> <span class="s2">&quot;.crops&quot;</span><span class="o">+</span><span class="n">cut</span><span class="p">,</span>
+        <span class="s2">&quot;renumber&quot;</span> <span class="p">:</span> <span class="s2">&quot;.crops.seq&quot;</span><span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">infix_out</span></div>
+
+<div class="viewcode-block" id="import_db"><a class="viewcode-back" href="../../../api/generated/crops.core.cio.html#crops.core.cio.import_db">[docs]</a><span class="k">def</span> <span class="nf">import_db</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span><span class="n">pdb_in</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Imports intervals database.</span>
+
+<span class="sd">    :param inpath: Path to interval database used.</span>
+<span class="sd">    :type inpath: str</span>
+<span class="sd">    :param pdb_in: Chain ID, defaults to None.</span>
+<span class="sd">    :type pdb_in: str, dict, optional</span>
+<span class="sd">    :raises TypeError: When pdb_in is given and is neither a string nor a list of strings.</span>
+<span class="sd">    :return: dict</span>
+<span class="sd">    :rtype: A dictionary of :class:`~crops.core.intervals.intinterval`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">database_out</span><span class="o">=</span><span class="p">{}</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pdb_in</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+        <span class="n">pdb_in_lower</span><span class="o">=</span><span class="p">{}</span>
+        <span class="n">pdb_in_lower</span><span class="p">[</span><span class="n">pdb_in</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">=</span><span class="kc">None</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pdb_in</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="n">pdb_in_lower</span><span class="o">=</span><span class="p">{}</span>
+        <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">pdb_in</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument should be either None, a string, or a dictionary with empty values.&#39;</span><span class="p">)</span>
+            <span class="n">pdb_in_lower</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">=</span><span class="kc">None</span>
+    <span class="k">elif</span> <span class="n">pdb_in</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Argument should be either None, a string, or a dictionary with empty values.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">inpath</span><span class="p">)</span><span class="o">==</span><span class="s1">&#39;pdb_chain_uniprot.csv&#39;</span><span class="p">:</span>
+        <span class="n">mol</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">chain</span><span class="o">=</span><span class="mi">1</span>
+        <span class="n">up</span><span class="o">=</span><span class="mi">2</span>
+        <span class="n">leftend</span><span class="o">=</span><span class="mi">3</span>
+        <span class="n">rightend</span><span class="o">=</span><span class="mi">4</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mol</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">chain</span><span class="o">=</span><span class="mi">1</span>
+        <span class="n">leftend</span><span class="o">=</span><span class="mi">2</span>
+        <span class="n">rightend</span><span class="o">=</span><span class="mi">3</span>
+        <span class="n">up</span><span class="o">=</span><span class="kc">None</span>
+
+    <span class="n">csv_chain_file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">inpath</span><span class="p">)</span>
+    <span class="n">csv_chain</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">reader</span><span class="p">(</span><span class="n">csv_chain_file</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">entry</span> <span class="ow">in</span> <span class="n">csv_chain</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;#&quot;</span> <span class="ow">and</span> <span class="n">entry</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span><span class="s2">&quot;PDB&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pdb_in</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="n">pdb_in_lower</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">database_out</span><span class="p">:</span>
+                    <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">=</span><span class="p">{}</span>
+                <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]:</span>
+                    <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">=</span><span class="n">intinterval</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">up</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">{}</span>
+                <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">=</span> \
+                <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">other</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">leftend</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">rightend</span><span class="p">])])</span>
+                <span class="k">if</span> <span class="n">up</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">entry</span><span class="p">[</span><span class="n">up</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">]:</span>
+                        <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">][</span><span class="n">entry</span><span class="p">[</span><span class="n">up</span><span class="p">]]</span><span class="o">=</span><span class="n">intinterval</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="n">entry</span><span class="p">[</span><span class="n">up</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+                    <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">][</span><span class="n">entry</span><span class="p">[</span><span class="n">up</span><span class="p">]]</span><span class="o">=</span>\
+                    <span class="n">database_out</span><span class="p">[</span><span class="n">entry</span><span class="p">[</span><span class="n">mol</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()][</span><span class="n">entry</span><span class="p">[</span><span class="n">chain</span><span class="p">]]</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">][</span><span class="n">entry</span><span class="p">[</span><span class="n">up</span><span class="p">]]</span><span class="o">.</span><span class="n">union</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">leftend</span><span class="p">]),</span><span class="nb">int</span><span class="p">(</span><span class="n">entry</span><span class="p">[</span><span class="n">rightend</span><span class="p">])])</span>
+    <span class="k">return</span> <span class="n">database_out</span></div>
+
+
+<div class="viewcode-block" id="parsestrfile"><a class="viewcode-back" href="../../../api/generated/crops.core.cio.html#crops.core.cio.parsestrfile">[docs]</a><span class="k">def</span> <span class="nf">parsestrfile</span><span class="p">(</span><span class="n">STR_INPATH</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns dictionary containing gemmi structures and another one with the file names.</span>
+
+<span class="sd">    :param STR_INPATH: Either a directory or file path.</span>
+<span class="sd">    :type STR_INPATH: str</span>
+<span class="sd">    :raises KeyError: More than one structure file containing same identifier.</span>
+<span class="sd">    :return strdict: A dictionary containing imported gemmi structures.</span>
+<span class="sd">    :rtype strdict: dict</span>
+<span class="sd">    :return filedict: A dictionary containing file names.</span>
+<span class="sd">    :rtype filedict: dict</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">strdict</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">filedict</span><span class="o">=</span><span class="p">{}</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">STR_INPATH</span><span class="p">):</span>
+
+        <span class="n">structure</span><span class="o">=</span><span class="n">gemmi</span><span class="o">.</span><span class="n">read_structure</span><span class="p">(</span><span class="n">STR_INPATH</span><span class="p">)</span>
+        <span class="n">pdbid</span><span class="o">=</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="n">strdict</span><span class="p">[</span><span class="n">pdbid</span><span class="p">]</span><span class="o">=</span><span class="n">structure</span>
+        <span class="n">filedict</span><span class="p">[</span><span class="n">pdbid</span><span class="p">]</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">STR_INPATH</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">STR_INPATH</span><span class="p">):</span>
+        <span class="n">filelist</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">STR_INPATH</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">filelist</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">structure</span><span class="o">=</span><span class="n">gemmi</span><span class="o">.</span><span class="n">read_structure</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+                    <span class="n">pdbid</span><span class="o">=</span><span class="n">structure</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">pdbid</span> <span class="ow">in</span> <span class="n">strdict</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Structure &#39;</span><span class="o">+</span><span class="n">pdbid</span><span class="o">+</span><span class="s1">&#39; loaded more than once. Check files in directory and remove duplicates.&#39;</span><span class="p">)</span>
+                    <span class="n">strdict</span><span class="p">[</span><span class="n">pdbid</span><span class="p">]</span><span class="o">=</span><span class="n">structure</span>
+                    <span class="n">filedict</span><span class="p">[</span><span class="n">pdbid</span><span class="p">]</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">STR_INPATH</span><span class="p">)</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">strdict</span><span class="p">,</span> <span class="n">filedict</span></div>
+
+<div class="viewcode-block" id="parseseqfile"><a class="viewcode-back" href="../../../api/generated/crops.core.cio.html#crops.core.cio.parseseqfile">[docs]</a><span class="k">def</span> <span class="nf">parseseqfile</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span><span class="n">uniprot</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns dictionary containing :class:`~crops.core.sequence.Sequence`.</span>
+
+<span class="sd">    :param inpath: File path.</span>
+<span class="sd">    :type inpath: str</span>
+<span class="sd">    :param uniprot: A dictionary of Uniprot codes, defaults to None</span>
+<span class="sd">    :type uniprot: str, dict, optional</span>
+<span class="sd">    :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.</span>
+<span class="sd">    :rtype: dict</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">newseqs</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">newid</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">head</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">chain</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+    <span class="n">ignore</span><span class="o">=</span><span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span><span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Input argument uniprot must be either a string or a dictionary.&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">uniprot</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+            <span class="n">unitemp</span><span class="o">=</span><span class="n">uniprot</span>
+            <span class="n">uniprot</span><span class="o">=</span><span class="p">{}</span>
+            <span class="n">uniprot</span><span class="p">[</span><span class="n">unitemp</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+        <span class="k">for</span> <span class="n">upcode</span> <span class="ow">in</span> <span class="n">uniprot</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">upcode</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Input argument uniprot must be either a string or a dictionary.&#39;</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">indx</span><span class="o">=-</span><span class="mi">1</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">line</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+            <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">line</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ignore</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">indx</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">newseqs</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                            <span class="n">newseqs</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">Sequence</span><span class="p">(</span><span class="n">seq_id</span><span class="o">=</span><span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span><span class="n">source</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">inpath</span><span class="p">))</span>
+                        <span class="k">if</span> <span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">newseqs</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imer</span><span class="p">:</span>
+                            <span class="n">newseqs</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">add_monomer</span><span class="p">(</span><span class="n">nheader</span><span class="o">=</span><span class="n">head</span><span class="p">,</span><span class="n">nseq</span><span class="o">=</span><span class="n">chain</span><span class="p">,</span><span class="n">nid</span><span class="o">=</span><span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">newseqs</span><span class="p">[</span><span class="s1">&#39;uniprot&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">imer</span><span class="p">)</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">uniprot</span><span class="p">):</span>
+                                <span class="k">break</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">indx</span><span class="o">&gt;=</span><span class="mi">0</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">newseqs</span><span class="p">:</span>
+                            <span class="n">newseqs</span><span class="p">[</span><span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">=</span><span class="n">Sequence</span><span class="p">(</span><span class="n">seq_id</span><span class="o">=</span><span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span><span class="n">source</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">inpath</span><span class="p">))</span>
+                        <span class="k">for</span> <span class="n">iid</span> <span class="ow">in</span> <span class="n">newid</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">newseqs</span><span class="p">[</span><span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">add_monomer</span><span class="p">(</span><span class="n">head</span><span class="p">,</span><span class="n">chain</span><span class="p">,</span><span class="n">nid</span><span class="o">=</span><span class="n">iid</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">line</span><span class="o">=</span><span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                            <span class="k">break</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">break</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;&gt;&quot;</span><span class="p">):</span>
+                <span class="n">newid</span><span class="o">=</span><span class="n">retrieve_id</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">head</span><span class="o">=</span><span class="n">line</span>
+                <span class="n">indx</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">chain</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+                <span class="k">if</span> <span class="n">uniprot</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">ignore</span><span class="o">=</span><span class="kc">False</span> <span class="k">if</span> <span class="n">newid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">uniprot</span> <span class="k">else</span> <span class="kc">True</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39; #&#39;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">ignore</span><span class="p">:</span>
+                    <span class="n">chain</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">newseqs</span></div>
+
+<div class="viewcode-block" id="outpath"><a class="viewcode-back" href="../../../api/generated/crops.core.cio.html#crops.core.cio.outpath">[docs]</a><span class="k">def</span> <span class="nf">outpath</span><span class="p">(</span><span class="n">globaldir</span><span class="p">,</span><span class="n">subdir</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">filename</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">mksubdir</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns the desired output filepath.</span>
+
+<span class="sd">    :param globaldir: General output dir.</span>
+<span class="sd">    :type globaldir: str</span>
+<span class="sd">    :param subdir: Additional subdirectory, defaults to None.</span>
+<span class="sd">    :type subdir: str, optional</span>
+<span class="sd">    :param filename: File name, defaults to None.</span>
+<span class="sd">    :type filename: str, optional.</span>
+<span class="sd">    :param mksubdir: Create directory if not existing, defaults to False.</span>
+<span class="sd">    :type mksubdir: bool, optional</span>
+<span class="sd">    :raises FileNotFoundError: Directory does not exist.</span>
+<span class="sd">    :return: Output filepath.</span>
+<span class="sd">    :rtype: str</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">newpath</span><span class="o">=</span><span class="n">check_path</span><span class="p">(</span><span class="n">globaldir</span><span class="p">,</span><span class="s1">&#39;dir&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">subdir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">newpath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newpath</span><span class="p">,</span><span class="n">subdir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">newpath</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">mksubdir</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">newpath</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Directory does not exist&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filename</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">newpath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">newpath</span><span class="p">,</span><span class="n">filename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">newpath</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2020-2020, University of Liverpool.<br/>
+      Last updated on 16 Sep 2020.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+crops.command\_line.crops\_renumber module
+==========================================
+
+.. automodule:: crops.command_line.crops_renumber
+   :members:
+   :undoc-members:
+   :show-inheritance:
