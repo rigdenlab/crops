@@ -267,7 +267,7 @@ class monomer_sequence:
         """Returns the length of the main sequence.
 
         :return n: Length of the main sequence.
-        :rtype n: int
+        :type n: int
 
         """
 
@@ -277,7 +277,7 @@ class monomer_sequence:
         """Returns the length of the full sequence. If not found, the length of the main sequence is returned.'
 
         :return n: Length of the full sequence.
-        :rtype n: int
+        :type n: int
 
         """
         if 'fullseq' not in self.seqs:
