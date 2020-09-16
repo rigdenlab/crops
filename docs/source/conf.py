@@ -12,7 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, "../..")
+sys.path.insert(0, "../..") # crops path
+sys.path.insert(0, "..") # sphinxext path
 from crops.about import __prog__, __description__, __author__, __date__, __version__, __copyright__
 
 # -- Project information -----------------------------------------------------
@@ -52,7 +53,7 @@ extensions = [
 try:
     import sphinx_bootstrap_theme
 except ImportError:
-    print("Error: sphinx_bootstrap_thememust be installed before generating this documentation")
+    print("Error: sphinx_bootstrap_theme must be installed before generating this documentation")
     sys.exit(1)
 
 # Add any paths that contain templates here, relative to this directory.
@@ -354,5 +355,5 @@ intersphinx_mapping = {
 #    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
 #    'pandas': ('https://pandas.pydata.org', None),
 #    'pyjob': ('https://pyjob.readthedocs.io', None),
-    'gemmi': ('https://gemmi.readthedocs.io', None),
+    'gemmi': ('https://gemmi.readthedocs.io', None)
 }
