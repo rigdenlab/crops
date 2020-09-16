@@ -12,8 +12,8 @@
 #
 import os
 import sys
-sys.path.insert(0, "../..") # crops path
-sys.path.insert(0, "..") # sphinxext path
+sys.path.insert(0, "..") # crops path
+sys.path.insert(0, ".") # sphinxext path
 from crops.about import __prog__, __description__, __author__, __date__, __version__, __copyright__
 
 # -- Project information -----------------------------------------------------
