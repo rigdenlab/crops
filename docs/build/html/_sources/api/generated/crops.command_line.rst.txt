@@ -1,0 +1,17 @@
+crops.command\_line package
+===========================
+
+.. automodule:: crops.command_line
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   crops.command_line.crops_cropseq
+   crops.command_line.crops_cropstr
+   crops.command_line.crops_renumber

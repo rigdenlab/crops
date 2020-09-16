@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>crops.core.ops &#8212; CROPS v0.3.1</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          CROPS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../install.html">Installation</a></li>
+                <li><a href="../../../examples.html">Examples</a></li>
+                <li><a href="../../../contents.html">Documentation</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Home <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for crops.core.ops</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">crops.about</span> <span class="kn">import</span> <span class="n">__prog__</span><span class="p">,</span> <span class="n">__description__</span><span class="p">,</span> <span class="n">__author__</span><span class="p">,</span> <span class="n">__date__</span><span class="p">,</span> <span class="n">__version__</span>
+
+<span class="kn">from</span> <span class="nn">crops.core.rescodes</span> <span class="kn">import</span> <span class="n">ressymbol</span>
+<span class="kn">from</span> <span class="nn">crops.core.sequence</span> <span class="kn">import</span> <span class="n">monomer_sequence</span>
+<span class="kn">from</span> <span class="nn">crops.core.intervals</span> <span class="kn">import</span> <span class="n">intinterval</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<div class="viewcode-block" id="renumberpdb"><a class="viewcode-back" href="../../../api/generated/crops.core.ops.html#crops.core.ops.renumberpdb">[docs]</a><span class="k">def</span> <span class="nf">renumberpdb</span><span class="p">(</span><span class="n">INSEQ</span><span class="p">,</span><span class="n">INSTR</span><span class="p">,</span><span class="n">seqback</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns modified :class:`gemmi.Structure` with new residue numbers.</span>
+
+<span class="sd">    :param INSEQ: Input sequence.</span>
+<span class="sd">    :type INSEQ: :class:`~crops.core.sequence.Sequence`</span>
+<span class="sd">    :param INSTR: Gemmi structure.</span>
+<span class="sd">    :type INSTR: :class:`gemmi.Structure`</span>
+<span class="sd">    :param seqback: If True, it additionally returns the Sequence with the gaps found in the structure, defaults to False.</span>
+<span class="sd">    :type seqback: bool, optional</span>
+<span class="sd">    :return INSTR: Renumbered structure.</span>
+<span class="sd">    :return INSEQ: Sequence with extra information about gaps, only if seqback==True.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">n_chains</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_resmax</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">INSTR</span><span class="p">:</span>
+        <span class="n">n_chains</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">n_resmax</span><span class="p">:</span>
+                <span class="n">n_resmax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_resmax</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_chains</span><span class="p">)]</span>
+    <span class="n">n_chains</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1">#NUMBER OF CHAINS PER MODEL -&gt;&gt; DO</span>
+    <span class="k">if</span> <span class="n">seqback</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">monomer</span> <span class="ow">in</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">imer</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="n">monomer</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">INSTR</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+            <span class="n">original_seq</span><span class="o">=</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">imer</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;mainseq&#39;</span><span class="p">]</span>
+            <span class="n">solved</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">shift</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)):</span>
+                <span class="n">cnt</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">gap</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">score</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">nligands</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">newseq</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+                <span class="n">newseq</span> <span class="o">+=</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="n">shift</span>
+                <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">residue</span> <span class="o">==</span> <span class="n">chain</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">ressymbol</span><span class="p">(</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="n">original_seq</span><span class="p">[</span><span class="n">shift</span><span class="p">]:</span>
+                            <span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">pos</span><span class="p">[</span><span class="n">n_chains</span><span class="p">][</span><span class="n">cnt</span><span class="p">]</span><span class="o">=</span><span class="mi">1</span><span class="o">+</span><span class="n">shift</span>
+                            <span class="n">newseq</span> <span class="o">+=</span> <span class="n">ressymbol</span><span class="p">(</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">ressymbol</span><span class="p">(</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                        <span class="n">nligands</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="n">pos</span><span class="p">[</span><span class="n">n_chains</span><span class="p">][</span><span class="n">cnt</span><span class="p">]</span><span class="o">=-</span><span class="n">nligands</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">chain</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span><span class="o">-</span><span class="n">chain</span><span class="p">[</span><span class="n">cnt</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">):</span>
+                            <span class="n">gap</span> <span class="o">+=</span> <span class="p">(</span><span class="n">chain</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span><span class="o">-</span><span class="n">chain</span><span class="p">[</span><span class="n">cnt</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                            <span class="n">newseq</span> <span class="o">+=</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="p">(</span><span class="n">chain</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span><span class="o">-</span><span class="n">chain</span><span class="p">[</span><span class="n">cnt</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                        <span class="n">pos</span><span class="p">[</span><span class="n">n_chains</span><span class="p">][</span><span class="n">cnt</span><span class="p">]</span><span class="o">=</span><span class="n">cnt</span><span class="o">+</span><span class="mi">1</span><span class="o">+</span><span class="n">gap</span><span class="o">+</span><span class="n">shift</span>
+                        <span class="k">if</span> <span class="n">ressymbol</span><span class="p">(</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="n">original_seq</span><span class="p">[</span><span class="n">cnt</span><span class="o">+</span><span class="n">gap</span><span class="o">+</span><span class="n">shift</span><span class="p">]:</span>
+                            <span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+                            <span class="n">newseq</span> <span class="o">+=</span> <span class="n">ressymbol</span><span class="p">(</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">residue</span><span class="o">==</span><span class="n">chain</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">cnt</span><span class="o">+</span><span class="n">gap</span><span class="o">+</span><span class="n">shift</span><span class="o">+</span><span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">original_seq</span><span class="p">):</span>
+                                <span class="n">newseq</span> <span class="o">+=</span> <span class="s1">&#39;-&#39;</span><span class="o">*</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">original_seq</span><span class="p">)</span><span class="o">-</span><span class="p">(</span><span class="n">cnt</span><span class="o">+</span><span class="n">gap</span><span class="o">+</span><span class="n">shift</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">score</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span><span class="o">-</span><span class="n">nligands</span><span class="p">:</span>
+                    <span class="n">solved</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">solved</span><span class="p">:</span>
+                <span class="n">cnt</span><span class="o">=</span><span class="mi">0</span>
+                <span class="k">for</span> <span class="n">residue</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">:</span>
+                    <span class="n">residue</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="n">pos</span><span class="p">[</span><span class="n">n_chains</span><span class="p">][</span><span class="n">cnt</span><span class="p">]</span>
+                    <span class="n">cnt</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">seqback</span><span class="p">:</span>
+                <span class="n">INSEQ</span><span class="o">.</span><span class="n">imer</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newseq</span><span class="p">)</span>
+            <span class="n">n_chains</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">solved</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">seqback</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">INSTR</span><span class="p">,</span><span class="n">INSEQ</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">INSTR</span></div>
+
+<div class="viewcode-block" id="crop_seq"><a class="viewcode-back" href="../../../api/generated/crops.core.ops.html#crops.core.ops.crop_seq">[docs]</a><span class="k">def</span> <span class="nf">crop_seq</span><span class="p">(</span><span class="n">INSEQ</span><span class="p">,</span> <span class="n">segments</span><span class="p">,</span> <span class="n">cut_type</span><span class="p">,</span> <span class="n">terms</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>  <span class="c1">#INPUTS MUST BE SINGLE MONOMERS</span>
+    <span class="sd">&quot;&quot;&quot;Returns modified :class:`~crops.core.sequence.monomer_sequence` without specified elements.</span>
+
+<span class="sd">    :param INSEQ: Input sequence.</span>
+<span class="sd">    :type INSEQ: :class:`~crops.core.sequence.monomer_sequence`</span>
+<span class="sd">    :param segments: Input preserving interval.</span>
+<span class="sd">    :type segments: :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">    :param cut_type: Additional header information.</span>
+<span class="sd">    :type cut_type: str</span>
+<span class="sd">    :param terms: If True, only terminal ends are removed, defaults to False.</span>
+<span class="sd">    :type terms: bool, optional</span>
+<span class="sd">    :raises ValueError: If intervals given lie out of the sequence.</span>
+<span class="sd">    :return newchain: Cropped sequence.</span>
+<span class="sd">    :rtype newchain: :class:`~crops.core.sequence.monomer_sequence`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">segments</span><span class="o">.</span><span class="n">subint</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">segments</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">length</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;One or many of the segment end values is outside the original sequence.&#39;</span><span class="p">)</span>
+
+    <span class="n">newchain</span><span class="o">=</span><span class="n">monomer_sequence</span><span class="p">(</span><span class="n">chid</span><span class="o">=</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chain_id&#39;</span><span class="p">],</span><span class="n">header</span><span class="o">=</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">])</span>
+    <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;fullseq&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;mainseq&#39;</span><span class="p">]</span>
+    <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;cropseq&#39;</span><span class="p">]</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="s1">&#39;gapseq&#39;</span> <span class="ow">in</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">:</span>
+        <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">])</span>
+        <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;cropgapseq&#39;</span><span class="p">]</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">])</span>
+
+    <span class="n">cropint</span><span class="o">=</span><span class="n">segments</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">terms</span> <span class="k">else</span> <span class="n">segments</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">segments</span><span class="o">.</span><span class="n">terminals</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">length</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">cropint</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">res</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;mainseq&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;mainseq&#39;</span><span class="p">][</span><span class="n">res</span><span class="p">]</span>
+            <span class="k">if</span> <span class="s1">&#39;gapseq&#39;</span> <span class="ow">in</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">])):</span>
+                    <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">][</span><span class="n">n</span><span class="p">][</span><span class="n">res</span><span class="p">]</span>
+                    <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;cropgapseq&#39;</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">][</span><span class="n">n</span><span class="p">][</span><span class="n">res</span><span class="p">]</span>
+            <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;cropseq&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;mainseq&#39;</span><span class="p">][</span><span class="n">res</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;gapseq&#39;</span> <span class="ow">in</span> <span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;gapseq&#39;</span><span class="p">])):</span>
+                    <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;cropgapseq&#39;</span><span class="p">][</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="s1">&#39;*&#39;</span>
+            <span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;cropseq&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="s1">&#39;*&#39;</span>
+
+    <span class="k">if</span> <span class="n">newchain</span><span class="o">.</span><span class="n">length</span><span class="p">()</span><span class="o">&lt;</span><span class="nb">len</span><span class="p">(</span><span class="n">newchain</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;cropseq&#39;</span><span class="p">]):</span>
+        <span class="n">newchain</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cut_type</span>
+
+    <span class="k">return</span> <span class="n">newchain</span></div>
+
+<div class="viewcode-block" id="croppdb"><a class="viewcode-back" href="../../../api/generated/crops.core.ops.html#crops.core.ops.croppdb">[docs]</a><span class="k">def</span> <span class="nf">croppdb</span><span class="p">(</span><span class="n">INSTR</span><span class="p">,</span> <span class="n">INSEQ</span><span class="p">,</span> <span class="n">segments</span><span class="p">,</span> <span class="n">terms</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns modified :class:`gemmi.Structure` without specified elements.</span>
+
+<span class="sd">    :param INSTR: Gemmi structure.</span>
+<span class="sd">    :type INSTR: :class:`gemmi.Structure`</span>
+<span class="sd">    :param INSEQ: Input sequence.</span>
+<span class="sd">    :type INSEQ: :class:`~crops.core.sequence.Sequence`</span>
+<span class="sd">    :param segments: Input preserving intervals.</span>
+<span class="sd">    :type segments: dict of :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">    :param terms: If True, only terminal ends are removed, defaults to False.</span>
+<span class="sd">    :type terms: bool, optional</span>
+<span class="sd">    :return INSTR: DESCRIPTION</span>
+<span class="sd">    :rtype INSTR: :class:`gemmi.Structure`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">segments</span><span class="p">,</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="n">segments</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interval</span><span class="p">,</span><span class="n">intinterval</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Input argument segments should be a dictionary of integer intervals.&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Input argument segments should be a dictionary of integer intervals.&#39;</span><span class="p">)</span>
+
+    <span class="n">n_chains</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">n_resmax</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">INSTR</span><span class="p">:</span>
+        <span class="n">n_chains</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">n_resmax</span><span class="p">:</span>
+                <span class="n">n_resmax</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">)</span>
+
+    <span class="n">delres</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">False</span> <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_resmax</span><span class="p">)]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_chains</span><span class="p">)]</span>
+    <span class="n">n_chains</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">INSTR</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">segments</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">terms</span><span class="p">:</span> <span class="c1">#TAKE TERMINALS OUTSIDE</span>
+                    <span class="n">cropint</span><span class="o">=</span><span class="n">segments</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cropint</span><span class="o">=</span><span class="n">segments</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">segments</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">terminals</span><span class="p">())</span>
+                <span class="n">original_seq</span><span class="o">=</span><span class="n">INSEQ</span><span class="o">.</span><span class="n">imer</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">seqs</span><span class="p">[</span><span class="s1">&#39;mainseq&#39;</span><span class="p">]</span>
+                <span class="n">r_bio</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">pos_chainlist</span><span class="o">=</span><span class="mi">0</span>
+                <span class="k">for</span> <span class="n">r_original</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">original_seq</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">cropint</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">r_original</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+                        <span class="n">r_bio</span><span class="o">+=</span><span class="mi">1</span>
+                        <span class="k">if</span> <span class="n">chain</span><span class="p">[</span><span class="n">pos_chainlist</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span> <span class="o">==</span> <span class="n">r_original</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">chain</span><span class="p">[</span><span class="n">pos_chainlist</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span><span class="o">=</span><span class="n">r_bio</span>
+                            <span class="n">pos_chainlist</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">chain</span><span class="p">[</span><span class="n">pos_chainlist</span><span class="p">]</span><span class="o">.</span><span class="n">seqid</span><span class="o">.</span><span class="n">num</span> <span class="o">==</span> <span class="n">r_original</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                            <span class="n">delres</span><span class="p">[</span><span class="n">n_chains</span><span class="p">][</span><span class="n">pos_chainlist</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="n">pos_chainlist</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">n_chains</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="n">n_chains</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">model</span> <span class="ow">in</span> <span class="n">INSTR</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">chain</span> <span class="ow">in</span> <span class="n">model</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">res</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">chain</span><span class="p">))):</span>
+                <span class="k">if</span> <span class="n">delres</span><span class="p">[</span><span class="n">n_chains</span><span class="p">][</span><span class="n">res</span><span class="p">]:</span>
+                    <span class="k">del</span> <span class="n">chain</span><span class="p">[</span><span class="n">res</span><span class="p">]</span>
+            <span class="n">n_chains</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">INSTR</span></div>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2020-2020, University of Liverpool.<br/>
+      Last updated on 16 Sep 2020.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

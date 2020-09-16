@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>crops.core.intervals &#8212; CROPS v0.3.1</title>
+    <link rel="stylesheet" href="../../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          CROPS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../index.html">Home</a></li>
+                <li><a href="../../../install.html">Installation</a></li>
+                <li><a href="../../../examples.html">Examples</a></li>
+                <li><a href="../../../contents.html">Documentation</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Home <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for crops.core.intervals</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+
+<span class="kn">from</span> <span class="nn">crops.about</span> <span class="kn">import</span> <span class="n">__prog__</span><span class="p">,</span> <span class="n">__description__</span><span class="p">,</span> <span class="n">__author__</span><span class="p">,</span> <span class="n">__date__</span><span class="p">,</span> <span class="n">__version__</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="k">def</span> <span class="nf">_intervalise</span><span class="p">(</span><span class="n">subject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Turns any integer or list of two integers into a :class:`~crops.core.intervals.intinterval`.</span>
+
+<span class="sd">    :param subject: Input parameter.</span>
+<span class="sd">    :type subject: int, list, :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">    :raises TypeError: Argument must be an integer interval, an integer or a list of two integers.</span>
+<span class="sd">    :return: A :class:`~crops.core.intervals.intinterval` defined by the input.</span>
+<span class="sd">    :rtype: :class:`~crops.core.intervals.intinterval`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">intinterval</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">subject</span>
+
+    <span class="n">raisemsg</span><span class="o">=</span><span class="s1">&#39;Argument must be an intinterval, an integer or a list of two integers.&#39;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">raisemsg</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subject</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="nb">float</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">==</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+                        <span class="n">s</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">raisemsg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="nb">int</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">raisemsg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">subject</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">subject</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">subject</span><span class="o">=</span><span class="p">[[</span><span class="n">subject</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">subject</span><span class="p">[</span><span class="mi">0</span><span class="p">]]]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">subject</span><span class="o">=</span><span class="p">[</span><span class="n">subject</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">subject</span><span class="o">=</span><span class="p">[[</span><span class="n">subject</span><span class="p">,</span><span class="n">subject</span><span class="p">]]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">raisemsg</span><span class="p">)</span>
+
+    <span class="n">intervalised</span><span class="o">=</span><span class="n">intinterval</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;other&#39;</span><span class="p">,</span><span class="n">subint</span><span class="o">=</span><span class="n">subject</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">intervalised</span>
+
+<span class="k">def</span> <span class="nf">_intervalize</span><span class="p">(</span><span class="n">subject</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_intervalise</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+
+<div class="viewcode-block" id="intinterval"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval">[docs]</a><span class="k">class</span> <span class="nc">intinterval</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;An integer interval object.</span>
+<span class="sd">    The integer interval class represents a data structure to hold all</span>
+<span class="sd">    non-connected sub-intervals making it up, extra information tags, and</span>
+<span class="sd">    set operations for the intervals.</span>
+<span class="sd">    It contains functions to organise intervals and make operations on them.</span>
+
+<span class="sd">    :param description: An interval ID, defaults to &#39;intinterval&#39;.</span>
+<span class="sd">    :type description: str, optional</span>
+<span class="sd">    :param subint: A list of two-integer lists, defaults to [].</span>
+<span class="sd">    :type subint: list, optional</span>
+<span class="sd">    :ivar tags: Useful information of the :class:`~crops.core.intervals.intinterval`, including the default &#39;description&#39;.</span>
+<span class="sd">    :type tags: dict</span>
+<span class="sd">    :ivar subint: The list of sub-intervals in :class:`~crops.core.intervals.intinterval`.</span>
+<span class="sd">    :type subint: list</span>
+
+<span class="sd">    :example:</span>
+<span class="sd">    &gt;&gt;&gt; from crops.core import intervals</span>
+<span class="sd">    &gt;&gt;&gt; my_interval = intinterval(&#39;an interval&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; other_interval = intinterval(&#39;another interval&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; my_interval = my_interval.union(15)</span>
+<span class="sd">    &gt;&gt;&gt; my_interval2 = my_interval2.union([2,7])</span>
+<span class="sd">    &gt;&gt;&gt; my_interval = my_interval.union(my_interval2)</span>
+<span class="sd">    &gt;&gt;&gt; print(my_interval)</span>
+<span class="sd">    Integer interval object: (id=&quot;an interval&quot;, subsets=&quot;[[2,7],[15,15]]&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; print(my_interval.intersection([3,19]))</span>
+<span class="sd">    Integer interval object: (id=&quot;an interval&quot;, subsets=&quot;[[3,7],[15,15]]&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; my_interval.n_elements()</span>
+<span class="sd">    8</span>
+<span class="sd">    &gt;&gt;&gt; my_interval.terminals()</span>
+<span class="sd">    [3,15]</span>
+<span class="sd">    &gt;&gt;&gt; my_interval.contains(16)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; my_interval.contains(my_interval2)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; my_interval.contains([5,7])</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;Integer interval&#39;</span>
+    <span class="vm">__slots__</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tags&#39;</span><span class="p">,</span><span class="s1">&#39;subint&#39;</span><span class="p">]</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s1">&#39;intinterval&#39;</span><span class="p">,</span> <span class="n">subint</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">=</span><span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subint</span> <span class="o">=</span> <span class="n">subint</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">kind</span><span class="o">+</span><span class="s2">&quot; object: (id=&quot;</span><span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;, subsets=&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;)&quot;</span>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">iter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="p">)</span>
+
+<div class="viewcode-block" id="intinterval.description"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.description">[docs]</a>    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">newdescription</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns or moifies the &#39;description&#39; tag.</span>
+
+<span class="sd">        :param newdescription: If given, the value of &#39;description&#39; in tags is replaced by &#39;newdescription&#39;, defaults to None</span>
+<span class="sd">        :type newdescription: str, optional</span>
+<span class="sd">        :return: If newdescription not given, the value of &#39;description&#39; in tags is returned.</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;description&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
+        <span class="k">if</span> <span class="n">newdescription</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">newdescription</span></div>
+
+<div class="viewcode-block" id="intinterval.addtag"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.addtag">[docs]</a>    <span class="k">def</span> <span class="nf">addtag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds a new tag to :class:`~crops.core.intervals.intinterval`.</span>
+
+<span class="sd">        :param tag: Key argument.</span>
+<span class="sd">        :type tag: str</span>
+<span class="sd">        :param value: Value argument.</span>
+<span class="sd">        :type value: any</span>
+<span class="sd">        :raises TypeError: If tag is not a string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Keys must be strings&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="p">[</span><span class="n">tag</span><span class="p">]</span><span class="o">=</span><span class="n">value</span></div>
+
+<div class="viewcode-block" id="intinterval.deltag"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.deltag">[docs]</a>    <span class="k">def</span> <span class="nf">deltag</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deletes a tag from :class:`~crops.core.intervals.intinterval`.</span>
+
+<span class="sd">        :param tag: Key argument.</span>
+<span class="sd">        :type tag: str</span>
+<span class="sd">        :raises TypeError: If argument is not a string.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tag</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;Tags must be strings&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">tag</span><span class="o">==</span><span class="s1">&#39;description&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Key &quot;description&quot; cannot be removed.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tags</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">tag</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="intinterval.copy"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="intinterval.deepcopy"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.deepcopy">[docs]</a>    <span class="k">def</span> <span class="nf">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="intinterval.terminals"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.terminals">[docs]</a>    <span class="k">def</span> <span class="nf">terminals</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the first and last element in the :class:`~crops.core.intervals.intinterval`.</span>
+
+<span class="sd">        :param other: Defaults to None.</span>
+<span class="sd">        :type other: int, list, :class:`~crops.core.intervals.intinterval`, optional</span>
+<span class="sd">        :return: A list of two integers indicating lower and higher limits of the interval (self if other is None, other otherwise).</span>
+<span class="sd">            If input is an empty interval, this function will return an empty list.</span>
+<span class="sd">        :rtype: list</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">interval</span><span class="o">=</span><span class="bp">self</span> <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_intervalise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">interval</span><span class="o">.</span><span class="n">subint</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">interval</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span><span class="n">interval</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span></div>
+
+<div class="viewcode-block" id="intinterval.n_elements"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.n_elements">[docs]</a>    <span class="k">def</span> <span class="nf">n_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Returns the number of elements in the interval, subinterval, or any other set.</span>
+
+<span class="sd">        :param other: Input argument, defaults to None.</span>
+<span class="sd">        :type other: int, list, :class:`~crops.core.intervals.intinterval`, optional</span>
+<span class="sd">        :return: Number of elements in the interval (self if other is None, other otherwise).</span>
+<span class="sd">        :rtype: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+        <span class="n">interval</span><span class="o">=</span><span class="bp">self</span> <span class="k">if</span> <span class="n">other</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_intervalise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">A</span> <span class="ow">in</span> <span class="n">interval</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">+=</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">n</span></div>
+
+<div class="viewcode-block" id="intinterval.contains"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.contains">[docs]</a>    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks if input interval is fully contained in self. B ⊂ A : A = self, B = other.</span>
+
+<span class="sd">        :param other: Another interval.</span>
+<span class="sd">        :type other: int, list, :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">        :return: Whether self contains other or not.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># A ⊂ B : A = self, B = other</span>
+        <span class="n">other</span><span class="o">=</span><span class="n">_intervalise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="p">[]:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="p">[]:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">B</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">outcome</span><span class="o">=</span><span class="kc">False</span>
+            <span class="k">for</span> <span class="n">A</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">outcome</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">outcome</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="intinterval.union"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.union">[docs]</a>    <span class="k">def</span> <span class="nf">union</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span><span class="n">newdesc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A ⋃ B : A = self, B = other</span>
+
+<span class="sd">        :param other: Another interval.</span>
+<span class="sd">        :type other: int, list, :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">        :param newdesc: If given, description of returned interval, defaults to None.</span>
+<span class="sd">        :type newdesc: str, optional</span>
+<span class="sd">        :return: The Union of both intervals.</span>
+<span class="sd">        :rtype: :class:`~crops.core.intervals.intinterval`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">newdesc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newdesc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">()</span>
+        <span class="c1"># A ⋃ B : A = self, B = other</span>
+        <span class="n">other</span><span class="o">=</span><span class="n">_intervalise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="p">[]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+        <span class="k">elif</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="p">[]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">!=</span><span class="p">[]:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+
+        <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+        <span class="c1"># Use of distributive property:</span>
+        <span class="c1"># A = (A1 ⋃ A2); B = (B1 ⋃ B2)</span>
+        <span class="c1"># A ⋃ B = (A ⋃ B1) ⋃ (A ⋃ B2)</span>
+        <span class="k">for</span> <span class="n">B</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">ingap</span><span class="o">=</span><span class="kc">True</span>
+            <span class="n">newlist</span><span class="o">=</span><span class="p">[]</span>
+            <span class="k">for</span> <span class="n">A</span> <span class="ow">in</span> <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+                <span class="c1"># other&#39;s left-hand side</span>
+                <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">ingap</span><span class="o">=</span><span class="kc">False</span>
+                <span class="c1"># other&#39;s right-hand side</span>
+                <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">ingap</span><span class="o">=</span><span class="kc">False</span>
+                <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="n">ingap</span><span class="o">=</span><span class="kc">False</span>
+
+            <span class="k">if</span> <span class="n">ingap</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">)):</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+                        <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">s</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+                            <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">s</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="n">s</span><span class="o">==</span><span class="nb">len</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">A</span> <span class="ow">in</span> <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">newlist</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+                            <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">newlist</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">!=</span><span class="n">B</span><span class="p">:</span>
+                                <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">newlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+
+            <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">newlist</span><span class="p">)</span>
+
+        <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newint</span></div>
+
+<div class="viewcode-block" id="intinterval.intersection"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.intersection">[docs]</a>    <span class="k">def</span> <span class="nf">intersection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">,</span><span class="n">newdesc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A ⋂ B : A = self, B = other</span>
+
+<span class="sd">        :param other: Another interval.</span>
+<span class="sd">        :type other: int, list, :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">        :param newdesc: If given, description of returned interval, defaults to None.</span>
+<span class="sd">        :type newdesc: str, optional</span>
+<span class="sd">        :return: The Intersection of both intervals.</span>
+<span class="sd">        :rtype: :class:`~crops.core.intervals.intinterval`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">newdesc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newdesc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">()</span>
+        <span class="c1"># A ⋂ B : A = self, B = other</span>
+        <span class="n">other</span><span class="o">=</span><span class="n">_intervalise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="p">[]</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+        <span class="k">elif</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="p">[]</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">!=</span><span class="p">[]:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">=</span><span class="p">[]</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+
+        <span class="c1"># Use of distributive property:</span>
+        <span class="c1"># A = (A1 ⋃ A2); B = (B1 ⋃ B2)</span>
+        <span class="c1"># A ⋂ B = (A1 ⋂ B1) ⋃ (A1 ⋂ B2) ⋃ (A2 ⋂ B1) ⋃ (A2 ⋂ B2)</span>
+        <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+        <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">=</span><span class="p">[]</span>
+        <span class="k">for</span> <span class="n">A</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">B</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+                <span class="n">partial_int</span><span class="o">=</span><span class="p">[]</span>
+                <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                    <span class="k">pass</span>
+                <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">partial_int</span><span class="o">=</span><span class="p">[</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">partial_int</span><span class="o">=</span><span class="p">[</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">partial_int</span><span class="o">=</span><span class="p">[</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">partial_int</span><span class="o">=</span><span class="p">[</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+                <span class="n">newint</span><span class="o">=</span><span class="n">newint</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">partial_int</span><span class="p">)</span>
+
+        <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newint</span></div>
+
+<div class="viewcode-block" id="intinterval.subtract"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.subtract">[docs]</a>    <span class="k">def</span> <span class="nf">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span><span class="n">newdesc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A \ B : A = self, B = other</span>
+
+<span class="sd">        :param other: Another interval.</span>
+<span class="sd">        :type other: int, list, :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">        :param newdesc: If given, description of returned interval, defaults to None.</span>
+<span class="sd">        :type newdesc: str, optional</span>
+<span class="sd">        :return: The result of subtracting other from self.</span>
+<span class="sd">        :rtype: :class:`~crops.core.intervals.intinterval`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">newdesc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newdesc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">()</span>
+        <span class="c1"># A \ B : A = self, B = other</span>
+        <span class="n">other</span><span class="o">=</span><span class="n">_intervalise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+        <span class="k">elif</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">=</span><span class="p">[]</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+
+        <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+        <span class="c1"># Use of the following set algebra property:</span>
+        <span class="c1"># A = (A1 ⋃ A2); B = (B1 ⋃ B2)</span>
+        <span class="c1"># A \ B = [(A1 \ B1) \ B2] ⋃ [(A2 \ B1) \ B2]</span>
+        <span class="k">for</span> <span class="n">A</span> <span class="ow">in</span> <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">B</span> <span class="ow">in</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">A</span><span class="o">!=</span><span class="p">[]:</span>
+                    <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                        <span class="k">pass</span>
+                    <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">A</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                            <span class="k">break</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">A</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                        <span class="k">break</span>
+                    <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="o">!=</span><span class="n">A</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">=</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+                        <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">==</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                            <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">A</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">,[</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                            <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+                    <span class="k">elif</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">==</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                            <span class="n">A</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                            <span class="k">break</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">=</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">))):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+            <span class="k">if</span> <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="p">[]:</span>
+                <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newint</span></div>
+
+<div class="viewcode-block" id="intinterval.symdiff"><a class="viewcode-back" href="../../../api/generated/crops.core.intervals.html#crops.core.intervals.intinterval.symdiff">[docs]</a>    <span class="k">def</span> <span class="nf">symdiff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">other</span><span class="p">,</span><span class="n">newdesc</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;A Δ B : A = self, B = other</span>
+
+<span class="sd">        :param other: Another interval.</span>
+<span class="sd">        :type other: int, list, :class:`~crops.core.intervals.intinterval`</span>
+<span class="sd">        :param newdesc: If given, description of returned interval, defaults to None.</span>
+<span class="sd">        :type newdesc: str, optional</span>
+<span class="sd">        :return: The Symmetric difference of both intervals.</span>
+<span class="sd">        :rtype: :class:`~crops.core.intervals.intinterval`</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">newdesc</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">newdesc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">()</span>
+        <span class="c1"># A Δ B : A = self, B = other</span>
+        <span class="n">other</span><span class="o">=</span><span class="n">_intervalise</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="o">==</span><span class="p">[]</span> <span class="ow">and</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="o">!=</span><span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">subint</span><span class="p">)</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+        <span class="k">elif</span> <span class="n">other</span><span class="o">.</span><span class="n">subint</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">subint</span><span class="p">:</span>
+            <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">()</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">subint</span><span class="o">=</span><span class="p">[]</span>
+            <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">newint</span>
+
+        <span class="c1"># Use of the following set algebra property:</span>
+        <span class="c1"># A Δ B = (A \ B) ⋃ (B \ A)</span>
+        <span class="n">newint</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+        <span class="n">newint</span><span class="o">=</span><span class="n">newint</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">other</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+        <span class="n">newint</span><span class="o">.</span><span class="n">description</span><span class="p">(</span><span class="n">newdesc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">newint</span></div></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+      
+    </p>
+    <p>
+        &copy; Copyright 2020-2020, University of Liverpool.<br/>
+      Last updated on 16 Sep 2020.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

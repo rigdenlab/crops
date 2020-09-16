@@ -1,0 +1,7 @@
+crops.core.intervals module
+===========================
+
+.. automodule:: crops.core.intervals
+   :members:
+   :undoc-members:
+   :show-inheritance:

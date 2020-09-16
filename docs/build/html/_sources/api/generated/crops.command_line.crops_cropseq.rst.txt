@@ -1,0 +1,7 @@
+crops.command\_line.crops\_cropseq module
+=========================================
+
+.. automodule:: crops.command_line.crops_cropseq
+   :members:
+   :undoc-members:
+   :show-inheritance:

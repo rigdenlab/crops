@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>crops.core.intervals module &#8212; CROPS v0.3.1</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default ">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          CROPS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../../install.html">Installation</a></li>
+                <li><a href="../../examples.html">Examples</a></li>
+                <li><a href="../../contents.html">Documentation</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Home <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">crops.core.intervals module</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="module-crops.core.intervals">
+<span id="crops-core-intervals-module"></span><h1>crops.core.intervals module<a class="headerlink" href="#module-crops.core.intervals" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="crops.core.intervals.intinterval">
+<em class="property">class </em><code class="sig-name descname">intinterval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">description</span><span class="o">=</span><span class="default_value">'intinterval'</span></em>, <em class="sig-param"><span class="n">subint</span><span class="o">=</span><span class="default_value">[]</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>An integer interval object.
+The integer interval class represents a data structure to hold all
+non-connected sub-intervals making it up, extra information tags, and
+set operations for the intervals.
+It contains functions to organise intervals and make operations on them.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>description</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – An interval ID, defaults to ‘intinterval’.</p></li>
+<li><p><strong>subint</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) – A list of two-integer lists, defaults to [].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Variables</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#crops.core.intervals.intinterval.tags" title="crops.core.intervals.intinterval.tags"><strong>tags</strong></a> – Useful information of the <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>, including the default ‘description’.</p></li>
+<li><p><a class="reference internal" href="#crops.core.intervals.intinterval.subint" title="crops.core.intervals.intinterval.subint"><strong>subint</strong></a> – The list of sub-intervals in <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Example</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">crops.core</span> <span class="kn">import</span> <span class="n">intervals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span> <span class="o">=</span> <span class="n">intinterval</span><span class="p">(</span><span class="s1">&#39;an interval&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">other_interval</span> <span class="o">=</span> <span class="n">intinterval</span><span class="p">(</span><span class="s1">&#39;another interval&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span> <span class="o">=</span> <span class="n">my_interval</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval2</span> <span class="o">=</span> <span class="n">my_interval2</span><span class="o">.</span><span class="n">union</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span><span class="mi">7</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span> <span class="o">=</span> <span class="n">my_interval</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">my_interval2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_interval</span><span class="p">)</span>
+<span class="go">Integer interval object: (id=&quot;an interval&quot;, subsets=&quot;[[2,7],[15,15]]&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">my_interval</span><span class="o">.</span><span class="n">intersection</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span><span class="mi">19</span><span class="p">]))</span>
+<span class="go">Integer interval object: (id=&quot;an interval&quot;, subsets=&quot;[[3,7],[15,15]]&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span><span class="o">.</span><span class="n">n_elements</span><span class="p">()</span>
+<span class="go">8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span><span class="o">.</span><span class="n">terminals</span><span class="p">()</span>
+<span class="go">[3,15]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">my_interval2</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">my_interval</span><span class="o">.</span><span class="n">contains</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span><span class="mi">7</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.addtag">
+<code class="sig-name descname">addtag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em>, <em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.addtag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.addtag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new tag to <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Key argument.</p></li>
+<li><p><strong>value</strong> (<em>any</em>) – Value argument.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – If tag is not a string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.contains">
+<code class="sig-name descname">contains</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.contains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.contains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if input interval is fully contained in self. B ⊂ A : A = self, B = other.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (int, list, <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>) – Another interval.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether self contains other or not.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)">bool</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.copy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.deepcopy">
+<code class="sig-name descname">deepcopy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.deepcopy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.deepcopy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.deltag">
+<code class="sig-name descname">deltag</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tag</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.deltag"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.deltag" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes a tag from <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – Key argument.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.8)"><strong>TypeError</strong></a> – If argument is not a string.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.description">
+<code class="sig-name descname">description</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">newdescription</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns or moifies the ‘description’ tag.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>newdescription</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – If given, the value of ‘description’ in tags is replaced by ‘newdescription’, defaults to None</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If newdescription not given, the value of ‘description’ in tags is returned.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.intersection">
+<code class="sig-name descname">intersection</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em>, <em class="sig-param"><span class="n">newdesc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.intersection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.intersection" title="Permalink to this definition">¶</a></dt>
+<dd><p>A ⋂ B : A = self, B = other</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (int, list, <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>) – Another interval.</p></li>
+<li><p><strong>newdesc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – If given, description of returned interval, defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Intersection of both intervals.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="crops.core.intervals.intinterval.kind">
+<code class="sig-name descname">kind</code><em class="property"> = 'Integer interval'</em><a class="headerlink" href="#crops.core.intervals.intinterval.kind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.n_elements">
+<code class="sig-name descname">n_elements</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.n_elements"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.n_elements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the number of elements in the interval, subinterval, or any other set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (int, list, <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>, optional) – Input argument, defaults to None.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Number of elements in the interval (self if other is None, other otherwise).</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="crops.core.intervals.intinterval.subint">
+<code class="sig-name descname">subint</code><a class="headerlink" href="#crops.core.intervals.intinterval.subint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.subtract">
+<code class="sig-name descname">subtract</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em>, <em class="sig-param"><span class="n">newdesc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.subtract"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.subtract" title="Permalink to this definition">¶</a></dt>
+<dd><p>A B : A = self, B = other</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (int, list, <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>) – Another interval.</p></li>
+<li><p><strong>newdesc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – If given, description of returned interval, defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The result of subtracting other from self.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.symdiff">
+<code class="sig-name descname">symdiff</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em>, <em class="sig-param"><span class="n">newdesc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.symdiff"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.symdiff" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Δ B : A = self, B = other</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (int, list, <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>) – Another interval.</p></li>
+<li><p><strong>newdesc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – If given, description of returned interval, defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Symmetric difference of both intervals.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="crops.core.intervals.intinterval.tags">
+<code class="sig-name descname">tags</code><a class="headerlink" href="#crops.core.intervals.intinterval.tags" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.terminals">
+<code class="sig-name descname">terminals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.terminals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.terminals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the first and last element in the <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>other</strong> (int, list, <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>, optional) – Defaults to None.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of two integers indicating lower and higher limits of the interval (self if other is None, other otherwise).
+If input is an empty interval, this function will return an empty list.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="crops.core.intervals.intinterval.union">
+<code class="sig-name descname">union</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">other</span></em>, <em class="sig-param"><span class="n">newdesc</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/crops/core/intervals.html#intinterval.union"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#crops.core.intervals.intinterval.union" title="Permalink to this definition">¶</a></dt>
+<dd><p>A ⋃ B : A = self, B = other</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>other</strong> (int, list, <a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a>) – Another interval.</p></li>
+<li><p><strong>newdesc</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em>, </em><em>optional</em>) – If given, description of returned interval, defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The Union of both intervals.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#crops.core.intervals.intinterval" title="crops.core.intervals.intinterval"><code class="xref py py-class docutils literal notranslate"><span class="pre">intinterval</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+        <br/>
+        
+<div id="sourcelink">
+  <a href="../../_sources/api/generated/crops.core.intervals.rst.txt"
+     rel="nofollow">Source</a>
+</div>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020-2020, University of Liverpool.<br/>
+      Last updated on 16 Sep 2020.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
