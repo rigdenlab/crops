@@ -96,7 +96,7 @@ class monomer_sequence:
     :ivar info: Useful information of the :class:`~crops.core.sequence.monomer_sequence`.
     :vartype info: dict
     :ivar seqs: The set of sequences, including default "mainseq", in :class:`~crops.core.sequence.monomer_sequence`.
-    :vartype seqs: dict[str]
+    :vartype seqs: dict [str, str]
 
     :example:
 
@@ -116,7 +116,7 @@ class monomer_sequence:
 
     """
 
-    kind='Single chain sequence'
+    _kind='Single chain sequence'
     __slots__=['info','seqs']
     def __init__(self,chid,seq=None,header=None):
         self.info={}
@@ -148,9 +148,9 @@ class monomer_sequence:
             raise ValueError('mainseq sequence not found.')
         showseq=self.seqs['mainseq'] if len(self.seqs['mainseq'])<=20 else self.seqs['mainseq'][:10]+'[...]'+self.seqs['mainseq'][len(self.seqs['mainseq'])-10:]
         if 'oligomer_id' in self.info:
-            string=self.kind+" object: ( id="+ self.info['oligomer_id']+'_'+self.info['chain_id'] +", seq="+str(showseq)+", length="+str(len(self.seqs['mainseq']))+" )"
+            string=self._kind+" object: ( id="+ self.info['oligomer_id']+'_'+self.info['chain_id'] +", seq="+str(showseq)+", length="+str(len(self.seqs['mainseq']))+" )"
         else:
-            string=self.kind+" object: ( id="+ self.info['chain_id'] +", seq="+str(showseq)+", length="+str(len(self.seqs['mainseq']))+" )"
+            string=self._kind+" object: ( id="+ self.info['chain_id'] +", seq="+str(showseq)+", length="+str(len(self.seqs['mainseq']))+" )"
         return string
 
     def __iter__(self):
@@ -398,7 +398,7 @@ class Sequence:
     :ivar seq_id: Sequence identifier (e.g. PDB id).
     :vartype seq_id: str
     :ivar imer: Container of several :class:`~crops.core.sequence.monomer_sequence` making up the oligomer.
-    :vartype imer: dict[:class:`~crops.core.sequence.monomer_sequence`]
+    :vartype imer: dict [str, :class:`~crops.core.sequence.monomer_sequence`]
     :ivar source: Information concerning the source of the :class:`~crops.core.sequence.Sequence` (e.g. Uniprot).
     :vartype source: str
 
@@ -420,7 +420,7 @@ class Sequence:
     0
 
     """
-    kind='Protein/polynucleotide sequence'
+    _kind='Protein/polynucleotide sequence'
     __slots__ = ['seq_id', 'imer', 'source']
     def __init__(self, seq_id=None, imer=None, source=None):
 
@@ -438,9 +438,9 @@ class Sequence:
 
     def __repr__(self):
         if self.source is not None:
-            string=self.source+" "+self.kind+" object: (id="+ self.seq_id+", # chains = "+str(len(self.imer))+")"
+            string=self.source+" "+self._kind+" object: (id="+ self.seq_id+", # chains = "+str(len(self.imer))+")"
         else:
-            string=self.kind+" object: (id="+ self.seq_id+", # chains = "+str(len(self.imer))+")"
+            string=self._kind+" object: (id="+ self.seq_id+", # chains = "+str(len(self.imer))+")"
         return string
 
     def __iter__(self):
