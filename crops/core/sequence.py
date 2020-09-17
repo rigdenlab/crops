@@ -94,9 +94,9 @@ class monomer_sequence:
     :param header: Standard .fasta header, starting with ">".
     :type header: str, optional
     :ivar info: Useful information of the :class:`~crops.core.sequence.monomer_sequence`.
-    :type info: Dict
+    :vartype info: dict
     :ivar seqs: The set of sequences, including default "mainseq", in :class:`~crops.core.sequence.monomer_sequence`.
-    :type seqs: Dict[str]
+    :vartype seqs: dict[str]
 
     :example:
 
@@ -385,9 +385,9 @@ class monomer_sequence:
 
 class Sequence:
     """A sequence object grouping several chain sequence objects.
-    The Sequence class represents a data structure to hold all
-     :class:`~crops.core.sequence.monomer_sequence` and other useful information
-    characterising an oligomer.
+    The Sequence class represents a data structure to hold 
+    all :class:`~crops.core.sequence.monomer_sequence` and other 
+    useful information characterising an oligomer.
 
     :param seq_id: Sequence identifier (e.g. PDB id).
     :type seq_id: str
@@ -396,11 +396,11 @@ class Sequence:
     :param source: Information concerning the source of the :class:`~crops.core.sequence.Sequence` (e.g. Uniprot).
     :type source: str, optional
     :ivar seq_id: Sequence identifier (e.g. PDB id).
-    :type seq_id: str
+    :vartype seq_id: str
     :ivar imer: Container of several :class:`~crops.core.sequence.monomer_sequence` making up the oligomer.
-    :type imer: dict
+    :vartype imer: dict[:class:`~crops.core.sequence.monomer_sequence`]
     :ivar source: Information concerning the source of the :class:`~crops.core.sequence.Sequence` (e.g. Uniprot).
-    :type source: str
+    :vartype source: str
 
     :example:
 
