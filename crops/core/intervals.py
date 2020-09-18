@@ -341,7 +341,7 @@ class intinterval:
         return newint
 
     def subtract(self, other,newdesc=None):
-        """A \\ B : A = self, B = other
+        r"""A \\ B : A = self, B = other
 
         :param other: Another interval.
         :type other: int, list [int], :class:`~crops.core.intervals.intinterval`
