@@ -94,7 +94,7 @@ class monomer_sequence:
     :param header: Standard .fasta header, starting with ">".
     :type header: str, optional
     :ivar info: Useful information of the :class:`~crops.core.sequence.monomer_sequence`.
-    :vartype info: dict [str, Any]
+    :vartype info: dict [str, any]
     :ivar seqs: The set of sequences, including default "mainseq", in :class:`~crops.core.sequence.monomer_sequence`.
     :vartype seqs: dict [str, str]
 

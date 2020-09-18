@@ -62,8 +62,8 @@ def ressymbol(name):
 
     :param name: Residue symbol (3-letter convention) or Nucleotide symbol (1,2-letter convention).
     :type name: str
-    :return oneletter: Residue/Nucleotide symbol (1-letter convention).
-    :rtype oneletter: str
+    :return: Residue/Nucleotide symbol (1-letter convention).
+    :rtype: str
 
     """
     wholelist={**reslist,**nuclist}

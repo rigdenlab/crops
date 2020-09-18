@@ -75,7 +75,7 @@ def infix_gen(inpath,terms=False):
 
     :param inpath: Path to interval database used.
     :type inpath: str
-    :param terms: Are only terminal ends discarded?, defaults to False.
+    :param terms: Are terminal ends the only segments to be discarded?, defaults to False.
     :type terms: bool, optional
     :return: Filename tag.
     :rtype: str
@@ -96,14 +96,18 @@ def infix_gen(inpath,terms=False):
     return infix_out
 
 def import_db(inpath,pdb_in=None):
-    """Imports intervals database.
+    """Imports intervals database. Input must be a .csv file (filepath). 
+    If imported file is not 'pdb_chain_uniprot.csv' from SIFTS database, 
+    the columns must contain molecule ID, chain ID, lower element of subset, 
+    and higher element of subset, in this order.
 
     :param inpath: Path to interval database used.
     :type inpath: str
-    :param pdb_in: Chain ID, defaults to None.
+    :param pdb_in: Chain ID(s). If given, the imported values
+        will be filtered to contain only IDs provided, defaults to None. 
     :type pdb_in: str, dict, optional
-    :raises TypeError: When pdb_in is given and is neither a string nor a list of strings.
-    :return: dict
+    :raises TypeError: When pdb_in is given and is neither a string nor a dictionary.
+    :return: dict [str, :class:`~crops.core.intervals.intinterval`im]
     :rtype: A dictionary of :class:`~crops.core.intervals.intinterval`.
 
     """
@@ -156,28 +160,28 @@ def import_db(inpath,pdb_in=None):
     return database_out
 
 
-def parsestrfile(STR_INPATH):
-    """Returns dictionary containing gemmi structures and another one with the file names.
+def parsestrfile(str_inpath):
+    """Returns dictionary containing :class:`~gemmi.Structure` objects and another one with the file names.
 
-    :param STR_INPATH: Either a directory or file path.
-    :type STR_INPATH: str
+    :param str_inpath: Either a directory or file path.
+    :type str_inpath: str
     :raises KeyError: More than one structure file containing same identifier.
-    :return strdict: A dictionary containing imported gemmi structures.
-    :rtype strdict: dict
+    :return strdict: A dictionary containing imported :class:`~gemmi.Structure` objects.
+    :rtype strdict: dict [str, :class:`~gemmi.Structure`]
     :return filedict: A dictionary containing file names.
-    :rtype filedict: dict
+    :rtype filedict: dict [str, str]
 
     """
     strdict={}
     filedict={}
-    if os.path.isfile(STR_INPATH):
+    if os.path.isfile(str_inpath):
 
-        structure=gemmi.read_structure(STR_INPATH)
+        structure=gemmi.read_structure(str_inpath)
         pdbid=structure.name.lower()
         strdict[pdbid]=structure
-        filedict[pdbid]=os.path.basename(STR_INPATH)
-    elif os.path.isdir(STR_INPATH):
-        filelist=os.listdir(STR_INPATH)
+        filedict[pdbid]=os.path.basename(str_inpath)
+    elif os.path.isdir(str_inpath):
+        filelist=os.listdir(str_inpath)
         for file in filelist:
             if os.isfile(file):
                 try:
@@ -186,21 +190,23 @@ def parsestrfile(STR_INPATH):
                     if pdbid in strdict:
                         raise KeyError('Structure '+pdbid+' loaded more than once. Check files in directory and remove duplicates.')
                     strdict[pdbid]=structure
-                    filedict[pdbid]=os.path.basename(STR_INPATH)
+                    filedict[pdbid]=os.path.basename(str_inpath)
                 except:
                     pass
 
     return strdict, filedict
 
 def parseseqfile(inpath,uniprot=None):
-    """Returns dictionary containing :class:`~crops.core.sequence.Sequence`.
+    """Sequence file parser.
 
-    :param inpath: File path.
+    :param inpath: Sequence file path.
     :type inpath: str
-    :param uniprot: A dictionary of Uniprot codes, defaults to None
-    :type uniprot: str, dict, optional
+    :param uniprot: A dictionary of Uniprot codes, defaults to None.
+    :type uniprot: str, dict [str, any], optional
     :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.
-    :rtype: dict
+        If uniprot is not None, the dictionary will contain a single entry with a :class:`~crops.core.sequence.Sequence`
+        that will contain the requested Uniprot chains as :class:`~crops.core.sequence.monomer_sequence` objects.
+    :rtype: dict [str, :class:`~crops.core.sequence.Sequence`]
 
     """
     newseqs={}
@@ -273,7 +279,7 @@ def outpath(globaldir,subdir=None,filename=None,mksubdir=False):
     :type filename: str, optional.
     :param mksubdir: Create directory if not existing, defaults to False.
     :type mksubdir: bool, optional
-    :raises FileNotFoundError: Directory does not exist.
+    :raises FileNotFoundError: Directory does not exist and mksubdir is False.
     :return: Output filepath.
     :rtype: str
 
