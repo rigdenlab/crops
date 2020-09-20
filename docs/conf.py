@@ -86,8 +86,8 @@ today_fmt = '%d %B %Y'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
-
+# exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'README', '**.ipynb_checkpoints']
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 # add_function_parentheses = True

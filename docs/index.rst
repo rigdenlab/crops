@@ -7,7 +7,7 @@ Welcome to CROPS's documentation!
 =================================
 
 .. include:: ../README.rst
-   :start-line: 1
+   :start-line: 4
    :end-before: Indices and tables
 
 .. toctree::
