@@ -1,5 +1,5 @@
 
-.. include:: ../README.rst
+.. mdinclude:: ../README.rst
    :start-line: 4
    :end-before: Indices and tables
 
