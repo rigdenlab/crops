@@ -29,10 +29,8 @@ def check_path(path,typeofpath=None):
 
     """
     pathok=False
-    if path=='':
-        path='./'
     if typeofpath=='dir':
-        path=os.path.abspath(os.path.join(path,''))
+        path=os.path.abspath(path)
         if os.path.isdir(path):
             pathok=True
     elif typeofpath=='file':
@@ -41,8 +39,8 @@ def check_path(path,typeofpath=None):
             pathok=True
     elif typeofpath is None:
         if os.path.isdir(os.path.abspath(os.path.join(path,''))):
-            pathok=True
             path=os.path.abspath(os.path.join(path,''))
+            pathok=True
         else:
             path=os.path.abspath(path)
             if os.path.isfile(path):
