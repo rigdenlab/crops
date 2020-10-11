@@ -45,9 +45,9 @@ def retrieve_id(seqheader,extrainfo=False):
             namechar=True
         elif seqheader[j]=="|":
             if seqheader[j+1:j+6]=='Chain' or seqheader[j+1:j+6]=='chain':
-                k=0 if seqheader[j+7]==' ' else 1
+                k=0 if seqheader[j+6]==' ' else 1
                 newchid=''
-                for jj in range(j+7+k+1,len(seqheader)):
+                for jj in range(j+6+k+1,len(seqheader)):
                     if seqheader[jj]==',':
                         nameseq[1].append(newchid)
                         newchid=''
