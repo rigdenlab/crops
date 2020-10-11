@@ -40,10 +40,7 @@ def main():
     if args.outdir is None:
         outdir=cio.check_path(os.path.dirname(inseq),'dir')
     else:
-        print(args.outdir)
-        print(args.outdir[0])
         outdir=cio.check_path(os.path.dirname(args.outdir[0]),'dir')
-        print(outdir)
     infixlbl=".crops.seq"
 
     seqset=cio.parseseqfile(inseq)
