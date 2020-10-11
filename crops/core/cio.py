@@ -29,19 +29,28 @@ def check_path(path,typeofpath=None):
 
     """
     pathok=False
+    if path=='':
+        path='./'
     if typeofpath=='dir':
+        path=os.path.abspath(os.path.join(path,''))
         if os.path.isdir(path):
             pathok=True
     elif typeofpath=='file':
+        path=os.path.abspath(path)
         if os.path.isfile(path):
             pathok=True
     elif typeofpath is None:
-        if os.path.isfile(path) or os.path.isdir(path):
+        if os.path.isdir(os.path.abspath(os.path.join(path,''))):
             pathok=True
+            path=os.path.abspath(os.path.join(path,''))
+        else:
+            path=os.path.abspath(path)
+            if os.path.isfile(path):
+                pathok=True
     else:
         raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
     if pathok:
-        return os.path.abspath(path)
+        return path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
