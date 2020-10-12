@@ -54,7 +54,7 @@ def main():
     if args.outdir is None:
         outdir=cio.check_path(os.path.dirname(inseq),'dir')
     else:
-        outdir=cio.check_path(os.path.dirname(args.outdir[0]),'dir')
+        outdir=cio.check_path(os.path.join(args.outdir[0],''),'dir')
 
     if args.sort is not None:
         if (args.sort[0].lower()!='ncrops' and args.sort[0].lower()!='percent' and
