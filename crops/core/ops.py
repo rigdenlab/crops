@@ -66,12 +66,11 @@ def renumberpdb(inseq,instr,seqback=False):
                         if ressymbol(residue.name) == original_seq[cnt+gap+shift]:
                             score += 1
                             newseq += ressymbol(residue.name)
-                        if residue==chain[-1]:
-                            if cnt+gap+shift+1 < len(original_seq):
-                                newseq += '-'*(len(original_seq)-(cnt+gap+shift+1))
                     cnt += 1
                 if score == len(chain)-nligands:
                     solved = True
+                    if len(newseq)<len(original_seq):
+                        newseq += '-'*(len(original_seq)-len(newseq))
                     break
             if solved:
                 cnt=0
