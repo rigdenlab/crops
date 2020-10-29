@@ -7,6 +7,7 @@ from crops.core.sequence import monomer_sequence
 from crops.core.intervals import intinterval
 
 import copy
+from warnings import warn
 
 def renumberpdb(inseq,instr,seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
@@ -40,38 +41,52 @@ def renumberpdb(inseq,instr,seqback=False):
 
     for model in instr:
         for chain in model:
-            original_seq=inseq.imer[chain.name].seqs['mainseq']
             solved = False
-            for shift in range(int(len(chain)/2)):
-                cnt=0
-                gap=0
-                score=0
+            if chain.name in inseq.imer:
+                original_seq=inseq.imer[chain.name].seqs['mainseq']
+                for shift in range(int(len(chain)/2)):
+                    cnt=0
+                    gap=0
+                    score=0
+                    nligands=0
+                    newseq=''
+                    newseq += '-'*shift
+                    for residue in chain:
+                        if residue == chain[0]:
+                            if ressymbol(residue.name) == original_seq[shift]:
+                                score += 1
+                                pos[n_chains][cnt]=1+shift
+                                newseq += ressymbol(residue.name)
+                        elif ressymbol(residue.name)==0:
+                            nligands+=1
+                            pos[n_chains][cnt]=-nligands
+                        else:
+                            if (chain[cnt].seqid.num-chain[cnt-1].seqid.num > 1):
+                                gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
+                                newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
+                            pos[n_chains][cnt]=cnt+1+gap+shift
+                            if ressymbol(residue.name) == original_seq[cnt+gap+shift]:
+                                score += 1
+                                newseq += ressymbol(residue.name)
+                        cnt += 1
+                    if score == len(chain)-nligands:
+                        solved = True
+                        if len(newseq)<len(original_seq):
+                            newseq += '-'*(len(original_seq)-len(newseq))
+                        break
+            else:
+                warn('.pdb chain '+chain.name+' not found in .fasta file. All elements considered ligands.')
+                ligandwarn=False
                 nligands=0
-                newseq=''
-                newseq += '-'*shift
                 for residue in chain:
-                    if residue == chain[0]:
-                        if ressymbol(residue.name) == original_seq[shift]:
-                            score += 1
-                            pos[n_chains][cnt]=1+shift
-                            newseq += ressymbol(residue.name)
-                    elif ressymbol(residue.name)==0:
-                        nligands+=1
-                        pos[n_chains][cnt]=-nligands
-                    else:
-                        if (chain[cnt].seqid.num-chain[cnt-1].seqid.num > 1):
-                            gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
-                            newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
-                        pos[n_chains][cnt]=cnt+1+gap+shift
-                        if ressymbol(residue.name) == original_seq[cnt+gap+shift]:
-                            score += 1
-                            newseq += ressymbol(residue.name)
-                    cnt += 1
-                if score == len(chain)-nligands:
-                    solved = True
-                    if len(newseq)<len(original_seq):
-                        newseq += '-'*(len(original_seq)-len(newseq))
-                    break
+                    if ressymbol(residue.name)!=0:
+                        ligandwarn=True
+                    nligands+=1
+                    pos[n_chains][nligands-1]=-nligands
+                if ligandwarn==True:
+                    warn('Some of the ligands contain Aminoacid or Nucleotide residues. Please check that they actually are ligands.')
+                solved=True
+
             if solved:
                 cnt=0
                 for residue in chain:
