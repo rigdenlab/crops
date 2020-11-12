@@ -93,7 +93,8 @@ def renumberpdb(inseq,instr,seqback=False):
                     residue.seqid.num = pos[n_chains][cnt]
                     cnt += 1
             if seqback:
-                inseq.imer[chain.name].seqs['gapseq'].append(newseq)
+                if chain.name in inseq.imer:
+                    inseq.imer[chain.name].seqs['gapseq'].append(newseq)
             n_chains += 1
             solved = False
     if seqback:
