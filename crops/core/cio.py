@@ -31,7 +31,8 @@ def check_path(path,typeofpath=None):
     pathok=False
     if typeofpath=='dir':
         path=os.path.abspath(path)
-        if os.path.isdir(path):
+        if os.path.isdir(os.path.join(path,'')):
+            path=os.path.abspath(os.path.join(path,''))
             pathok=True
     elif typeofpath=='file':
         path=os.path.abspath(path)
