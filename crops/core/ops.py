@@ -57,7 +57,7 @@ def renumberpdb(inseq,instr,seqback=False):
                                 score += 1
                                 pos[n_chains][cnt]=1+shift
                                 newseq += ressymbol(residue.name)
-                        elif ressymbol(residue.name)==0 or residue.het_flag=='H':
+                        elif ressymbol(residue.name)==0:# or residue.het_flag=='H':
                             nligands+=1
                             pos[n_chains][cnt]=-nligands
                         else:
@@ -79,7 +79,7 @@ def renumberpdb(inseq,instr,seqback=False):
                 ligandwarn=False
                 nligands=0
                 for residue in chain:
-                    if ressymbol(residue.name)!=0 or residue.het_flag=='H':
+                    if ressymbol(residue.name)!=0:# or residue.het_flag=='H':
                         ligandwarn=True
                     nligands+=1
                     pos[n_chains][nligands-1]=-nligands
