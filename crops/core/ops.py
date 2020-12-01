@@ -53,11 +53,11 @@ def renumberpdb(inseq,instr,seqback=False):
                     newseq += '-'*shift
                     for residue in chain:
                         if residue == chain[0]:
-                            if ressymbol(residue.name) == original_seq[shift]:
+                            if ressymbol(residue.name,pick=original_seq[shift]) == original_seq[shift]:
                                 score += 1
                                 pos[n_chains][cnt]=1+shift
-                                newseq += ressymbol(residue.name)
-                        elif ressymbol(residue.name)==0 or residue.het_flag=='H':
+                                newseq += original_seq[shift]
+                        elif ressymbol(residue.name,pick=original_seq[shift])==0:# or residue.het_flag=='H':
                             nligands+=1
                             pos[n_chains][cnt]=-nligands
                         else:
@@ -65,9 +65,9 @@ def renumberpdb(inseq,instr,seqback=False):
                                 gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                                 newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                             pos[n_chains][cnt]=cnt+1+gap+shift
-                            if ressymbol(residue.name) == original_seq[cnt+gap+shift]:
+                            if ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]:
                                 score += 1
-                                newseq += ressymbol(residue.name)
+                                newseq += original_seq[cnt+gap+shift]
                         cnt += 1
                     if score == len(chain)-nligands:
                         solved = True
@@ -79,7 +79,7 @@ def renumberpdb(inseq,instr,seqback=False):
                 ligandwarn=False
                 nligands=0
                 for residue in chain:
-                    if ressymbol(residue.name)!=0 or residue.het_flag=='H':
+                    if ressymbol(residue.name)!=0:# or residue.het_flag=='H':
                         ligandwarn=True
                     nligands+=1
                     pos[n_chains][nligands-1]=-nligands
