@@ -140,6 +140,8 @@ def import_db(inpath,pdb_in=None):
         up=2
         leftend=3
         rightend=4
+        #pdbleftend=7
+        #pdbrightend=8
     else:
         mol=0
         chain=1
@@ -160,6 +162,7 @@ def import_db(inpath,pdb_in=None):
                         database_out[entry[mol].lower()][entry[chain]].tags['uniprot']={}
                 database_out[entry[mol].lower()][entry[chain]]= \
                 database_out[entry[mol].lower()][entry[chain]].union(other=[int(entry[leftend]),int(entry[rightend])])
+                #database_out[entry[mol].lower()][entry[chain]].tags['pdb']=[int(entry[pdbleftend]),int(entry[pdbrightend])]
                 if up is not None:
                     if entry[up].upper() not in database_out[entry[mol].lower()][entry[chain]].tags['uniprot']:
                         database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]]=intinterval(description=entry[up].upper())
