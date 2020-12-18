@@ -33,7 +33,7 @@ mod_reslist =	{
   "2MR": "R",  "AAR": "R",  "AGM": "R",  "ARO": "R",  "CIR": "R",  "DA2": "R",
   "DAR": "R",
   "MEN": "N",  "DSG": "N",  "SNN": "N",  "AHB": "N",  "DMH": "N",
-  "0TD": "D",  "BFD": "D",  "BH2": "D",  "BHD": "D",  "DAS": "D",  "IAS": "D",  
+  "0TD": "D",  "BFD": "D",  "BH2": "D",  "BHD": "D",  "DAS": "D",  "IAS": "D",
   "PHD": "D",
   "CAF": "C",  "CAS": "C",  "CCC": "C",  "CME": "C",  "CMT": "C",  "CSD": "C",
   "CSO": "C",  "CSP": "C",  "CSS": "C",  "CSW": "C",  "CSX": "C",  "CSZ": "C",
@@ -64,7 +64,7 @@ mod_reslist =	{
   "TYC": "Y",  "TYI": "Y",  "TYS": "Y",
   "DVA": "V",  "FVA": "V",  "MVA": "V",
   "PSU": "U",
-  
+
 }
 
 multiple_reslist =	{
@@ -72,7 +72,7 @@ multiple_reslist =	{
   "UNK": ["X"]+list(reslist.values()),
   "ASX": ["B", "D", "N"],
   "GLX": ["Z", "E", "Q"],
-  "XLE": ["J", "I", "L"],  
+  "XLE": ["J", "I", "L"],
   "DAL": ["A", "S"],  "MDO": ["A", "Y"],
   "CRQ": ["Q", "Y"],
   "CH6": ["M", "Y"],  "CRK": ["M", "Y"],  "NRQ": ["M", "Y"],
@@ -120,7 +120,6 @@ multiple_nuclist =	{
   "N": ["N","A","C","G","T","U"]
 }
 
-
 def ressymbol(name,pick=None):
     """Conversion from residue 3-letter symbol to 1-letter symbol.
 
@@ -131,7 +130,7 @@ def ressymbol(name,pick=None):
     :return: Residue/Nucleotide symbol (1-letter convention).
     :rtype: str
 
-    """    
+    """
     wholelist={**reslist,**mod_reslist,**multiple_reslist,
                **nuclist,**mod_nuclist,**multiple_nuclist}
     try:

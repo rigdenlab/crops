@@ -59,9 +59,9 @@ def renumberpdb(inseq,instr,seqback=False):
                         else:
                             if residue != chain[0] and chain[cnt].seqid.num-chain[cnt-1].seqid.num > 1:
                                 gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
-                                newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)    
+                                newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                             pos[n_chains][cnt]=cnt+1+gap+shift
-                            if (ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift] 
+                            if (ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]
                                 or ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == 0): #second condition ignores possible gaps in crops.rescodes database
                                 score += 1
                                 newseq += original_seq[cnt+gap+shift]
@@ -77,7 +77,7 @@ def renumberpdb(inseq,instr,seqback=False):
                                             if ressymbol(res_pdbid[n],pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]:
                                                 score += 1
                                                 newseq += original_seq[cnt+gap+shift]
-                                                break                                
+                                                break
                         cnt += 1
                     if score == len(chain)-nligands:
                         solved = True
@@ -102,7 +102,10 @@ def renumberpdb(inseq,instr,seqback=False):
             if solved:
                 cnt=0
                 for residue in chain:
-                    residue.seqid.num = pos[n_chains][cnt]
+                    if pos[n_chains][cnt]<0:
+                        residue.seqid.num = len(newseq)-pos[n_chains][cnt]
+                    else:
+                        residue.seqid.num = pos[n_chains][cnt]
                     cnt += 1
             if seqback:
                 if chain.name in inseq.imer:
@@ -177,7 +180,7 @@ def croppdb(instr, inseq, segments, terms=False):
     :rtype: :class:`gemmi.Structure`
 
     """
-    
+
     if isinstance(segments,dict):
         for interval in segments.values():
             if not isinstance(interval,intinterval):
