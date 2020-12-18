@@ -27,6 +27,8 @@ def renumberpdb(inseq,instr,seqback=False):
 
     n_chains = 0
     n_resmax = 0
+    #shortstr=copy.deepcopy(instr)
+    #shortstr.remove_ligands_and_waters()
     for model in instr:
         n_chains += len(model)
         for chain in model:
@@ -49,31 +51,41 @@ def renumberpdb(inseq,instr,seqback=False):
                     gap=0
                     score=0
                     nligands=0
-                    newseq=''
-                    newseq += '-'*shift
+                    newseq = '-'*shift
                     for residue in chain:
-                        if residue == chain[0]:
-                            if ressymbol(residue.name,pick=original_seq[shift]) == original_seq[shift]:
-                                score += 1
-                                pos[n_chains][cnt]=1+shift
-                                newseq += original_seq[shift]
-                        elif ressymbol(residue.name,pick=original_seq[shift])==0:# or residue.het_flag=='H':
+                        if str(residue.entity_type!='EntityType.Polymer'):
                             nligands+=1
                             pos[n_chains][cnt]=-nligands
                         else:
-                            if (chain[cnt].seqid.num-chain[cnt-1].seqid.num > 1):
+                            if residue != chain[0] and chain[cnt].seqid.num-chain[cnt-1].seqid.num > 1:
                                 gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                                 newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                             pos[n_chains][cnt]=cnt+1+gap+shift
-                            if ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]:
+                            if (ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]
+                                or ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == 0): #second condition ignores possible gaps in crops.rescodes database
                                 score += 1
                                 newseq += original_seq[cnt+gap+shift]
+                            else:
+                                pdbseq=instr.get_entity(chain.name)
+                                if cnt>len(pdbseq):
+                                    nligands+=1
+                                    pos[n_chains][cnt]=-nligands
+                                else:
+                                    res_pdbid=pdbseq[cnt].split(",")
+                                    if len(res_pdbid)>1:
+                                        for n in range(1,len(res_pdbid)):
+                                            if ressymbol(res_pdbid[n],pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]:
+                                                score += 1
+                                                newseq += original_seq[cnt+gap+shift]
+                                                break
                         cnt += 1
                     if score == len(chain)-nligands:
                         solved = True
                         if len(newseq)<len(original_seq):
                             newseq += '-'*(len(original_seq)-len(newseq))
                         break
+                if solved == False:
+                    raise ValueError('The .fasta sequence and the structure given do not match.')
             else:
                 warn('.pdb chain '+chain.name+' not found in .fasta file. All elements considered ligands.')
                 ligandwarn=False
@@ -90,7 +102,10 @@ def renumberpdb(inseq,instr,seqback=False):
             if solved:
                 cnt=0
                 for residue in chain:
-                    residue.seqid.num = pos[n_chains][cnt]
+                    if pos[n_chains][cnt]<0:
+                        residue.seqid.num = len(newseq)-pos[n_chains][cnt]
+                    else:
+                        residue.seqid.num = pos[n_chains][cnt]
                     cnt += 1
             if seqback:
                 if chain.name in inseq.imer:
@@ -165,7 +180,7 @@ def croppdb(instr, inseq, segments, terms=False):
     :rtype: :class:`gemmi.Structure`
 
     """
-    
+
     if isinstance(segments,dict):
         for interval in segments.values():
             if not isinstance(interval,intinterval):

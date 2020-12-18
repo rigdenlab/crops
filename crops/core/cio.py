@@ -104,15 +104,15 @@ def infix_gen(inpath,terms=False):
     return infix_out
 
 def import_db(inpath,pdb_in=None):
-    """Imports intervals database. Input must be a .csv file (filepath). 
-    If imported file is not 'pdb_chain_uniprot.csv' from SIFTS database, 
-    the columns must contain molecule ID, chain ID, lower element of subset, 
+    """Imports intervals database. Input must be a .csv file (filepath).
+    If imported file is not 'pdb_chain_uniprot.csv' from SIFTS database,
+    the columns must contain molecule ID, chain ID, lower element of subset,
     and higher element of subset, in this order.
 
     :param inpath: Path to interval database used.
     :type inpath: str
     :param pdb_in: Chain ID(s). If given, the imported values
-        will be filtered to contain only IDs provided, defaults to None. 
+        will be filtered to contain only IDs provided, defaults to None.
     :type pdb_in: str, dict, optional
     :raises TypeError: When pdb_in is given and is neither a string nor a dictionary.
     :return: dict [str, :class:`~crops.core.intervals.intinterval`im]
@@ -140,6 +140,8 @@ def import_db(inpath,pdb_in=None):
         up=2
         leftend=3
         rightend=4
+        #pdbleftend=7
+        #pdbrightend=8
     else:
         mol=0
         chain=1
@@ -160,6 +162,7 @@ def import_db(inpath,pdb_in=None):
                         database_out[entry[mol].lower()][entry[chain]].tags['uniprot']={}
                 database_out[entry[mol].lower()][entry[chain]]= \
                 database_out[entry[mol].lower()][entry[chain]].union(other=[int(entry[leftend]),int(entry[rightend])])
+                #database_out[entry[mol].lower()][entry[chain]].tags['pdb']=[int(entry[pdbleftend]),int(entry[pdbrightend])]
                 if up is not None:
                     if entry[up].upper() not in database_out[entry[mol].lower()][entry[chain]].tags['uniprot']:
                         database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]]=intinterval(description=entry[up].upper())

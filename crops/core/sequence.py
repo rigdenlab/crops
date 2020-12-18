@@ -385,8 +385,8 @@ class monomer_sequence:
 
 class Sequence:
     """A :class:`~crops.core.sequence.Sequence` object grouping several chain sequence objects.
-    The :class:`~crops.core.sequence.Sequence` class represents a data structure to hold 
-    all :class:`~crops.core.sequence.monomer_sequence` and other 
+    The :class:`~crops.core.sequence.Sequence` class represents a data structure to hold
+    all :class:`~crops.core.sequence.monomer_sequence` and other
     useful information characterising an oligomer.
 
     :param seq_id: Sequence identifier (e.g. PDB id), defaults to None.
