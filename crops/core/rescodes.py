@@ -94,7 +94,6 @@ nuclist =	{
   "I": "I",  "DI": "I"
 }
 
-
 mod_nuclist =	{
   "1MA": "A",  "2MA": "A",  "6MZ": "A",  "MA6": "A",  "MIA": "A",
   "4OC": "C",  "5CM": "C",  "CBR": "C",  "DOC": "C",
