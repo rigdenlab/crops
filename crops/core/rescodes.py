@@ -63,8 +63,7 @@ mod_reslist =	{
   "DTY": "Y",  "IYR": "Y",  "NIY": "Y",  "OMY": "Y",  "PTR": "Y",  "TPQ": "Y",
   "TYC": "Y",  "TYI": "Y",  "TYS": "Y",
   "DVA": "V",  "FVA": "V",  "MVA": "V",
-  "PSU": "U",
-
+  "PSU": "U"
 }
 
 multiple_reslist =	{
@@ -103,7 +102,6 @@ mod_nuclist =	{
   "4SU": "U",  "5BU": "U",  "5MU": "U",  "BRU": "U",  "H2U": "U",  "OMU": "U",
   "UR3": "U",
   "C5P": "X",  "U5P": "X"
-
 }
 
 multiple_nuclist =	{
