@@ -460,7 +460,7 @@ class Sequence:
         self.source=None
         self.imer.clear()
 
-    def add_monomer(self, nheader, nseq,  nid=None,forceentry=False): # INCLUDE DEL_MONOMER
+    def add_monomer(self, nheader, nseq,  nid=None,forceentry=False):
         """Adds a new :class:`~crops.core.sequence.monomer_sequence` to the :class:`~crops.core.sequence.Sequence`.
 
         :param nheader: Standard .fasta header, starting with ">".

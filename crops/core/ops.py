@@ -27,8 +27,6 @@ def renumberpdb(inseq,instr,seqback=False):
 
     n_chains = 0
     n_resmax = 0
-    #shortstr=copy.deepcopy(instr)
-    #shortstr.remove_ligands_and_waters()
     for model in instr:
         n_chains += len(model)
         for chain in model:
@@ -36,7 +34,6 @@ def renumberpdb(inseq,instr,seqback=False):
                 n_resmax = len(chain)
     pos = [[0 for j in range(n_resmax)] for i in range(n_chains)]
     n_chains = 0
-    #NUMBER OF CHAINS PER MODEL ->> DO
     if seqback:
         for monomer in inseq.imer.values():
             monomer.seqs['gapseq']=[]
@@ -53,7 +50,7 @@ def renumberpdb(inseq,instr,seqback=False):
                     nligands=0
                     newseq = '-'*shift
                     for residue in chain:
-                        if str(residue.entity_type!='EntityType.Polymer'):
+                        if str(residue.entity_type)!='EntityType.Polymer':
                             nligands+=1
                             pos[n_chains][cnt]=-nligands
                         else:
@@ -66,7 +63,7 @@ def renumberpdb(inseq,instr,seqback=False):
                                 score += 1
                                 newseq += original_seq[cnt+gap+shift]
                             else:
-                                pdbseq=instr.get_entity(chain.name)
+                                pdbseq=instr.get_entity(chain.name).full_sequence
                                 if cnt>len(pdbseq):
                                     nligands+=1
                                     pos[n_chains][cnt]=-nligands
@@ -91,7 +88,7 @@ def renumberpdb(inseq,instr,seqback=False):
                 ligandwarn=False
                 nligands=0
                 for residue in chain:
-                    if ressymbol(residue.name)!=0:# or residue.het_flag=='H':
+                    if ressymbol(residue.name)!=0:
                         ligandwarn=True
                     nligands+=1
                     pos[n_chains][nligands-1]=-nligands
@@ -201,7 +198,7 @@ def croppdb(instr, inseq, segments, terms=False):
     for model in instr:
         for chain in model:
             if chain.name in segments:
-                if not terms: #TAKE TERMINALS OUTSIDE
+                if not terms:
                     cropint=segments[chain.name].deepcopy()
                 else:
                     cropint=segments[chain.name].union(segments[chain.name].terminals())

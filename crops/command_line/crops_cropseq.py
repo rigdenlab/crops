@@ -62,7 +62,6 @@ def main():
             raise ValueError("Arguments for sorting option can only be either 'ncrops' or 'percent'.")
         else:
             sorter=args.sort[0].lower()
-            sortTerms=True if sorter=='ncropsin' or sorter=='percentin' else False
 
     ###########################################
 
@@ -112,7 +111,6 @@ def main():
 
                 else:
                     pass
-                    #warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
                         outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
@@ -122,7 +120,6 @@ def main():
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
         else:
-            #warn('PDB ID '+key+' not found in database. Cropping not performed.')
             for key2,monomer in S.imer.items():
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:

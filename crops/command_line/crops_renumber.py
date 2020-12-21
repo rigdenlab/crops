@@ -28,8 +28,6 @@ def main():
     parser.add_argument("input_strpath",nargs=1, metavar="Structure_filepath",
                         help="Input structure filepath or dir. If a directory is inserted, it will act on all structure files in such directory.")
 
-    #parser.add_argument("-b","--bulk",action='store_true',
-    #                    help="This option will interpret sequence file as containing sequences with more than one protein ID and, optionally, more than one pdb files in a pdb path.")
     parser.add_argument("-o","--outdir",nargs=1,metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
@@ -56,7 +54,6 @@ def main():
     return
 
 if __name__ == "__main__":
-    import sys
     #import traceback
 
     try:

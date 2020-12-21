@@ -10,13 +10,10 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 
 import argparse
 import os
-#import copy
-#import gemmi
 from warnings import warn
 
 from crops.core import cio
 from crops.core import ops as cop
-#from core import seq as csq
 
 def main():
 
