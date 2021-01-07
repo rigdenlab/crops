@@ -98,7 +98,8 @@ def infix_gen(inpath,terms=False):
         cut=".custom"
 
     infix_out={
-        "crop" : ".crops"+cut,
+        "croprenum" : ".crops"+cut,
+        "crop" : ".crops.oldids"+cut,
         "renumber" : ".crops.seq"}
 
     return infix_out

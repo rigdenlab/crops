@@ -47,7 +47,7 @@ def main():
 
     for pdbid, structure in strset.items():
         if pdbid in seqset:
-            newstructure=cop.renumberpdb(seqset[pdbid],structure)
+            newstructure=cop.renumber_pdb(seqset[pdbid],structure)
             outstr=cio.outpath(outdir,subdir=pdbid,filename=pdbid+infixlbl+os.path.splitext(instr)[1],mksubdir=True)
             newstructure.write_pdb(outstr)
 
