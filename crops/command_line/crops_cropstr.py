@@ -10,13 +10,10 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 
 import argparse
 import os
-#import copy
-#import gemmi
 from warnings import warn
 
 from crops.core import cio
 from crops.core import ops as cop
-#from core import seq as csq
 
 def main():
 
@@ -80,11 +77,12 @@ def main():
     gseqset={}
     for key, structure in strset.items():
         if key in seqset:
-            newstructure,gseqset[key]=cop.renumberpdb(seqset[key],structure,seqback=True)
+            newstructure,gseqset[key]=cop.renumber_pdb(seqset[key],structure,seqback=True)
             outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["renumber"]+os.path.splitext(instr)[1],mksubdir=True)
             newstructure.write_pdb(outstr)
     outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
     for key, S in gseqset.items():
+        newS=S.deepcopy()
         if key in intervals:
             if insprot is not None and minlen>0.0:
                 newinterval={}
@@ -102,19 +100,26 @@ def main():
                         monomer=cop.crop_seq(monomer,newinterval[key2],targetlbl+unilbl,terms=args.terminals)
                     else:
                         monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
+                    newS.imer[key2]=monomer.deepcopy()
                 else:
                     warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
-                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
             if insprot is not None and minlen>0.0:
-                cropped_str=cop.croppdb(strset[key],S,newinterval,args.terminals)
+                cropped_str=cop.crop_pdb(strset[key],newS,original_id=True)
             else:
-                cropped_str=cop.croppdb(strset[key],S,intervals[key],args.terminals)
+                cropped_str=cop.crop_pdb(strset[key],newS,original_id=True)
             outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(instr)[1],mksubdir=True)
             cropped_str.write_pdb(outstr)
+            if insprot is not None and minlen>0.0:
+                cropped_str2=cop.crop_pdb(strset[key],newS,original_id=False)
+            else:
+                cropped_str2=cop.crop_pdb(strset[key],newS,original_id=False)
+            outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(instr)[1],mksubdir=True)
+            cropped_str2.write_pdb(outstr)
         else:
             warn('PDB ID '+key+' not found in database. Cropping not performed.')
-            for key2,monomer in S.imer.items():
+            for key2,monomer in newS.imer.items():
                 outseq=cio.outpath(outdir,subdir=key,filename=key+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
 

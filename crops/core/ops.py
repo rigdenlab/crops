@@ -9,7 +9,7 @@ from crops.core.intervals import intinterval
 import copy
 from warnings import warn
 
-def renumberpdb(inseq,instr,seqback=False):
+def renumber_pdb(inseq,instr,seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
 
     :param inseq: Input sequence.
@@ -27,8 +27,6 @@ def renumberpdb(inseq,instr,seqback=False):
 
     n_chains = 0
     n_resmax = 0
-    #shortstr=copy.deepcopy(instr)
-    #shortstr.remove_ligands_and_waters()
     for model in instr:
         n_chains += len(model)
         for chain in model:
@@ -36,10 +34,9 @@ def renumberpdb(inseq,instr,seqback=False):
                 n_resmax = len(chain)
     pos = [[0 for j in range(n_resmax)] for i in range(n_chains)]
     n_chains = 0
-    #NUMBER OF CHAINS PER MODEL ->> DO
     if seqback:
-        for monomer in inseq.imer.values():
-            monomer.seqs['gapseq']=[]
+        for monkey in inseq.imer:
+            inseq.imer[monkey].seqs['gapseq']=[]
 
     for model in instr:
         for chain in model:
@@ -53,7 +50,7 @@ def renumberpdb(inseq,instr,seqback=False):
                     nligands=0
                     newseq = '-'*shift
                     for residue in chain:
-                        if str(residue.entity_type!='EntityType.Polymer'):
+                        if str(residue.entity_type)!='EntityType.Polymer':
                             nligands+=1
                             pos[n_chains][cnt]=-nligands
                         else:
@@ -66,7 +63,7 @@ def renumberpdb(inseq,instr,seqback=False):
                                 score += 1
                                 newseq += original_seq[cnt+gap+shift]
                             else:
-                                pdbseq=instr.get_entity(chain.name)
+                                pdbseq=instr.get_entity(chain.name).full_sequence
                                 if cnt>len(pdbseq):
                                     nligands+=1
                                     pos[n_chains][cnt]=-nligands
@@ -91,7 +88,7 @@ def renumberpdb(inseq,instr,seqback=False):
                 ligandwarn=False
                 nligands=0
                 for residue in chain:
-                    if ressymbol(residue.name)!=0:# or residue.het_flag=='H':
+                    if ressymbol(residue.name)!=0:
                         ligandwarn=True
                     nligands+=1
                     pos[n_chains][nligands-1]=-nligands
@@ -146,9 +143,14 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
         newchain.seqs['cropgapseq']=['']*len(inseq.seqs['gapseq'])
 
     cropint=segments.deepcopy() if not terms else segments.union(segments.terminals())
+    cropmap={}
+    for res in range(inseq.length()):
+        cropmap[res+1]=None
+
     for res in range(inseq.length()):
         if cropint.contains(res+1):
             newchain.seqs['mainseq'] += inseq.seqs['mainseq'][res]
+            cropmap[res+1]=len(newchain.seqs['mainseq'])
             if 'gapseq' in inseq.seqs:
                 for n in range(len(inseq.seqs['gapseq'])):
                     newchain.seqs['gapseq'][n] += inseq.seqs['gapseq'][n][res]
@@ -162,11 +164,39 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
 
     if newchain.length()<len(newchain.seqs['cropseq']):
         newchain.info['header'] += cut_type
+    newchain.info['cropmap']=copy.deepcopy(cropmap)
 
     return newchain
 
-def croppdb(instr, inseq, segments, terms=False):
+def crop_pdb(instr, inseq, original_id=True):
     """Returns modified :class:`gemmi.Structure` without specified elements.
+
+    :param instr: Gemmi structure.
+    :type instr: :class:`gemmi.Structure`
+    :param inseq: Input previously-cropped-sequence.
+    :type inseq: :class:`~crops.core.sequence.Sequence`
+    :param original_id: If True, it will keep residue ids alligned to original sequence, defaults to True
+    :type original_id: bool, optional
+    :return: Cropped structure.
+    :rtype: :class:`gemmi.Structure`
+
+    """
+    for model in instr:
+        for chain in model:
+            if 'cropmap' in inseq.imer[chain.name].info:
+                for res in reversed(range(len(chain))):
+                    if chain[res].seqid.num in inseq.imer[chain.name].info['cropmap']:
+                        if inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num] is not None:
+                            if not original_id:
+                                chain[res].seqid.num=inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num]
+                        else:
+                            del chain[res]
+
+    return instr
+                                
+def crop_pdb_old(instr, inseq, segments, terms=False):
+    """Returns modified :class:`gemmi.Structure` without specified elements.
+    Modified positional numbering.
 
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
@@ -201,16 +231,17 @@ def croppdb(instr, inseq, segments, terms=False):
     for model in instr:
         for chain in model:
             if chain.name in segments:
-                if not terms: #TAKE TERMINALS OUTSIDE
+                if not terms:
                     cropint=segments[chain.name].deepcopy()
                 else:
                     cropint=segments[chain.name].union(segments[chain.name].terminals())
-                original_seq=inseq.imer[chain.name].seqs['mainseq']
+                original_seq=inseq.imer[chain.name].seqs['cropseq']
                 r_bio=0
                 pos_chainlist=0
                 for r_original in range(len(original_seq)):
                     if cropint.contains(r_original+1):
                         r_bio+=1
+                        print(str(r_bio)+', old:'+ str(chain[pos_chainlist].seqid.num)+', r_or:'+str(r_original+1))
                         if chain[pos_chainlist].seqid.num == r_original+1:
                             chain[pos_chainlist].seqid.num=r_bio
                             pos_chainlist += 1
