@@ -84,7 +84,7 @@ def renumber_pdb(inseq,instr,seqback=False):
                 if solved == False:
                     raise ValueError('The .fasta sequence and the structure given do not match.')
             else:
-                warn('.pdb chain '+chain.name+' not found in .fasta file. All elements considered ligands.')
+                warn('.pdb chain '+str(chain.name)+' not found in .fasta file. All elements considered ligands.')
                 ligandwarn=False
                 nligands=0
                 for residue in chain:
@@ -183,17 +183,18 @@ def crop_pdb(instr, inseq, original_id=True):
     """
     for model in instr:
         for chain in model:
-            if 'cropmap' in inseq.imer[chain.name].info:
-                for res in reversed(range(len(chain))):
-                    if chain[res].seqid.num in inseq.imer[chain.name].info['cropmap']:
-                        if inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num] is not None:
-                            if not original_id:
-                                chain[res].seqid.num=inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num]
-                        else:
-                            del chain[res]
+            if chain.name in inseq.imer:
+                if 'cropmap' in inseq.imer[chain.name].info:
+                    for res in reversed(range(len(chain))):
+                        if chain[res].seqid.num in inseq.imer[chain.name].info['cropmap']:
+                            if inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num] is not None:
+                                if not original_id:
+                                    chain[res].seqid.num=inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num]
+                            else:
+                                del chain[res]
 
     return instr
-                                
+
 def crop_pdb_old(instr, inseq, segments, terms=False):
     """Returns modified :class:`gemmi.Structure` without specified elements.
     Modified positional numbering.
