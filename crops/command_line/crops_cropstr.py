@@ -14,6 +14,9 @@ from warnings import warn
 
 from crops.core import cio
 from crops.core import ops as cop
+from crops import command_line as ccl
+
+logger=None
 
 def main():
 
@@ -37,9 +40,12 @@ def main():
 
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
-
     args = parser.parse_args()
 
+    global logger
+    logger = ccl.crops_logger(level="info")
+    logger.info(ccl.welcome())
+    
     inseq=cio.check_path(args.input_seqpath[0],'file')
     indb=cio.check_path(args.input_database[0],'file')
     instr=cio.check_path(args.input_strpath[0])
@@ -54,15 +60,23 @@ def main():
     else:
         outdir=cio.check_path(os.path.join(args.outdir[0],''),'dir')
     ###########################################
+    logger.info('Parsing sequence file '+inseq)
     seqset=cio.parseseqfile(inseq)
+    logger.info('Done')
+    
+    logger.info('Parsing structure file '+instr)
     strset, fileset=cio.parsestrfile(instr)
+    logger.info('Done')
 
+    logger.info('Parsing interval database file '+indb)
     if len(seqset)>0:
         intervals=cio.import_db(indb,pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
+    logger.info('Done\n')
 
     if insprot is not None and minlen>0.0:
+        logger.info('Parsing uniprot sequence file '+insprot)
         uniprotset={}
         for seqncid, seqnc in seqset.items():
             for monomerid, monomer in seqnc.imer.items():
@@ -72,14 +86,19 @@ def main():
                             uniprotset[key.upper()]=None
 
         uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
+        logger.info('Done\n')
 
     ###########################################
     gseqset={}
+    logger.info('Renumbering structure(s)...')
     for key, structure in strset.items():
         if key in seqset:
             newstructure,gseqset[key]=cop.renumber_pdb(seqset[key],structure,seqback=True)
             outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["renumber"]+os.path.splitext(instr)[1],mksubdir=True)
-            newstructure.write_pdb(outstr)
+            #newstructure.write_pdb(outstr)
+            newstructure.write_minimal_pdb(outstr)
+    logger.info('Done\n')
+    logger.info('Cropping renumbered structure(s)...')
     outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
     for key, S in gseqset.items():
         newS=S.deepcopy()
@@ -102,7 +121,7 @@ def main():
                         monomer=cop.crop_seq(monomer,intervals[key][key2],targetlbl,terms=args.terminals)
                     newS.imer[key2]=monomer.deepcopy()
                 else:
-                    warn('Chain name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
+                    logger.warning('Chain-name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
                 outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
             if insprot is not None and minlen>0.0:
@@ -110,30 +129,34 @@ def main():
             else:
                 cropped_str=cop.crop_pdb(strset[key],newS,original_id=True)
             outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(instr)[1],mksubdir=True)
-            cropped_str.write_pdb(outstr)
+            #cropped_str.write_pdb(outstr)
+            cropped_str.write_minimal_pdb(outstr)
             if insprot is not None and minlen>0.0:
                 cropped_str2=cop.crop_pdb(strset[key],newS,original_id=False)
             else:
                 cropped_str2=cop.crop_pdb(strset[key],newS,original_id=False)
             outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(instr)[1],mksubdir=True)
-            cropped_str2.write_pdb(outstr)
+            #cropped_str2.write_pdb(outstr)
+            cropped_str2.write_minimal_pdb(outstr)
         else:
-            warn('PDB ID '+key+' not found in database. Cropping not performed.')
+            logger.warning('PDB-ID '+key.upper()+' not found in database. Cropping not performed.')
             for key2,monomer in newS.imer.items():
                 outseq=cio.outpath(outdir,subdir=key,filename=key+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
+    logger.info('Done\n')
+
+    return
 
 if __name__ == "__main__":
     import sys
-    #import traceback
+    import traceback
 
     try:
         main()
+        logger.info(ccl.ok())
         sys.exit(0)
-    except:
+    except Exception as e:
+        if not isinstance(e, SystemExit):
+            msg = "".join(traceback.format_exception(*sys.exc_info()))
+            logger.critical(msg)
         sys.exit(1)
-    #except Exception as e:
-    #    if not isinstance(e, SystemExit):
-    #        msg = "".join(traceback.format_exception(*sys.exc_info()))
-    #        logger.critical(msg)
-    #    sys.exit(1)

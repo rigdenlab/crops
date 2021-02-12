@@ -10,14 +10,15 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 
 import argparse
 import os
-#import copy
 from warnings import warn
 
 from crops.core import cio
 from crops.core import ops as cop
-#from core import seq as csq
+from crops import command_line as ccl
 
 import time
+
+logger=None
 
 def main():
     starttime=time.time()
@@ -43,6 +44,10 @@ def main():
 
     args = parser.parse_args()
 
+    global logger
+    logger = ccl.crops_logger(level="info")
+    logger.info(ccl.welcome())
+
     inseq=cio.check_path(args.input_seqpath[0],'file')
     indb=cio.check_path(args.input_database[0],'file')
     insprot=cio.check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
@@ -64,14 +69,19 @@ def main():
             sorter=args.sort[0].lower()
 
     ###########################################
-
+    logger.info('Parsing sequence file '+inseq)
     seqset=cio.parseseqfile(inseq)
+    logger.info('Done')
+    
+    logger.info('Parsing interval database file '+indb)
     if len(seqset)>0:
         intervals=cio.import_db(indb,pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
+    logger.info('Done\n')
 
     if insprot is not None and minlen>0.0:
+        logger.info('Parsing uniprot sequence file '+insprot)
         uniprotset={}
         for seqncid, seqnc in seqset.items():
             for monomerid, monomer in seqnc.imer.items():
@@ -81,7 +91,9 @@ def main():
                             uniprotset[key.upper()]=None
 
         uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
+        logger.info('Done\n')
 
+    logger.info('Cropping sequence(s)...')
     if len(seqset)>1 and args.sort is not None:
         sorted_outseq={}
 
@@ -130,9 +142,11 @@ def main():
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
     croptime=time.time()
-    print('Crop time = '+str(croptime-starttime)+ ' s')
+    logger.debug('Crop time = '+str(croptime-starttime)+ ' s')
+    logger.info('Done\n')
 
     if len(seqset)>1 and args.sort is not None:
+        logger.info('Sorting sequence(s)...')
         outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
         if sorter=='ncrops':
             sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(),reverse=True)
@@ -145,19 +159,21 @@ def main():
         del sorted_outseq
         for monomer in sorted_outseq2:
             monomer[1].dump(outseq)
-        print('Sort time = '+str(time.time()-croptime)+ ' s')
+        logger.debug('Sort time = '+str(time.time()-croptime)+ ' s')
+        logger.info('Done\n')
+
+    return
 
 if __name__ == "__main__":
     import sys
-    #import traceback
+    import traceback
 
     try:
         main()
+        logger.info(ccl.ok())
         sys.exit(0)
-    except:
+    except Exception as e:
+        if not isinstance(e, SystemExit):
+            msg = "".join(traceback.format_exception(*sys.exc_info()))
+            logger.critical(msg)
         sys.exit(1)
-    #except Exception as e:
-    #    if not isinstance(e, SystemExit):
-    #        msg = "".join(traceback.format_exception(*sys.exc_info()))
-    #        logger.critical(msg)
-    #    sys.exit(1)

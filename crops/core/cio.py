@@ -11,10 +11,6 @@ from crops.core.sequence import Sequence, monomer_sequence
 from crops.core.sequence import retrieve_id
 from crops.core.intervals import intinterval
 
-#import sys
-#from io import StringIO  # Python3
-
-
 def check_path(path,typeofpath=None):
     """Returns full path if correct.
 

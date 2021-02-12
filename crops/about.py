@@ -1,4 +1,4 @@
-
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files"""
 """About CROPS. Package information is recorded here"""
 
 import datetime

@@ -17,6 +17,9 @@ import os
 import sys
 from crops.core import cio
 from crops.core import ops as cop
+from crops import command_line as ccl
+
+logger=None
 
 
 def main():
@@ -33,6 +36,10 @@ def main():
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
     args = parser.parse_args()
 
+    global logger
+    logger = ccl.crops_logger(level="info")
+    logger.info(ccl.welcome())
+
     inseq=cio.check_path(args.input_seqpath[0],'file')
     instr=cio.check_path(args.input_strpath[0])
 
@@ -42,27 +49,35 @@ def main():
         outdir=cio.check_path(os.path.join(args.outdir[0],''),'dir')
     infixlbl=".crops.seq"
 
+    logger.info('Parsing sequence file '+inseq)
     seqset=cio.parseseqfile(inseq)
-    strset, fileset=cio.parsestrfile(instr)
+    logger.info('Done')
 
+    logger.info('Parsing structure file '+instr)
+    strset, fileset=cio.parsestrfile(instr)
+    logger.info('Done')
+
+    logger.info('Renumbering structure(s)...')
     for pdbid, structure in strset.items():
         if pdbid in seqset:
             newstructure=cop.renumber_pdb(seqset[pdbid],structure)
             outstr=cio.outpath(outdir,subdir=pdbid,filename=pdbid+infixlbl+os.path.splitext(instr)[1],mksubdir=True)
-            newstructure.write_pdb(outstr)
+            #newstructure.write_pdb(outstr)
+            newstructure.write_minimal_pdb(outstr)
+    logger.info('Done\n')
 
     return
 
 if __name__ == "__main__":
-    #import traceback
+    import sys
+    import traceback
 
     try:
         main()
+        logger.info(ccl.ok())
         sys.exit(0)
-    except:
+    except Exception as e:
+        if not isinstance(e, SystemExit):
+            msg = "".join(traceback.format_exception(*sys.exc_info()))
+            logger.critical(msg)
         sys.exit(1)
-    #except Exception as e:
-    #    if not isinstance(e, SystemExit):
-    #        msg = "".join(traceback.format_exception(*sys.exc_info()))
-    #        logger.critical(msg)
-    #    sys.exit(1)
