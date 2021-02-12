@@ -242,7 +242,6 @@ def crop_pdb_old(instr, inseq, segments, terms=False):
                 for r_original in range(len(original_seq)):
                     if cropint.contains(r_original+1):
                         r_bio+=1
-                        print(str(r_bio)+', old:'+ str(chain[pos_chainlist].seqid.num)+', r_or:'+str(r_original+1))
                         if chain[pos_chainlist].seqid.num == r_original+1:
                             chain[pos_chainlist].seqid.num=r_bio
                             pos_chainlist += 1
