@@ -399,7 +399,6 @@ class intinterval:
                             A[1]=B[0]-1
 
         for i in reversed(range(len(newint.subint))):
-            print(str(i) + ' ' + str(newint.subint[i]))
             if newint.subint[i]==[]:
                 newint.subint.pop(i)
 

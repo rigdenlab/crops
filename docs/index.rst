@@ -1,7 +1,7 @@
 
 .. mdinclude:: ../README.rst
    :start-line: 4
-   :end-before: Indices and tables
+   :end-before: Read The Docs
 
 .. toctree::
    :maxdepth: 2
