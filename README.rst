@@ -39,3 +39,8 @@ Next section
 ++++++++++++
 
 To be built.
+
+Read the Docs !!
+++++++++++++++++
+
+You can find all the documentation including practical examples `here <https://crops.readthedocs.io/en/latest/>`_.
