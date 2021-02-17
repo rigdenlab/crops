@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """==========
 This script will remove a number of residues from a sequence file
 in agreement to the intervals and other details supplied.
@@ -10,9 +8,11 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 
 import argparse
 import os
-from warnings import warn
 
-from crops.core import cio
+from crops.io import check_path
+from crops.io import outpathgen
+from crops.io import parsers as cin
+from crops.io import taggers as ctg
 from crops.core import ops as cop
 from crops import command_line as ccl
 
@@ -45,32 +45,32 @@ def main():
     global logger
     logger = ccl.crops_logger(level="info")
     logger.info(ccl.welcome())
-    
-    inseq=cio.check_path(args.input_seqpath[0],'file')
-    indb=cio.check_path(args.input_database[0],'file')
-    instr=cio.check_path(args.input_strpath[0])
-    insprot=cio.check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
+
+    inseq=check_path(args.input_seqpath[0],'file')
+    indb=check_path(args.input_database[0],'file')
+    instr=check_path(args.input_strpath[0])
+    insprot=check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
 
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
-    targetlbl=cio.target_format(indb,terms=args.terminals, th=minlen)
-    infixlbl=cio.infix_gen(indb,terms=args.terminals)
+    targetlbl=ctg.target_format(indb,terms=args.terminals, th=minlen)
+    infixlbl=ctg.infix_gen(indb,terms=args.terminals)
 
     if args.outdir is None:
-        outdir=cio.check_path(os.path.dirname(inseq),'dir')
+        outdir=check_path(os.path.dirname(inseq),'dir')
     else:
-        outdir=cio.check_path(os.path.join(args.outdir[0],''),'dir')
+        outdir=check_path(os.path.join(args.outdir[0],''),'dir')
     ###########################################
     logger.info('Parsing sequence file '+inseq)
-    seqset=cio.parseseqfile(inseq)
+    seqset=cin.parseseqfile(inseq)
     logger.info('Done')
-    
+
     logger.info('Parsing structure file '+instr)
-    strset, fileset=cio.parsestrfile(instr)
+    strset, fileset=cin.parsestrfile(instr)
     logger.info('Done')
 
     logger.info('Parsing interval database file '+indb)
     if len(seqset)>0:
-        intervals=cio.import_db(indb,pdb_in=seqset)
+        intervals=cin.import_db(indb,pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
     logger.info('Done\n')
@@ -85,7 +85,7 @@ def main():
                         if key.upper() not in uniprotset:
                             uniprotset[key.upper()]=None
 
-        uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
+        uniprotset=cin.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
         logger.info('Done\n')
 
     ###########################################
@@ -94,7 +94,7 @@ def main():
     for key, structure in strset.items():
         if key in seqset:
             newstructure,gseqset[key]=cop.renumber_pdb(seqset[key],structure,seqback=True)
-            outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["renumber"]+os.path.splitext(instr)[1],mksubdir=True)
+            outstr=outpathgen(outdir,subdir=key,filename=key+infixlbl["renumber"]+os.path.splitext(instr)[1],mksubdir=True)
             #newstructure.write_pdb(outstr)
             newstructure.write_minimal_pdb(outstr)
     logger.info('Done\n')
@@ -122,26 +122,26 @@ def main():
                     newS.imer[key2]=monomer.deepcopy()
                 else:
                     logger.warning('Chain-name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
-                outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
+                outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
             if insprot is not None and minlen>0.0:
                 cropped_str=cop.crop_pdb(strset[key],newS,original_id=True)
             else:
                 cropped_str=cop.crop_pdb(strset[key],newS,original_id=True)
-            outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(instr)[1],mksubdir=True)
+            outstr=outpathgen(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(instr)[1],mksubdir=True)
             #cropped_str.write_pdb(outstr)
             cropped_str.write_minimal_pdb(outstr)
             if insprot is not None and minlen>0.0:
                 cropped_str2=cop.crop_pdb(strset[key],newS,original_id=False)
             else:
                 cropped_str2=cop.crop_pdb(strset[key],newS,original_id=False)
-            outstr=cio.outpath(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(instr)[1],mksubdir=True)
+            outstr=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(instr)[1],mksubdir=True)
             #cropped_str2.write_pdb(outstr)
             cropped_str2.write_minimal_pdb(outstr)
         else:
             logger.warning('PDB-ID '+key.upper()+' not found in database. Cropping not performed.')
             for key2,monomer in newS.imer.items():
-                outseq=cio.outpath(outdir,subdir=key,filename=key+os.path.splitext(os.path.basename(inseq))[1])
+                outseq=outpathgen(outdir,subdir=key,filename=key+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
     logger.info('Done\n')
 

@@ -1,7 +1,0 @@
-crops.core.sequence module
-==========================
-
-.. automodule:: crops.core.sequence
-   :members:
-   :undoc-members:
-   :show-inheritance:

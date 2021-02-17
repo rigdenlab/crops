@@ -18,7 +18,7 @@ def ok():
 
 def crops_logger(level="info"):
     """Logger setup.
-    
+
     :param level: Console logging level, defaults to "info".
                       Options: [ notset | info | debug | warning | error | critical ]
     :type level: str, optional
@@ -26,14 +26,14 @@ def crops_logger(level="info"):
     :type logfile: str, optional
     :return: Configured logger.
     :rtype: :obj:`~logging.Logger`
-    
+
     """
     class CropsFormatter(logging.Formatter):
 
         def __init__(self, fmt="%(levelname)s: %(message)s"):
             #logging.Formatter.__init__(self, fmt=fmt)
             super().__init__(fmt="%(levelname)s: %(message)s", datefmt=None, style='%')
-        
+
         def format(self, record):
             # Save the original format configured by the user
             # when the logger formatter was instantiated
@@ -54,7 +54,7 @@ def crops_logger(level="info"):
             self._fmt = format_orig
 
             return myformat
-    
+
     logging_levels = {
         "notset": logging.NOTSET,
         "info": logging.INFO,

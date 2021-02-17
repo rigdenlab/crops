@@ -1,13 +1,10 @@
-# -*- coding: utf-8 -*-
-
 from crops.about import __prog__, __description__, __author__, __date__, __version__
 
-from crops.core.rescodes import ressymbol
-from crops.core.sequence import monomer_sequence
-from crops.core.intervals import intinterval
+from crops.libs import ressymbol
+from crops.elements.sequence import monomer_sequence
 
 import copy
-from warnings import warn
+import logging
 
 def renumber_pdb(inseq,instr,seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
@@ -84,7 +81,7 @@ def renumber_pdb(inseq,instr,seqback=False):
                 if solved == False:
                     raise ValueError('The .fasta sequence and the structure given do not match.')
             else:
-                warn('.pdb chain '+str(chain.name)+' not found in .fasta file. All elements considered ligands.')
+                logging.warning('.pdb chain '+str(chain.name)+' not found in .fasta file. All elements considered ligands.')
                 ligandwarn=False
                 nligands=0
                 for residue in chain:
@@ -93,7 +90,7 @@ def renumber_pdb(inseq,instr,seqback=False):
                     nligands+=1
                     pos[n_chains][nligands-1]=-nligands
                 if ligandwarn==True:
-                    warn('Some of the ligands contain Aminoacid or Nucleotide residues. Please check that they actually are ligands.')
+                    logging.warning('Some of the ligands contain Aminoacid or Nucleotide residues. Please check that they actually are ligands.')
                 solved=True
 
             if solved:
@@ -193,70 +190,5 @@ def crop_pdb(instr, inseq, original_id=True):
                             else:
                                 del chain[res]
 
-    return instr
-
-def crop_pdb_old(instr, inseq, segments, terms=False):
-    """Returns modified :class:`gemmi.Structure` without specified elements.
-    Modified positional numbering.
-
-    :param instr: Gemmi structure.
-    :type instr: :class:`gemmi.Structure`
-    :param inseq: Input sequence.
-    :type inseq: :class:`~crops.core.sequence.Sequence`
-    :param segments: Input preserving intervals.
-    :type segments: dict of :class:`~crops.core.intervals.intinterval`
-    :param terms: If True, only terminal ends are removed, defaults to False.
-    :type terms: bool, optional
-    :return: Cropped structure.
-    :rtype: :class:`gemmi.Structure`
-
-    """
-
-    if isinstance(segments,dict):
-        for interval in segments.values():
-            if not isinstance(interval,intinterval):
-                raise TypeError('Input argument segments should be a dictionary of integer intervals.')
-    else:
-        raise TypeError('Input argument segments should be a dictionary of integer intervals.')
-
-    n_chains = 0
-    n_resmax = 0
-    for model in instr:
-        n_chains += len(model)
-        for chain in model:
-            if len(chain) > n_resmax:
-                n_resmax = len(chain)
-
-    delres = [[False for j in range(n_resmax)] for i in range(n_chains)]
-    n_chains = 0
-    for model in instr:
-        for chain in model:
-            if chain.name in segments:
-                if not terms:
-                    cropint=segments[chain.name].deepcopy()
-                else:
-                    cropint=segments[chain.name].union(segments[chain.name].terminals())
-                original_seq=inseq.imer[chain.name].seqs['cropseq']
-                r_bio=0
-                pos_chainlist=0
-                for r_original in range(len(original_seq)):
-                    if cropint.contains(r_original+1):
-                        r_bio+=1
-                        if chain[pos_chainlist].seqid.num == r_original+1:
-                            chain[pos_chainlist].seqid.num=r_bio
-                            pos_chainlist += 1
-                    else:
-                        if chain[pos_chainlist].seqid.num == r_original+1:
-                            delres[n_chains][pos_chainlist] = True
-                            pos_chainlist += 1
-            n_chains += 1
-
-    n_chains = 0
-    for model in instr:
-        for chain in model:
-            for res in reversed(range(len(chain))):
-                if delres[n_chains][res]:
-                    del chain[res]
-            n_chains += 1
     return instr
 

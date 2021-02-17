@@ -1,7 +1,0 @@
-crops.about module
-==================
-
-.. automodule:: crops.about
-   :members:
-   :undoc-members:
-   :show-inheritance:

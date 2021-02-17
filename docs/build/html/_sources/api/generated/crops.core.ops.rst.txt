@@ -1,7 +1,0 @@
-crops.core.ops module
-=====================
-
-.. automodule:: crops.core.ops
-   :members:
-   :undoc-members:
-   :show-inheritance:
