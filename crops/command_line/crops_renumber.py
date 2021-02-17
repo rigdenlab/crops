@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """==========
 This script will renumber a structure file in agreement with the
 residue positions in the sequence file corresponding to that structure.
@@ -14,8 +12,9 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 import argparse
 import os
 
-import sys
-from crops.core import cio
+from crops.io import check_path
+from crops.io import outpathgen
+from crops.io.parsers import parsers as cin
 from crops.core import ops as cop
 from crops import command_line as ccl
 
@@ -40,28 +39,28 @@ def main():
     logger = ccl.crops_logger(level="info")
     logger.info(ccl.welcome())
 
-    inseq=cio.check_path(args.input_seqpath[0],'file')
-    instr=cio.check_path(args.input_strpath[0])
+    inseq=check_path(args.input_seqpath[0],'file')
+    instr=check_path(args.input_strpath[0])
 
     if args.outdir is None:
-        outdir=cio.check_path(os.path.dirname(inseq),'dir')
+        outdir=check_path(os.path.dirname(inseq),'dir')
     else:
-        outdir=cio.check_path(os.path.join(args.outdir[0],''),'dir')
+        outdir=check_path(os.path.join(args.outdir[0],''),'dir')
     infixlbl=".crops.seq"
 
     logger.info('Parsing sequence file '+inseq)
-    seqset=cio.parseseqfile(inseq)
+    seqset=cin.parseseqfile(inseq)
     logger.info('Done')
 
     logger.info('Parsing structure file '+instr)
-    strset, fileset=cio.parsestrfile(instr)
+    strset, fileset=cin.parsestrfile(instr)
     logger.info('Done')
 
     logger.info('Renumbering structure(s)...')
     for pdbid, structure in strset.items():
         if pdbid in seqset:
             newstructure=cop.renumber_pdb(seqset[pdbid],structure)
-            outstr=cio.outpath(outdir,subdir=pdbid,filename=pdbid+infixlbl+os.path.splitext(instr)[1],mksubdir=True)
+            outstr=outpathgen(outdir,subdir=pdbid,filename=pdbid+infixlbl+os.path.splitext(instr)[1],mksubdir=True)
             #newstructure.write_pdb(outstr)
             newstructure.write_minimal_pdb(outstr)
     logger.info('Done\n')

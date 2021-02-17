@@ -1,7 +1,0 @@
-crops.command\_line.crops\_cropstr module
-=========================================
-
-.. automodule:: crops.command_line.crops_cropstr
-   :members:
-   :undoc-members:
-   :show-inheritance:

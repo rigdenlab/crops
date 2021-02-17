@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """==========
 This script will remove a number of residues from a sequence file
 in agreement to the intervals and other details supplied.
@@ -10,9 +8,11 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 
 import argparse
 import os
-from warnings import warn
 
-from crops.core import cio
+from crops.io import check_path
+from crops.io import outpathgen
+from crops.io import parsers as cin
+from crops.io import taggers as ctg
 from crops.core import ops as cop
 from crops import command_line as ccl
 
@@ -48,18 +48,18 @@ def main():
     logger = ccl.crops_logger(level="info")
     logger.info(ccl.welcome())
 
-    inseq=cio.check_path(args.input_seqpath[0],'file')
-    indb=cio.check_path(args.input_database[0],'file')
-    insprot=cio.check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
+    inseq=check_path(args.input_seqpath[0],'file')
+    indb=check_path(args.input_database[0],'file')
+    insprot=check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
 
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
-    targetlbl=cio.target_format(indb,terms=args.terminals, th=minlen)
-    infixlbl=cio.infix_gen(indb,terms=args.terminals)
+    targetlbl=ctg.target_format(indb,terms=args.terminals, th=minlen)
+    infixlbl=ctg.infix_gen(indb,terms=args.terminals)
 
     if args.outdir is None:
-        outdir=cio.check_path(os.path.dirname(inseq),'dir')
+        outdir=check_path(os.path.dirname(inseq),'dir')
     else:
-        outdir=cio.check_path(os.path.join(args.outdir[0],''),'dir')
+        outdir=check_path(os.path.join(args.outdir[0],''),'dir')
 
     if args.sort is not None:
         if (args.sort[0].lower()!='ncrops' and args.sort[0].lower()!='percent' and
@@ -70,12 +70,12 @@ def main():
 
     ###########################################
     logger.info('Parsing sequence file '+inseq)
-    seqset=cio.parseseqfile(inseq)
+    seqset=cin.parseseqfile(inseq)
     logger.info('Done')
-    
+
     logger.info('Parsing interval database file '+indb)
     if len(seqset)>0:
-        intervals=cio.import_db(indb,pdb_in=seqset)
+        intervals=cin.import_db(indb,pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
     logger.info('Done\n')
@@ -90,7 +90,7 @@ def main():
                         if key.upper() not in uniprotset:
                             uniprotset[key.upper()]=None
 
-        uniprotset=cio.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
+        uniprotset=cin.parseseqfile(insprot, uniprot=uniprotset)['uniprot']
         logger.info('Done\n')
 
     logger.info('Cropping sequence(s)...')
@@ -125,9 +125,9 @@ def main():
                     pass
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
-                        outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
                     else:
-                        outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                     monomer.dump(outseq)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
@@ -135,9 +135,9 @@ def main():
             for key2,monomer in S.imer.items():
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
-                        outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
                     else:
-                        outseq=cio.outpath(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                     monomer.dump(outseq)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
@@ -147,7 +147,7 @@ def main():
 
     if len(seqset)>1 and args.sort is not None:
         logger.info('Sorting sequence(s)...')
-        outseq=cio.outpath(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
+        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
         if sorter=='ncrops':
             sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(),reverse=True)
         elif sorter=='percent':

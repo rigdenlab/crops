@@ -1,7 +1,0 @@
-crops.core.cio module
-=====================
-
-.. automodule:: crops.core.cio
-   :members:
-   :undoc-members:
-   :show-inheritance:
