@@ -24,21 +24,28 @@ CROPS is a useful toolkit developed by the `Rigden <https://github.com/rigdenlab
 
 This toolkit has been developed to perform three specific tasks:
 
-* renumber residue indices in structure files to make them match the position in the sequence (provided by a sequence file from the same source);
+* renumber residue indices in structure files to make them match residue position in the sequence (provided by a sequence file from the same source);
 * crop insertions off sequences in sequence files;
 * crop insertions off structures in structure files.
 
 CROPS makes use of a number of databases in order to collect information about segments, insertions, sources, etc. In particular, it is built around the following databases:
 
 * PDB-to-Uniprot `SIFTS database <https://www.ebi.ac.uk/pdbe/docs/sifts/quick.html>`_,
-* `Uniprot <https://www.uniprot.org/downloads>`_ - Swiss Prot database (to be deprecated),
-* `Uniclust <https://uniclust.mmseqs.com/>`_ databases (to be implemented),
+* `Uniclust <https://uniclust.mmseqs.com/>`_ databases,
 * custom user-defined interval files.
 
-Next section
+Supported Formats
++++++++++++++++++
+
+* Sequences:  FASTA --several header formats recognised. 
+* Structures: PDB. mmCIF to be implemented.
+* Databases:  CSV
+
+Installation
 ++++++++++++
 
 To be built.
+
 
 Read the Docs !!
 ++++++++++++++++
