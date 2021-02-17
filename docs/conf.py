@@ -45,7 +45,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'recommonmark'
     #'sphinxext.math_symbol_table',
     #'sphinxarg.ext',
 ]
