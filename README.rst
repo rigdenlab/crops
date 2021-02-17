@@ -51,9 +51,3 @@ Read the Docs !!
 ++++++++++++++++
 
 You can find all the documentation including practical examples `here <https://crops.readthedocs.io/en/latest/>`_.
-
-
-.. image:: docs/_static/logo_crops_seg.svg
-   :width: 15%
-   :align: center
-

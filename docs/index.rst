@@ -2,15 +2,16 @@ Welcome to CROPS's documentation!
 =================================
 
 .. include:: ../README.rst
-   :start-line: 5
+   :start-line: 4
    :end-before: Read the Docs
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+******************
 Indices and tables
-==================
+******************
 
 * :ref:`genindex`
 * :ref:`modindex`
