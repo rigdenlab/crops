@@ -37,9 +37,9 @@ CROPS makes use of a number of databases in order to collect information about s
 Supported Formats
 +++++++++++++++++
 
-* Sequences:  FASTA --several header formats recognised. 
-* Structures: PDB. mmCIF to be implemented.
-* Databases:  CSV
+* **Sequences:**  *FASTA* --several header formats recognised. 
+* **Structures:** *PDB*. *mmCIF* to be implemented.
+* **Databases:**  *CSV*.
 
 Installation
 ++++++++++++
