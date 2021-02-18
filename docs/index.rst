@@ -1,12 +1,11 @@
-Welcome to CROPS's documentation!
-=================================
+..
 
 .. include:: ../README.rst
    :start-line: 4
    :end-before: Read the Docs
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
 ******************
