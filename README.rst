@@ -41,12 +41,6 @@ Supported Formats
 * **Structures:** *PDB*. *mmCIF* to be implemented.
 * **Databases:**  *CSV*.
 
-Installation
-++++++++++++
-
-To be built.
-
-
 Read the Docs !!
 ++++++++++++++++
 
