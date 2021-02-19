@@ -14,7 +14,7 @@ import os
 
 from crops.io import check_path
 from crops.io import outpathgen
-from crops.io.parsers import parsers as cin
+from crops.io import parsers as cin
 from crops.core import ops as cop
 from crops import command_line as ccl
 
