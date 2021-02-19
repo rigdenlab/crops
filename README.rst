@@ -44,4 +44,4 @@ Supported Formats
 Read the Docs !!
 ++++++++++++++++
 
-You can find all the documentation including practical examples `here <https://crops.readthedocs.io/en/latest/>`_.
+You can find all the documentation including installation instructions and practical examples `here <https://crops.readthedocs.io/en/latest/>`_.
