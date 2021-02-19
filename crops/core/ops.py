@@ -10,7 +10,7 @@ def renumber_pdb(inseq,instr,seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
 
     :param inseq: Input sequence.
-    :type inseq: :class:`~crops.core.sequence.Sequence`
+    :type inseq: :class:`~crops.elements.sequence.Sequence`
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
     :param seqback: If True, it additionally returns the Sequence with the gaps found in the structure, defaults to False.
@@ -18,7 +18,7 @@ def renumber_pdb(inseq,instr,seqback=False):
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
     :return inseq: Sequence with extra information about gaps, only if seqback==True.
-    :rtype inseq: :class:`~crops.core.sequence.Sequence`
+    :rtype inseq: :class:`~crops.elements.sequence.Sequence`
 
     """
 
@@ -112,19 +112,19 @@ def renumber_pdb(inseq,instr,seqback=False):
         return instr
 
 def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MONOMERS
-    """Returns modified :class:`~crops.core.sequence.monomer_sequence` without specified elements.
+    """Returns modified :class:`~crops.elements.sequence.monomer_sequence` without specified elements.
 
     :param inseq: Input sequence.
-    :type inseq: :class:`~crops.core.sequence.monomer_sequence`
+    :type inseq: :class:`~crops.elements.sequence.monomer_sequence`
     :param segments: Input preservation interval.
-    :type segments: :class:`~crops.core.intervals.intinterval`
+    :type segments: :class:`~crops.elements.intervals.intinterval`
     :param cut_type: Additional header information.
     :type cut_type: str
     :param terms: If True, only terminal ends are removed, defaults to False.
     :type terms: bool, optional
     :raises ValueError: If intervals given lie out of the sequence.
     :return: Cropped sequence.
-    :rtype: :class:`~crops.core.sequence.monomer_sequence`
+    :rtype: :class:`~crops.elements.sequence.monomer_sequence`
 
     """
     if len(segments.subint)>0:
@@ -171,7 +171,7 @@ def crop_pdb(instr, inseq, original_id=True):
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
     :param inseq: Input previously-cropped-sequence.
-    :type inseq: :class:`~crops.core.sequence.Sequence`
+    :type inseq: :class:`~crops.elements.sequence.Sequence`
     :param original_id: If True, it will keep residue ids alligned to original sequence, defaults to True
     :type original_id: bool, optional
     :return: Cropped structure.
