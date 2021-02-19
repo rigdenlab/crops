@@ -18,7 +18,8 @@ from crops import command_line as ccl
 
 logger=None
 
-def main():
+def create_argument_parser():
+    """Create a parser for the command line arguments used in crops-renumber"""
 
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
@@ -40,6 +41,10 @@ def main():
 
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
+    return parser
+
+def main():
+    parser = create_argument_parser()
     args = parser.parse_args()
 
     global logger
