@@ -17,22 +17,22 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   core.rst
+   api/core.rst
 
 .. toctree::
    :maxdepth: 2
 
-   elements.rst
+   api/elements.rst
 
 .. toctree::
    :maxdepth: 2
 
-   io.rst
+   api/io.rst
 
 .. toctree::
    :maxdepth: 2
 
-   libs.rst
+   api/libs.rst
 
 .. only:: html
 
