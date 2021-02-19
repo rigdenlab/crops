@@ -3,13 +3,13 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 import copy
 
 def _intervalise(subject):
-    """Turns any integer or list of two integers into a :class:`~crops.core.intervals.intinterval`.
+    """Turns any integer or list of two integers into a :class:`~crops.elements.intervals.intinterval`.
 
     :param subject: Input parameter.
-    :type subject: int, list, :class:`~crops.core.intervals.intinterval`
+    :type subject: int, list, :class:`~crops.elements.intervals.intinterval`
     :raises TypeError: Argument must be an integer interval, an integer or a list of two integers.
-    :return: A :class:`~crops.core.intervals.intinterval` defined by the input.
-    :rtype: :class:`~crops.core.intervals.intinterval`
+    :return: A :class:`~crops.elements.intervals.intinterval` defined by the input.
+    :rtype: :class:`~crops.elements.intervals.intinterval`
 
     """
 
@@ -49,7 +49,7 @@ def _intervalize(subject):
 
 class intinterval:
     """An integer interval object.
-    The :class:`~crops.core.intervals.intinterval` class represents a data structure to hold all
+    The :class:`~crops.elements.intervals.intinterval` class represents a data structure to hold all
     non-connected sub-intervals making it up, extra information tags, and
     set operations for the intervals.
     It contains functions to organise intervals and make operations on them.
@@ -58,15 +58,15 @@ class intinterval:
     :type description: str, optional
     :param subint: A list of two-integer lists, defaults to [].
     :type subint: list [int], optional
-    :ivar tags: Useful information of the :class:`~crops.core.intervals.intinterval`, including the default 'description'.
+    :ivar tags: Useful information of the :class:`~crops.elements.intervals.intinterval`, including the default 'description'.
     :vartype tags: dict [any]
-    :ivar subint: The list of sub-intervals in :class:`~crops.core.intervals.intinterval`.
+    :ivar subint: The list of sub-intervals in :class:`~crops.elements.intervals.intinterval`.
     :vartype subint: list [ list [int] ]
 
     :example:
-    >>> from crops.core import intervals
-    >>> my_interval = intinterval('an interval')
-    >>> my_interval2 = intinterval('another interval')
+    >>> from crops.elements import intervals as cint
+    >>> my_interval = cint.intinterval('an interval')
+    >>> my_interval2 = cint.intinterval('another interval')
     >>> my_interval = my_interval.union(15)
     >>> my_interval2 = my_interval2.union([2,7])
     >>> my_interval = my_interval.union(my_interval2)
@@ -97,12 +97,12 @@ class intinterval:
             self.subint = subint
 
     def __repr__(self):
-        return self.kind+" object: (id="+ self.description()+", subsets="+str(self.subint)+")"
+        return self.kind+' object: (id="'+ self.description()+'", subsets='+str(self.subint)+')'
     def __iter__(self):
         return iter(self.subint)
 
     def description(self, newdescription=None):
-        """Returns or moifies the 'description' tag.
+        """Returns or modifies the 'description' tag.
 
         :param newdescription: If given, the value of 'description' in tags is replaced by 'newdescription', defaults to None
         :type newdescription: str, optional
@@ -118,7 +118,7 @@ class intinterval:
             self.tags['description']=newdescription
 
     def addtag(self, tag, value):
-        """Adds a new tag to :class:`~crops.core.intervals.intinterval`.
+        """Adds a new tag to :class:`~crops.elements.intervals.intinterval`.
 
         :param tag: Key argument.
         :type tag: str
@@ -132,7 +132,7 @@ class intinterval:
         self.tags[tag]=value
 
     def deltag(self, tag):
-        """Deletes a tag from :class:`~crops.core.intervals.intinterval`.
+        """Deletes a tag from :class:`~crops.elements.intervals.intinterval`.
 
         :param tag: Key argument.
         :type tag: str
@@ -154,10 +154,10 @@ class intinterval:
         return copy.deepcopy(self)
 
     def terminals(self, other=None):
-        """Returns the first and last element in the :class:`~crops.core.intervals.intinterval`.
+        """Returns the first and last element in the :class:`~crops.elements.intervals.intinterval`.
 
         :param other: Defaults to None.
-        :type other: int, list [int], :class:`~crops.core.intervals.intinterval`, optional
+        :type other: int, list [int], :class:`~crops.elements.intervals.intinterval`, optional
         :return: A list of two integers indicating lower and higher limits of the interval (self if other is None, other otherwise).
             If input is an empty interval, this function will return an empty list.
         :rtype: list [int]
@@ -173,7 +173,7 @@ class intinterval:
         """ Returns the number of elements in the interval, subinterval, or any other set.
 
         :param other: Input argument, defaults to None.
-        :type other: int, list [int], :class:`~crops.core.intervals.intinterval`, optional
+        :type other: int, list [int], :class:`~crops.elements.intervals.intinterval`, optional
         :return: Number of elements in the interval (self if other is None, other otherwise).
         :rtype: int
 
@@ -190,7 +190,7 @@ class intinterval:
         """Checks if input interval is fully contained in self. B ⊂ A : A = self, B = other.
 
         :param other: Another interval.
-        :type other: int, list [int], :class:`~crops.core.intervals.intinterval`
+        :type other: int, list [int], :class:`~crops.elements.intervals.intinterval`
         :return: Whether self contains other or not.
         :rtype: bool
         """
@@ -219,11 +219,11 @@ class intinterval:
         """A ⋃ B : A = self, B = other.
 
         :param other: Another interval.
-        :type other: int, list [int], :class:`~crops.core.intervals.intinterval`
+        :type other: int, list [int], :class:`~crops.elements.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.
         :type newdesc: str, optional
         :return: The Union of both intervals.
-        :rtype: :class:`~crops.core.intervals.intinterval`
+        :rtype: :class:`~crops.elements.intervals.intinterval`
 
         """
         if newdesc is None:
@@ -293,11 +293,11 @@ class intinterval:
         """A ⋂ B : A = self, B = other.
 
         :param other: Another interval.
-        :type other: int, list [int], :class:`~crops.core.intervals.intinterval`
+        :type other: int, list [int], :class:`~crops.elements.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.
         :type newdesc: str, optional
         :return: The Intersection of both intervals.
-        :rtype: :class:`~crops.core.intervals.intinterval`
+        :rtype: :class:`~crops.elements.intervals.intinterval`
 
         """
         if newdesc is None:
@@ -342,11 +342,11 @@ class intinterval:
         r"""A \\ B : A = self, B = other
 
         :param other: Another interval.
-        :type other: int, list [int], :class:`~crops.core.intervals.intinterval`
+        :type other: int, list [int], :class:`~crops.elements.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.
         :type newdesc: str, optional
         :return: The result of subtracting other from self.
-        :rtype: :class:`~crops.core.intervals.intinterval`
+        :rtype: :class:`~crops.elements.intervals.intinterval`
 
         """
         if newdesc is None:
@@ -408,11 +408,11 @@ class intinterval:
         """A Δ B : A = self, B = other
 
         :param other: Another interval.
-        :type other: int, list [int], :class:`~crops.core.intervals.intinterval`
+        :type other: int, list [int], :class:`~crops.elements.intervals.intinterval`
         :param newdesc: If given, description of returned interval, defaults to None.
         :type newdesc: str, optional
         :return: The Symmetric difference of both intervals.
-        :rtype: :class:`~crops.core.intervals.intinterval`
+        :rtype: :class:`~crops.elements.intervals.intinterval`
 
         """
         if newdesc is None:

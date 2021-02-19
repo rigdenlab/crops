@@ -20,8 +20,8 @@ def import_db(inpath,pdb_in=None):
         will be filtered to contain only IDs provided, defaults to None.
     :type pdb_in: str, dict, optional
     :raises TypeError: When pdb_in is given and is neither a string nor a dictionary.
-    :return: dict [str, :class:`~crops.core.intervals.intinterval`im]
-    :rtype: A dictionary of :class:`~crops.core.intervals.intinterval`.
+    :return: dict [str, :class:`~crops.elements.intervals.intinterval`im]
+    :rtype: A dictionary of :class:`~crops.elements.intervals.intinterval`.
 
     """
     database_out={}
@@ -116,10 +116,10 @@ def parseseqfile(inpath,uniprot=None):
     :type inpath: str
     :param uniprot: A dictionary of Uniprot codes, defaults to None.
     :type uniprot: str, dict [str, any], optional
-    :return: A dictionary containing parsed :class:`~crops.core.sequence.Sequence`.
-        If uniprot is not None, the dictionary will contain a single entry with a :class:`~crops.core.sequence.Sequence`
-        that will contain the requested Uniprot chains as :class:`~crops.core.sequence.monomer_sequence` objects.
-    :rtype: dict [str, :class:`~crops.core.sequence.Sequence`]
+    :return: A dictionary containing parsed :class:`~crops.elements.sequence.Sequence`.
+        If uniprot is not None, the dictionary will contain a single entry with a :class:`~crops.elements.sequence.Sequence`
+        that will contain the requested Uniprot chains as :class:`~crops.elements.sequence.monomer_sequence` objects.
+    :rtype: dict [str, :class:`~crops.elements.sequence.Sequence`]
 
     """
     newseqs={}
