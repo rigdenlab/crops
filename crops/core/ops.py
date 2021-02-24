@@ -129,6 +129,8 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
     """
     if len(segments.subint)>0:
         if segments.subint[-1][-1] > inseq.length():
+            logging.debug('On '+str(inseq))
+            logging.debug('with '+str(segments))
             raise ValueError('One or many of the segment end values is outside the original sequence.')
 
     newchain=monomer_sequence(chid=inseq.info['chain_id'],header=inseq.info['header'])

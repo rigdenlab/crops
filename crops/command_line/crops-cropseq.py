@@ -40,7 +40,7 @@ def create_argument_parser():
     sections.add_argument("-t","--terminals",action='store_true',default=False,
                           help="Ignore interval discontinuities and only crop the ends off.")
     sections.add_argument("-u","--uniprot_threshold", nargs=2, metavar=("Uniprot_ratio_threshold","Sequence_database"),
-                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniprot_sprot.fasta-path')
+                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniclust##_yyyy_mm_consensus.fasta-path')
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
     return parser
