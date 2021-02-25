@@ -11,7 +11,7 @@ With CROPS you can use a simple command to renumber the residues in a structure 
 
 The result of the above call is a new content in the output file ``mydir/3org/3org.seqs.pdb`` containing a minimal output of the original ``3org.pdb`` with the residues of all models and chains renumbered according to residue position in the ``3org.fasta`` sequence. Ligands are renumbered with consecutive indices right after the chain ends.
 
-The output directory argument is optional. If not provided, the results will be saved in the sequence file's directory ``3org/3org.seqs.pdb`` by default.
+The output directory argument is optional. If not provided, the results will be saved to the sequence file's directory ``3org/3org.seqs.pdb`` by default.
 
 .. note::
 

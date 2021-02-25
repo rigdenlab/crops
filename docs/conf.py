@@ -298,7 +298,7 @@ htmlhelp_basename = project+'doc'
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-#man_pages = [(master_doc, 'swamp', u'SWAMP Documentation', [author], 1)]
+#man_pages = [(master_doc, 'crops', u'CROPS Documentation', [author], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
