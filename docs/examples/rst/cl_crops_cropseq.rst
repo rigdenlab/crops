@@ -1,6 +1,6 @@
 .. _cl_crops_cropseq:
 
-Sequece file croppping
+Sequence file croppping
 ----------------------
 
 For the removal of residues out of a sequence file containing one or more sequences, this CROPS command will do it for you: 
