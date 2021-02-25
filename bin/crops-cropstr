@@ -1,0 +1,2 @@
+#!/usr/bin/env python
+python -m crops.command_line.crops-cropstr "$@"
