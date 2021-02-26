@@ -7,6 +7,8 @@ import os
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
+with open("requirements.txt", "r") as fh:
+    dependencies = fh.read().splitlines()
 
 setuptools.setup(
      name=__prog__,
@@ -26,4 +28,5 @@ setuptools.setup(
          "License :: OSI Approved :: BSD License",
          "Operating System :: OS Independent",
      ],
+     install_requires=dependencies
  )
