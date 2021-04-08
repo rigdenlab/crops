@@ -402,6 +402,8 @@ class Sequence:
         """
         if nid is None:
             nid=retrieve_id(nheader)
+            if (nheader is not None and nid is None):
+                nid=retrieve_id(nheader+'|')
             nid=nid[1]
         else:
             nid=[nid]
@@ -455,7 +457,7 @@ class Sequence:
 
         if single is None:
             outpath=os.path.join(outdir,self.seq_id+infix+".fasta")
-            for monomer in self.imer:
+            for monomer in self.imer.values():
                 monomer.dump(outpath)
         else:
             if not isinstance(single,str):
