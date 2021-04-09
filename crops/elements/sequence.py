@@ -434,7 +434,7 @@ class Sequence:
             raise TypeError('nid should be a string.')
 
         if nid in self.imer:
-            self.pop(nid)
+            self.imer.pop(nid)
         else:
             logging.warning('Chain named '+ nid+' not found in Sequence.')
 
