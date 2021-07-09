@@ -83,6 +83,24 @@ def retrieve_id(seqheader,extrainfo=False):
         nameseq[1]=[nameseq[0]]
         return nameseq
 
+    if seqheader.startswith('>pdb|'):
+        for i in range(5,len(seqheader)):
+            if seqheader[i]=='|':
+                for j in range(i+1,len(seqheader)):
+                    if seqheader[j]!=' ' and seqheader[i]!='|':
+                        newchid += seqheader[j]
+                    elif seqheader[j]==' ':
+                        if newchid != '':
+                            nameseq[1].append(newchid)
+                            newchid = ''
+                    else:
+                        if extrainfo:
+                            return seqheader[i:]
+                        break
+            else:
+                nameseq[0]+=seqheader[i]
+        return nameseq
+
     for j in range(len(seqheader)):
         if seqheader[j]==">":
             idchar=True
