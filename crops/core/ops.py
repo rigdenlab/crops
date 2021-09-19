@@ -21,7 +21,6 @@ def renumber_pdb(inseq,instr,seqback=False):
     :rtype inseq: :class:`~crops.elements.sequence.Sequence`
 
     """
-
     n_chains = 0
     n_resmax = 0
     for model in instr:
@@ -144,13 +143,16 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
 
     cropint=segments.deepcopy() if not terms else segments.union(segments.terminals())
     cropmap={}
+    cropmap['map']={}
+    cropmap['backmap']={}
     for res in range(inseq.length()):
-        cropmap[res+1]=None
+        cropmap['map'][res+1]=None
 
     for res in range(inseq.length()):
         if cropint.contains(res+1):
             newchain.seqs['mainseq'] += inseq.seqs['mainseq'][res]
-            cropmap[res+1]=len(newchain.seqs['mainseq'])
+            cropmap['map'][res+1]=len(newchain.seqs['mainseq'])
+            cropmap['backmap'][len(newchain.seqs['mainseq'])]=res+1
             if 'gapseq' in inseq.seqs:
                 for n in range(len(inseq.seqs['gapseq'])):
                     newchain.seqs['gapseq'][n] += inseq.seqs['gapseq'][n][res]

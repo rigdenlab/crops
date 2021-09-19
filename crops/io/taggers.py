@@ -70,7 +70,7 @@ def retrieve_id(seqheader,extrainfo=False):
         raise ValueError('Argument is not a str')
     namechar=False
     idchar=False
-    nameseq=['',[]]
+    nameseq=["", [], '']
     newchid=''
     if seqheader.startswith('>sp|'):
         for i in range(4,len(seqheader)):
@@ -109,12 +109,16 @@ def retrieve_id(seqheader,extrainfo=False):
             namechar=True
         elif seqheader[j]=="|":
             if seqheader[j+1:j+6]=='Chain' or seqheader[j+1:j+6]=='chain':
+                if newchid != "":
+                    nameseq[2] = newchid
                 k=0 if seqheader[j+6]==' ' else 1
                 newchid=''
                 for jj in range(j+6+k+1,len(seqheader)):
                     if seqheader[jj]==',':
                         nameseq[1].append(newchid)
                         newchid=''
+                    elif seqheader[jj]==" ":
+                        pass
                     elif seqheader[jj]=="|" or seqheader[jj]==":" or jj==len(seqheader)-1:
                         if extrainfo:
                             if jj==len(seqheader)-1:
