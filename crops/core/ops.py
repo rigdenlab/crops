@@ -72,7 +72,7 @@ def renumber_pdb(inseq,instr,seqback=False):
                                                 newseq += original_seq[cnt+gap+shift]
                                                 break
                         cnt += 1
-                    print('wrong: '+str(score-len(chain)+nligands)+'; shift: '+str(shift))
+                    #print('wrong: '+str(score-len(chain)+nligands)+'; shift: '+str(shift))
                     if score == len(chain)-nligands:
                         solved = True
                         if len(newseq)<len(original_seq):
