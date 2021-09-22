@@ -63,11 +63,16 @@ class monomer_sequence:
             if isinstance(header,str):
                 self.info['header']=header
                 self.info['oligomer_id']=retrieve_id(header)[0].lower()
+                if retrieve_id(header)[2] != '':
+                    self.info['seq_number']=retrieve_id(header)[2]
+                else:
+                    self.info['seq_number']=None
             else:
                 raise TypeError("Sequence chain header 'header' should be a string.")
         else:
             self.info['header']=None
             self.info['oligomer_id']=None
+            self.info['seq_number']=None
 
     def __repr__(self):
         if 'mainseq' not in self.seqs:
@@ -309,6 +314,17 @@ class monomer_sequence:
             self.info['chain_id']=None
         return self.info['chain_id']
 
+    def chain_id(self):
+        """Returns, if known, the number assigned to the sequence.
+
+        :return: Sequence number.
+        :rtype: str
+
+        """
+        if 'seq_number' not in self.info:
+            self.info['seq_number']=None
+        return self.info['seq_number']
+
 class Sequence:
     """A :class:`~crops.elements.sequence.Sequence` object grouping several chain sequence objects.
     The :class:`~crops.elements.sequence.Sequence` class represents a data structure to hold
@@ -386,7 +402,7 @@ class Sequence:
         self.source=None
         self.imer.clear()
 
-    def add_monomer(self, nheader, nseq,  nid=None,forceentry=False):
+    def add_monomer(self, nheader, nseq,  nid=None, sqnm=None, forceentry=False):
         """Adds a new :class:`~crops.elements.sequence.monomer_sequence` to the :class:`~crops.elements.sequence.Sequence`.
 
         :param nheader: Standard .fasta header, starting with ">".
@@ -395,6 +411,8 @@ class Sequence:
         :type nseq: str
         :param nid: New chain's identifier, defaults to None.
         :type nid: str, optional
+        :param sqnm: Sequence number, defaults to None.
+        :type sqnm: str, optional
         :param forceentry: Switch to force entry under a new ID if nid already in, defaults to False.
         :type forceentry: bool, optional
         :raises KeyError: When :class:`~crops.elements.sequence.monomer_sequence` ID already in :class:`~crops.elements.sequence.Sequence` and forceentry=False.
@@ -420,7 +438,6 @@ class Sequence:
                     raise KeyError('add_monomer ERROR: Chain named '+iid+' already exists in Sequence '+self.seq_id+".")
 
             self.imer[iid]=monomer_sequence(chid=iid,seq=nseq,header=nheader)
-
 
     def del_monomer(self, nid):
         """Removes the selected :class:`~crops.elements.sequence.monomer_sequence` from the :class:`~crops.elements.sequence.Sequence`.
