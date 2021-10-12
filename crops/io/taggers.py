@@ -48,6 +48,7 @@ def infix_gen(inpath,terms=False):
 
     infix_out={
         "croprenum" : ".crops"+cut,
+        "cropseq" : ".crops"+cut,
         "crop" : ".crops.oldids"+cut,
         "renumber" : ".crops.seq"}
 
