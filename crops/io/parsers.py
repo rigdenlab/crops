@@ -3,6 +3,7 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 import gemmi
 import os
 import csv
+import urllib2
 
 from crops.elements.sequence import Sequence
 from crops.io.taggers import retrieve_id
@@ -139,44 +140,78 @@ def parseseqfile(inpath,uniprot=None):
             if not isinstance(upcode,str):
                 raise TypeError('Input argument uniprot must be either a string or a dictionary.')
 
-    with open(inpath,'r') as f:
-        indx=-1
-        while True:
-            line=f.readline().rstrip()
-            if (not line or line.startswith(">")) and not ignore:
-                if uniprot is not None:
-                    if indx>=0:
-                        if len(newseqs)==0:
-                            newseqs['uniprot']=Sequence(seq_id=newid[0].upper(),source=os.path.basename(inpath))
-                        if newid[0].upper() not in newseqs['uniprot'].imer:
-                            newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=newid[0].upper())
-                            if len(newseqs['uniprot'].imer)==len(uniprot):
+    if inpath == 'server-only' and uniprot is not None:
+        for upcode in uniprot:
+            try:
+                for line in urllib2.urlopen('https://www.uniprot.org/uniprot/'+upcode.upper()+'.fasta'):
+                    if line.startswith(">"):
+                        chain = ''
+                        head = line
+                    else:
+                        chain += str(line)
+                if len(newseqs)==0:
+                    newseqs['uniprot']=Sequence(seq_id=upcode.upper(),source='Uniprot server')
+                if upcode.upper() not in newseqs['uniprot'].imer:
+                    newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=upcode.upper())
+            except:
+                raise OSError('Uniprot sequence '+upcode.upper()+' not found online. If this file exists, check your internet connexion.')
+    elif inpath == 'server-only' and uniprot is None:
+        raise TypeError('Input argument inpath cannot be "server-only" when a dict of uniprot ids is not provided.')
+    else:
+        with open(inpath,'r') as f:
+            indx=-1
+            while True:
+                line=f.readline().rstrip()
+                if (not line or line.startswith(">")) and not ignore:
+                    if uniprot is not None:
+                        if indx>=0:
+                            if len(newseqs)==0:
+                                newseqs['uniprot']=Sequence(seq_id=newid[0].upper(),source=os.path.basename(inpath))
+                            if newid[0].upper() not in newseqs['uniprot'].imer:
+                                newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=newid[0].upper())
+                                if len(newseqs['uniprot'].imer)==len(uniprot):
+                                    break
+                    else:
+                        if indx>=0:
+                            if newid[0].lower() not in newseqs:
+                                newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
+                            for iid in newid[1]:
+                                newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid)
+                    if not line:
+                        try:
+                            line=f.readline().rstrip()
+                            if not line:
                                 break
-                else:
-                    if indx>=0:
-                        if newid[0].lower() not in newseqs:
-                            newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
-                        for iid in newid[1]:
-                            newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid)
-                if not line:
-                    try:
-                        line=f.readline().rstrip()
-                        if not line:
+                        except:
                             break
-                    except:
-                        break
-            if line.startswith(">"):
-                newid=retrieve_id(line)
-                head=line
-                indx += 1
-                chain = ''
-                if uniprot is not None:
-                    ignore=False if newid[0] in uniprot else True
+                if line.startswith(">"):
+                    newid=retrieve_id(line)
+                    head=line
+                    indx += 1
+                    chain = ''
+                    if uniprot is not None:
+                        ignore=False if newid[0] in uniprot else True
 
-            elif line.startswith("#") or line.startswith(' #'):
-                pass
-            else:
-                if not ignore:
-                    chain += str(line)
+                elif line.startswith("#") or line.startswith(' #'):
+                    pass
+                else:
+                    if not ignore:
+                        chain += str(line)
+
+        for upcode in uniprot:
+            if upcode.upper() not in newseqs['uniprot'].imer:
+                try:
+                    for line in urllib2.urlopen('https://www.uniprot.org/uniprot/'+upcode.upper()+'.fasta'):
+                        if line.startswith(">"):
+                            chain = ''
+                            head = line
+                        else:
+                            chain += str(line)
+                    if len(newseqs)==0:
+                        newseqs['uniprot']=Sequence(seq_id=upcode.upper(),source='Uniprot server')
+                    if upcode.upper() not in newseqs['uniprot'].imer:
+                        newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=upcode.upper())
+                except:
+                    raise OSError('Uniprot sequence '+upcode.upper()+' not found in local file or online. Check your internet connexion.')
 
     return newseqs
