@@ -134,9 +134,9 @@ def main():
                     pass
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
-                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                     else:
-                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                     monomer.dump(outseq)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
@@ -144,9 +144,9 @@ def main():
             for key2,monomer in S.imer.items():
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
-                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                     else:
-                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                     monomer.dump(outseq)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
@@ -156,7 +156,7 @@ def main():
 
     if len(seqset)>1 and args.sort is not None:
         logger.info('Sorting sequence(s)...')
-        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
+        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
         if sorter=='ncrops':
             sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(),reverse=True)
         elif sorter=='percent':
