@@ -107,7 +107,7 @@ def main():
             newstructure.write_minimal_pdb(outstr)
     logger.info('Done\n')
     logger.info('Cropping renumbered structure(s)...')
-    outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+    outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
     for key, S in gseqset.items():
         newS=S.deepcopy()
         if key in intervals:
