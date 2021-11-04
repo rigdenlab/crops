@@ -166,7 +166,8 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
 
     if newchain.length()<len(newchain.seqs['cropseq']):
         newchain.info['header'] += cut_type
-    newchain.info['cropmap']=copy.deepcopy(cropmap)
+    newchain.info['cropmap']=copy.deepcopy(cropmap['map'])
+    newchain.info['cropbackmap']=copy.deepcopy(cropmap['backmap'])
 
     return newchain
 
