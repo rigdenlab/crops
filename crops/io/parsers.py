@@ -4,6 +4,7 @@ import gemmi
 import os
 import csv
 import urllib2
+import copy
 
 from crops.elements.sequence import Sequence
 from crops.io.taggers import retrieve_id
@@ -215,3 +216,51 @@ def parseseqfile(inpath,uniprot=None):
                     raise OSError('Uniprot sequence '+upcode.upper()+' not found in local file or online. Check your internet connexion.')
 
     return newseqs
+
+def parsemapfile(inpath):
+    """Cropmap file parser.
+
+    :param inpath: Cropmap file path.
+    :type inpath: str
+    :return: A dictionary containing parsed mapping and backmapping coordinates.
+    :rtype: dict [str, dict[str, dict[str, dict[int, int]]]]
+
+    """
+    mapdir={}
+    with open(inpath, 'r') as f:
+        indx = -1
+        line=f.readline().rstrip()
+        if (not line or line.startswith(">")):
+            if indx >= 0:
+                if newid[0].lower() not in mapdir:
+                    mapdir[newid[0].lower()]={}
+                for iid in newid[1]:
+                    if iid not in mapdir[newid[0].lower()]:
+                        mapdir[newid[0].lower()][iid]={}
+                        mapdir[newid[0].lower()][iid]['cropmap']=copy.deepcopy(map)
+                        mapdir[newid[0].lower()][iid]['cropbackmap']=copy.deepcopy(backmap)
+
+            if not line:
+                try:
+                    line=f.readline().rstrip()
+                    if not line:
+                        break
+                except:
+                    break
+
+        if line.startswith(">"):
+            newid=retrieve_id(line)
+            indx += 1
+            map={}
+            backmap={}
+        elif line.startswith("#") or line.startswith(' #'):
+            pass
+        else:
+            m=line.split('  ')
+            if m[1] != '0':
+                map[int(m[0])] = int(m[1])
+                backmap[int(m[1])] = int(m[0])
+            else:
+                map[int(m[0])] = None
+
+    return mapdir
