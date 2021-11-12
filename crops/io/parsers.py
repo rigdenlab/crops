@@ -226,19 +226,19 @@ def parsemapfile(inpath):
     :rtype: dict [str, dict[str, dict[str, dict[int, int]]]]
 
     """
-    mapdir={}
+    mapdict={}
     with open(inpath, 'r') as f:
         indx = -1
         line=f.readline().rstrip()
         if (not line or line.startswith(">")):
             if indx >= 0:
-                if newid[0].lower() not in mapdir:
-                    mapdir[newid[0].lower()]={}
+                if newid[0].lower() not in mapdict:
+                    mapdict[newid[0].lower()]={}
                 for iid in newid[1]:
-                    if iid not in mapdir[newid[0].lower()]:
-                        mapdir[newid[0].lower()][iid]={}
-                        mapdir[newid[0].lower()][iid]['cropmap']=copy.deepcopy(map)
-                        mapdir[newid[0].lower()][iid]['cropbackmap']=copy.deepcopy(backmap)
+                    if iid not in mapdict[newid[0].lower()]:
+                        mapdict[newid[0].lower()][iid]={}
+                        mapdict[newid[0].lower()][iid]['cropmap']=copy.deepcopy(map)
+                        mapdict[newid[0].lower()][iid]['cropbackmap']=copy.deepcopy(backmap)
 
             if not line:
                 try:
@@ -263,4 +263,4 @@ def parsemapfile(inpath):
             else:
                 map[int(m[0])] = None
 
-    return mapdir
+    return mapdict
