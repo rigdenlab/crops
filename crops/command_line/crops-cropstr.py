@@ -132,6 +132,9 @@ def main():
                     logger.warning('Chain-name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
                 outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
+                if 'cropmap' in monomer.info:
+                    outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.cropmap')
+                    monomer.dumpmap(outmap)
             if insprot is not None and minlen>0.0:
                 cropped_str=cop.crop_pdb(strset[key],newS,original_id=True)
             else:
