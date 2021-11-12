@@ -135,9 +135,15 @@ def main():
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
                         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
+                        if 'cropmap' in monomer.info:
+                            outmap=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+'.cropmap')
                     else:
                         outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                        if 'cropmap' in monomer.info:
+                            outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.cropmap',mksubdir=True)
                     monomer.dump(outseq)
+                    if 'cropmap' in monomer.info:
+                        monomer.dumpmap(outmap)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
         else:
