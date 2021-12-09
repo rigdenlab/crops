@@ -3,8 +3,11 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 import gemmi
 import os
 import csv
+import urllib3
+import copy
 
 from crops.elements.sequence import Sequence
+from crops.elements.sequence import guess_type
 from crops.io.taggers import retrieve_id
 from crops.elements.intervals import intinterval
 
@@ -139,25 +142,111 @@ def parseseqfile(inpath,uniprot=None):
             if not isinstance(upcode,str):
                 raise TypeError('Input argument uniprot must be either a string or a dictionary.')
 
-    with open(inpath,'r') as f:
-        indx=-1
+    if inpath == 'server-only' and uniprot is not None:
+        for upcode in uniprot:
+            try:
+                for line in urllib3.urlopen('https://www.uniprot.org/uniprot/'+upcode.upper()+'.fasta'):
+                    if line.startswith(">"):
+                        chain = ''
+                        head = line
+                    else:
+                        chain += str(line)
+                if len(newseqs)==0:
+                    newseqs['uniprot']=Sequence(seq_id=upcode.upper(),source='Uniprot server')
+                if upcode.upper() not in newseqs['uniprot'].imer:
+                    newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=upcode.upper(), guesstype=True)
+            except:
+                raise OSError('Uniprot sequence '+upcode.upper()+' not found online. If this file exists, check your internet connexion.')
+    elif inpath == 'server-only' and uniprot is None:
+        raise TypeError('Input argument inpath cannot be "server-only" when a dict of uniprot ids is not provided.')
+    else:
+        with open(inpath,'r') as f:
+            indx=-1
+            while True:
+                line=f.readline().rstrip()
+                if (not line or line.startswith(">")) and not ignore:
+                    if uniprot is not None:
+                        if indx>=0:
+                            if len(newseqs)==0:
+                                newseqs['uniprot']=Sequence(seq_id=newid[0].upper(),source=os.path.basename(inpath))
+                            if newid[0].upper() not in newseqs['uniprot'].imer:
+                                newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=newid[0].upper(), guesstype=True)
+                                if len(newseqs['uniprot'].imer)==len(uniprot):
+                                    break
+                    else:
+                        if indx>=0:
+                            if newid[0].lower() not in newseqs:
+                                newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
+                                if newid[2] is not None and newid[2] not in newseqs[newid[0].lower()].groups:
+                                    newseqs[newid[0].lower()].groups[newid[2]] = newid[1]
+                            for iid in newid[1]:
+                                newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid, guesstype=True)
+                                newseqs[newid[0].lower()].imer[iid].info['seq_group']=newid[2]
+                    if not line:
+                        try:
+                            line=f.readline().rstrip()
+                            if not line:
+                                break
+                        except:
+                            break
+                if line.startswith(">"):
+                    newid=retrieve_id(line)
+                    head=line
+                    indx += 1
+                    chain = ''
+                    if uniprot is not None:
+                        ignore=False if newid[0] in uniprot else True
+
+                elif line.startswith("#") or line.startswith(' #'):
+                    pass
+                else:
+                    if not ignore:
+                        chain += str(line)
+
+        if uniprot is not None:
+            for upcode in uniprot:
+                if upcode.upper() not in newseqs['uniprot'].imer:
+                    try:
+                        for line in urllib3.urlopen('https://www.uniprot.org/uniprot/'+upcode.upper()+'.fasta'):
+                            if line.startswith(">"):
+                                chain = ''
+                                head = line
+                            else:
+                                chain += str(line)
+                        if len(newseqs)==0:
+                            newseqs['uniprot']=Sequence(seq_id=upcode.upper(),source='Uniprot server')
+                        if upcode.upper() not in newseqs['uniprot'].imer:
+                            newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=upcode.upper(), guesstype=True)
+                    except:
+                        raise OSError('Uniprot sequence '+upcode.upper()+' not found in local file or online. Check your internet connexion.')
+
+    return newseqs
+
+def parsemapfile(inpath):
+    """Cropmap file parser.
+
+    :param inpath: Cropmap file path.
+    :type inpath: str
+    :return: A dictionary containing parsed mapping and backmapping coordinates.
+    :rtype: dict [str, dict[str, dict[str, dict[int, int]]]]
+
+    """
+    mapdict={}
+    newid=[]
+    with open(inpath, 'r') as f:
+        indx = -1
         while True:
             line=f.readline().rstrip()
-            if (not line or line.startswith(">")) and not ignore:
-                if uniprot is not None:
-                    if indx>=0:
-                        if len(newseqs)==0:
-                            newseqs['uniprot']=Sequence(seq_id=newid[0].upper(),source=os.path.basename(inpath))
-                        if newid[0].upper() not in newseqs['uniprot'].imer:
-                            newseqs['uniprot'].add_monomer(nheader=head,nseq=chain,nid=newid[0].upper())
-                            if len(newseqs['uniprot'].imer)==len(uniprot):
-                                break
-                else:
-                    if indx>=0:
-                        if newid[0].lower() not in newseqs:
-                            newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
-                        for iid in newid[1]:
-                            newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid)
+            if (not line or line.startswith(">")):
+                if indx >= 0:
+                    if newid[0].lower() not in mapdict:
+                        mapdict[newid[0].lower()]={}
+                    for iid in newid[1]:
+                        if iid not in mapdict[newid[0].lower()]:
+                            mapdict[newid[0].lower()][iid]={}
+                            mapdict[newid[0].lower()][iid]['cropmap']=copy.deepcopy(forthmap)
+                            mapdict[newid[0].lower()][iid]['cropbackmap']=copy.deepcopy(backmap)
+
                 if not line:
                     try:
                         line=f.readline().rstrip()
@@ -165,18 +254,20 @@ def parseseqfile(inpath,uniprot=None):
                             break
                     except:
                         break
+
             if line.startswith(">"):
                 newid=retrieve_id(line)
-                head=line
                 indx += 1
-                chain = ''
-                if uniprot is not None:
-                    ignore=False if newid[0] in uniprot else True
-
+                forthmap={}
+                backmap={}
             elif line.startswith("#") or line.startswith(' #'):
                 pass
             else:
-                if not ignore:
-                    chain += str(line)
+                m=line.split('  ')
+                if m[1] != '0':
+                    forthmap[int(m[0])] = int(m[1])
+                    backmap[int(m[1])] = int(m[0])
+                else:
+                    forthmap[int(m[0])] = None
 
-    return newseqs
+    return mapdict

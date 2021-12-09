@@ -37,7 +37,7 @@ def create_argument_parser():
     sections.add_argument("-t","--terminals",action='store_true',default=False,
                           help="Ignore interval discontinuities and only crop the ends off.")
     sections.add_argument("-u","--uniprot_threshold", nargs=2, metavar=("Uniprot_ratio_threshold","Sequence_database"),
-                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniprot_sprot.fasta-path')
+                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. Threshold: [MIN,MAX)=[0,100). Database path: uniclust##_yyyy_mm_consensus.fasta-path or server-only. The latter requires internet connexion.')
 
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
@@ -54,7 +54,10 @@ def main():
     inseq=check_path(args.input_seqpath[0],'file')
     indb=check_path(args.input_database[0],'file')
     instr=check_path(args.input_strpath[0])
-    insprot=check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
+    if args.uniprot_threshold is not None:
+        insprot=check_path(args.uniprot_threshold[1]) if args.uniprot_threshold != 'server-only' else 'server-only'
+    else:
+        insprot=None
 
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
     targetlbl=ctg.target_format(indb,terms=args.terminals, th=minlen)
@@ -104,7 +107,7 @@ def main():
             newstructure.write_minimal_pdb(outstr)
     logger.info('Done\n')
     logger.info('Cropping renumbered structure(s)...')
-    outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["crop"]+os.path.splitext(os.path.basename(inseq))[1])
+    outseq=os.path.join(outdir,os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
     for key, S in gseqset.items():
         newS=S.deepcopy()
         if key in intervals:
@@ -129,6 +132,9 @@ def main():
                     logger.warning('Chain-name '+key+'_'+str(key2)+' not found in database. Cropping not performed.')
                 outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                 monomer.dump(outseq)
+                if 'cropmap' in monomer.info:
+                    outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.cropmap')
+                    monomer.dumpmap(outmap)
             if insprot is not None and minlen>0.0:
                 cropped_str=cop.crop_pdb(strset[key],newS,original_id=True)
             else:

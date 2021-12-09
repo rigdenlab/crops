@@ -40,7 +40,7 @@ def create_argument_parser():
     sections.add_argument("-t","--terminals",action='store_true',default=False,
                           help="Ignore interval discontinuities and only crop the ends off.")
     sections.add_argument("-u","--uniprot_threshold", nargs=2, metavar=("Uniprot_ratio_threshold","Sequence_database"),
-                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. [MIN,MAX)=[0,100) uniclust##_yyyy_mm_consensus.fasta-path')
+                          help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. Threshold: [MIN,MAX)=[0,100). Database path: uniclust##_yyyy_mm_consensus.fasta-path or server-only. The latter requires internet connexion.')
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
     return parser
@@ -56,7 +56,10 @@ def main():
 
     inseq=check_path(args.input_seqpath[0],'file')
     indb=check_path(args.input_database[0],'file')
-    insprot=check_path(args.uniprot_threshold[1]) if args.uniprot_threshold is not None else None
+    if args.uniprot_threshold is not None:
+        insprot=check_path(args.uniprot_threshold[1]) if args.uniprot_threshold != 'server-only' else 'server-only'
+    else:
+        insprot=None
 
     minlen=float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
     targetlbl=ctg.target_format(indb,terms=args.terminals, th=minlen)
@@ -87,7 +90,7 @@ def main():
     logger.info('Done\n')
 
     if insprot is not None and minlen>0.0:
-        logger.info('Parsing uniprot sequence file '+insprot)
+        logger.info('Parsing uniprot sequence file: '+insprot)
         uniprotset={}
         for seqncid, seqnc in seqset.items():
             for monomerid, monomer in seqnc.imer.items():
@@ -131,19 +134,37 @@ def main():
                     pass
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
+<<<<<<< HEAD
                         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1])
                     else:
                         outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+=======
+                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
+                        if 'cropmap' in monomer.info:
+                            outmap=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+'.cropmap')
+                    else:
+                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+                        if 'cropmap' in monomer.info:
+                            outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.cropmap',mksubdir=True)
+>>>>>>> aa70ee283bd2aa2f2e5e748d5aaec3f1d596bcf2
                     monomer.dump(outseq)
+                    if 'cropmap' in monomer.info:
+                        monomer.dumpmap(outmap)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
         else:
             for key2,monomer in S.imer.items():
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
+<<<<<<< HEAD
                         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1])
                     else:
                         outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+=======
+                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
+                    else:
+                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
+>>>>>>> aa70ee283bd2aa2f2e5e748d5aaec3f1d596bcf2
                     monomer.dump(outseq)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
@@ -153,7 +174,11 @@ def main():
 
     if len(seqset)>1 and args.sort is not None:
         logger.info('Sorting sequence(s)...')
+<<<<<<< HEAD
         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["cropseq"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
+=======
+        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
+>>>>>>> aa70ee283bd2aa2f2e5e748d5aaec3f1d596bcf2
         if sorter=='ncrops':
             sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(),reverse=True)
         elif sorter=='percent':

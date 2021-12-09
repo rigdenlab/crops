@@ -71,7 +71,7 @@ def retrieve_id(seqheader,extrainfo=False):
         raise ValueError('Argument is not a str')
     namechar=False
     idchar=False
-    nameseq=["", [], '']
+    nameseq=["", [], None] #PDB IF, chain IDs for seqgroup,
     newchid=''
     if seqheader.startswith('>sp|'):
         for i in range(4,len(seqheader)):
@@ -108,9 +108,21 @@ def retrieve_id(seqheader,extrainfo=False):
         elif seqheader[j]==":" or seqheader[j]=="_":
             idchar=False
             namechar=True
+        elif seqheader[j]==" ":
+            pass
+        elif seqheader[j]=="[":
+            if seqheader[j:j+5]=="[auth" or seqheader[j:j+6]=="[ auth":
+                newchid=''
+        elif ((seqheader[j]=="a" and seqheader[j:j+4]=='auth') or
+              (seqheader[j]=="u" and seqheader[j-1:j+3]=='auth') or
+              (seqheader[j]=="t" and seqheader[j-2:j+2]=='auth') or
+              (seqheader[j]=="h" and seqheader[j-3:j+1]=='auth')):
+            pass
+        elif seqheader[j]=="]":
+            pass
         elif seqheader[j]=="|":
             if seqheader[j+1:j+6]=='Chain' or seqheader[j+1:j+6]=='chain':
-                if newchid != "":
+                if newchid != '':
                     nameseq[2] = newchid
                 k=0 if seqheader[j+6]==' ' else 1
                 newchid=''
@@ -119,6 +131,16 @@ def retrieve_id(seqheader,extrainfo=False):
                         nameseq[1].append(newchid)
                         newchid=''
                     elif seqheader[jj]==" ":
+                        pass
+                    elif seqheader[jj]=="[":
+                        if seqheader[jj:jj+5]=="[auth" or seqheader[jj:jj+6]=="[ auth":
+                            newchid=''
+                    elif ((seqheader[jj]=="a" and seqheader[jj:jj+4]=='auth') or
+                          (seqheader[jj]=="u" and seqheader[jj-1:jj+3]=='auth') or
+                          (seqheader[jj]=="t" and seqheader[jj-2:jj+2]=='auth') or
+                          (seqheader[jj]=="h" and seqheader[jj-3:jj+1]=='auth')):
+                        pass
+                    elif seqheader[jj]=="]":
                         pass
                     elif seqheader[jj]=="|" or seqheader[jj]==":" or jj==len(seqheader)-1:
                         if extrainfo:
@@ -130,6 +152,7 @@ def retrieve_id(seqheader,extrainfo=False):
                             newchid+=seqheader[jj]
                         nameseq[1].append(newchid)
                         newchid=''
+
                         return nameseq
                     else:
                         newchid+=seqheader[jj]
@@ -138,7 +161,7 @@ def retrieve_id(seqheader,extrainfo=False):
                     return seqheader[j:]
                 nameseq[1].append(newchid)
                 return nameseq
-        elif seqheader[j]==" ":
+        elif seqheader[j]==" " and seqheader[j-1]!="_":
             if extrainfo:
                 return seqheader[j:]
             if namechar:
