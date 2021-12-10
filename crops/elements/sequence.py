@@ -248,20 +248,24 @@ class monomer_sequence:
                 for n in range(nlines):
                     out.write(self.seqs['mainseq'][n*80:(n+1)*80]+'\n')
 
-    def dumpmap(self, out):
+    def dumpmap(self, out, themap='cropmap'):
         """Writes header and cropmap to a file. If file exists, output is appended.
 
         :param out: An output filepath (str) or an open file.
         :type out: str, file
+        :param themap: Key in self.info that contains a dictionary cropmap.
+        :type themap: str
         :raises TypeError: If out is neither a string nor an open file.
-        :raises ValueError: If self.info['cropmap'] does not exist.
+        :raises ValueError: If self.info[themap] does not exist.
 
         """
         if not isinstance(out,str) and not isinstance(out,io.IOBase):
             raise TypeError("Argument 'out' should be a string or a file.")
 
-        if 'cropmap' not in self.info:
-	        raise ValueError("Crop Map not found in sequence.")
+
+        if themap not in self.info:
+            stringerr=themap+" not found in sequence."
+            raise ValueError(stringerr)
 
         if self.oligomer_id() is not None:
             header='>'+self.oligomer_id().upper()+'_'+self.chain_id()
@@ -276,7 +280,7 @@ class monomer_sequence:
 
         if isinstance(out,io.IOBase):
             out.write(header+'\n')
-            for key, value in self.info['cropmap'].items():
+            for key, value in self.info[themap].items():
                 if value is not None:
                     out.write(str(key)+'  '+str(value)+'\n')
                 else:
@@ -286,7 +290,7 @@ class monomer_sequence:
             op='a' if os.path.isfile(outpath) else 'w'
             with open(outpath, op) as out:
                 out.write(header+'\n')
-                for key, value in self.info['cropmap'].items():
+                for key, value in self.info[themap].items():
                     if value is not None:
                         out.write(str(key)+'  '+str(value)+'\n')
                     else:
