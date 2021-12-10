@@ -17,6 +17,7 @@ from crops.core import ops as cop
 from crops import command_line as ccl
 
 import time
+import copy
 
 logger=None
 
@@ -134,11 +135,6 @@ def main():
                     pass
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
-<<<<<<< HEAD
-                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1])
-                    else:
-                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
-=======
                         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                         if 'cropmap' in monomer.info:
                             outmap=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+'.cropmap')
@@ -146,7 +142,6 @@ def main():
                         outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
                         if 'cropmap' in monomer.info:
                             outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.cropmap',mksubdir=True)
->>>>>>> aa70ee283bd2aa2f2e5e748d5aaec3f1d596bcf2
                     monomer.dump(outseq)
                     if 'cropmap' in monomer.info:
                         monomer.dumpmap(outmap)
@@ -154,18 +149,22 @@ def main():
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
         else:
             for key2,monomer in S.imer.items():
+                monomer.info['cropmap']={}
+                for n in range(1,monomer.length()+1):
+                    monomer.info['cropmap'][n]=n
+                monomer.info['cropbackmap']=copy.deepcopy(monomer.info['cropmap'])
                 if len(seqset)==1 or args.sort is None:
                     if len(seqset)>1:
-<<<<<<< HEAD
-                        outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1])
-                    else:
-                        outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["cropseq"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
-=======
                         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
+                        if 'cropmap' in monomer.info:
+                            outmap=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+'.cropmap')
                     else:
                         outseq=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1],mksubdir=True)
->>>>>>> aa70ee283bd2aa2f2e5e748d5aaec3f1d596bcf2
+                        if 'cropmap' in monomer.info:
+                            outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.cropmap',mksubdir=True)
                     monomer.dump(outseq)
+                    if 'cropmap' in monomer.info:
+                        monomer.dumpmap(outmap)
                 if len(seqset)>1 and args.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
     croptime=time.time()
@@ -174,11 +173,8 @@ def main():
 
     if len(seqset)>1 and args.sort is not None:
         logger.info('Sorting sequence(s)...')
-<<<<<<< HEAD
         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["cropseq"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
-=======
         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
->>>>>>> aa70ee283bd2aa2f2e5e748d5aaec3f1d596bcf2
         if sorter=='ncrops':
             sorted_outseq2=sorted(sorted_outseq.items(), key=lambda x: x[1].ncrops(),reverse=True)
         elif sorter=='percent':
