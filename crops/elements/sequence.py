@@ -6,7 +6,51 @@ import copy
 import logging
 
 from crops.io.taggers import retrieve_id
-from crops.io.parsers import parsemapfile
+from crops.libs.rescodes import reslist
+from crops.libs.rescodes import nuclist
+
+def guess_type(inseq):
+    """Returns the biological type of the sequence as guessed from residue types.
+
+    :param inseq: Sequence to be evaluated.
+    :type inseq: str
+    :return: Sequence type ('Protein' or 'DNA' or 'RNA' or 'Unknown').
+    :rtype: str
+
+    """
+    if not isinstance(inseq,str):
+        raise TypeError("Sequence 'inseq' should be a string.")
+
+    outtype=None
+    for char in inseq:
+        if (char=='C' or char=='A' or char=='G' or char=='I' or
+            char=='X' or char=='-' or char=='+' or char=='*'):
+            pass
+        elif char not in nuclist.values():
+            if char in reslist.values():
+                outtype='Protein'
+            else:
+                outtype='Unknown'
+        else:
+            if char=='T':
+                if outtype=='DNA' or outtype=='Protein':
+                    pass
+                elif outtype is None:
+                    outtype='DNA'
+                elif outtype=='RNA':
+                    outtype='Protein'
+            elif char=='U':
+                if outtype=='RNA' or outtype=='Protein':
+                    pass
+                elif outtype is None:
+                    outtype='RNA'
+                elif outtype=='DNA':
+                    outtype='Protein'
+
+    if outtype is None:
+        outtype='DNA or RNA'
+
+    return outtype
 
 class monomer_sequence:
     """A sequence object representing a single chain sequence.
@@ -38,14 +82,15 @@ class monomer_sequence:
     7
     >>> my_monomer.ngaps('gapseq')
     3
+    >>> my_monomer.guesstype()
     >>> print(my_monomer)
-    Single chain sequence object: (id='example_id', seq='GATTACA', length=7)
+    Single chain sequence object: (id='example_id', seq='GATTACA', type='DNA', length=7)
 
     """
 
     _kind='Single chain sequence'
     __slots__=['info','seqs']
-    def __init__(self,chid,seq=None,header=None):
+    def __init__(self,chid,seq=None,header=None,biotype=None):
         self.info={}
         self.seqs={}
         if chid is not None:
@@ -74,15 +119,23 @@ class monomer_sequence:
             self.info['header']=None
             self.info['oligomer_id']=None
             self.info['seq_number']=None
+        if biotype is not None:
+            if biotype=='guess':
+                pass
+            else:
+                self.info['biotype']=biotype
+        else:
+            self.info['biotype']=None
 
     def __repr__(self):
+        chtype=self.info['biotype'] if self.info['biotype'] is not None else 'Undefined'
         if 'mainseq' not in self.seqs:
             raise ValueError('mainseq sequence not found.')
         showseq=self.seqs['mainseq'] if len(self.seqs['mainseq'])<=20 else self.seqs['mainseq'][:10]+'[...]'+self.seqs['mainseq'][len(self.seqs['mainseq'])-10:]
         if self.info['oligomer_id'] is not None:
-            string=self._kind+" object: ( id="+ self.info['oligomer_id']+'_'+self.info['chain_id'] +", seq="+str(showseq)+", length="+str(len(self.seqs['mainseq']))+" )"
+            string=self._kind+" object: ( id="+ self.info['oligomer_id']+'_'+self.info['chain_id'] +", seq="+str(showseq)+", type="+chtype+", length="+str(len(self.seqs['mainseq']))+" )"
         else:
-            string=self._kind+" object: ( id="+ self.info['chain_id'] +", seq="+str(showseq)+", length="+str(len(self.seqs['mainseq']))+" )"
+            string=self._kind+" object: ( id="+ self.info['chain_id'] +", seq="+str(showseq)+", type="+chtype+", length="+str(len(self.seqs['mainseq']))+" )"
         return string
 
     def __iter__(self):
@@ -195,20 +248,24 @@ class monomer_sequence:
                 for n in range(nlines):
                     out.write(self.seqs['mainseq'][n*80:(n+1)*80]+'\n')
 
-    def dumpmap(self, out):
+    def dumpmap(self, out, themap='cropmap'):
         """Writes header and cropmap to a file. If file exists, output is appended.
 
         :param out: An output filepath (str) or an open file.
         :type out: str, file
+        :param themap: Key in self.info that contains a dictionary cropmap.
+        :type themap: str
         :raises TypeError: If out is neither a string nor an open file.
-        :raises ValueError: If self.info['cropmap'] does not exist.
+        :raises ValueError: If self.info[themap] does not exist.
 
         """
         if not isinstance(out,str) and not isinstance(out,io.IOBase):
             raise TypeError("Argument 'out' should be a string or a file.")
 
-        if 'cropmap' not in self.info:
-	    raise ValueError("Crop Map not found in sequence.")
+
+        if themap not in self.info:
+            stringerr=themap+" not found in sequence."
+            raise ValueError(stringerr)
 
         if self.oligomer_id() is not None:
             header='>'+self.oligomer_id().upper()+'_'+self.chain_id()
@@ -223,7 +280,7 @@ class monomer_sequence:
 
         if isinstance(out,io.IOBase):
             out.write(header+'\n')
-            for key, value in self.info['cropmap'].items():
+            for key, value in self.info[themap].items():
                 if value is not None:
                     out.write(str(key)+'  '+str(value)+'\n')
                 else:
@@ -233,11 +290,24 @@ class monomer_sequence:
             op='a' if os.path.isfile(outpath) else 'w'
             with open(outpath, op) as out:
                 out.write(header+'\n')
-                for key, value in self.info['cropmap'].items():
+                for key, value in self.info[themap].items():
                     if value is not None:
                         out.write(str(key)+'  '+str(value)+'\n')
                     else:
                         out.write(str(key)+'  0\n')
+
+    def biotype(self):
+        """Returns the biological type contained in info['biotype'].
+
+        :return: Biological type.
+        :rtype: str or None
+
+        """
+        if self.info['biotype'] is None:
+            if self.seqs['mainseq'] is not None and self.seqs['mainseq']!='':
+                self.info['biotype']=guess_type(self.mainseq())
+
+        return self.info['biotype']
 
     def length(self):
         """Returns the length of the main sequence.
@@ -359,16 +429,16 @@ class monomer_sequence:
             self.info['chain_id']=None
         return self.info['chain_id']
 
-    def chain_id(self):
+    def chain_seqgroup(self):
         """Returns, if known, the number assigned to the sequence.
 
         :return: Sequence number.
         :rtype: str
 
         """
-        if 'seq_number' not in self.info:
-            self.info['seq_number']=None
-        return self.info['seq_number']
+        if 'seq_group' not in self.info:
+            self.info['seq_group']=None
+        return self.info['seq_group']
 
 class Sequence:
     """A :class:`~crops.elements.sequence.Sequence` object grouping several chain sequence objects.
@@ -408,7 +478,7 @@ class Sequence:
 
     """
     _kind='Protein/polynucleotide sequence'
-    __slots__ = ['seq_id', 'imer', 'source']
+    __slots__ = ['seq_id', 'imer', 'source', 'groups']
     def __init__(self, seq_id=None, imer=None, source=None):
 
         if not isinstance(seq_id,str) and seq_id is not None:
@@ -422,6 +492,7 @@ class Sequence:
         self.seq_id = seq_id
         self.imer = imer if imer is not None else {}
         self.source = source
+        self.groups = {}
 
     def __repr__(self):
         if self.source is not None:
@@ -447,7 +518,7 @@ class Sequence:
         self.source=None
         self.imer.clear()
 
-    def add_monomer(self, nheader, nseq,  nid=None, sqnm=None, forceentry=False):
+    def add_monomer(self, nheader, nseq,  nid=None, sqnm=None, forceentry=False, guesstype=False):
         """Adds a new :class:`~crops.elements.sequence.monomer_sequence` to the :class:`~crops.elements.sequence.Sequence`.
 
         :param nheader: Standard .fasta header, starting with ">".
@@ -460,6 +531,8 @@ class Sequence:
         :type sqnm: str, optional
         :param forceentry: Switch to force entry under a new ID if nid already in, defaults to False.
         :type forceentry: bool, optional
+        :param guesstype: Use :func:`~crops.elements.sequence.guess_type` to guess type of sequence.
+        :type guesstype: bool, optional
         :raises KeyError: When :class:`~crops.elements.sequence.monomer_sequence` ID already in :class:`~crops.elements.sequence.Sequence` and forceentry=False.
 
         """
@@ -483,6 +556,8 @@ class Sequence:
                     raise KeyError('add_monomer ERROR: Chain named '+iid+' already exists in Sequence '+self.seq_id+".")
 
             self.imer[iid]=monomer_sequence(chid=iid,seq=nseq,header=nheader)
+            if guesstype:
+                self.imer[iid].info['biotype']=guess_type(nseq)
 
     def del_monomer(self, nid):
         """Removes the selected :class:`~crops.elements.sequence.monomer_sequence` from the :class:`~crops.elements.sequence.Sequence`.
@@ -557,3 +632,11 @@ class Sequence:
         :rtype: int
         """
         return len(self.imer)
+
+    def nidentical(self):
+        """Returns number of identical :class:`~crops.elements.sequence.monomer_sequence` objects in :class:`~crops.elements.sequence.Sequence`.
+
+        :return: Number of identical :class:`~crops.elements.sequence.monomer_sequence` objects in :class:`~crops.elements.sequence.Sequence`.
+        :rtype: int
+        """
+        return len(self.groups)
