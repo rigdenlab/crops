@@ -541,8 +541,10 @@ class Sequence:
             if (nheader is not None and nid is None):
                 nid=retrieve_id(nheader+'|')
             nid=nid[1]
+            gid=nid[2]
         else:
             nid=[nid]
+            gid=None
 
         for iid in nid:
             if iid in self.imer:
@@ -556,6 +558,30 @@ class Sequence:
                     raise KeyError('add_monomer ERROR: Chain named '+iid+' already exists in Sequence '+self.seq_id+".")
 
             self.imer[iid]=monomer_sequence(chid=iid,seq=nseq,header=nheader)
+            if gid is not None:
+                self.imer[iid].info['seq_group']=gid
+                if gid in self.groups:
+                    self.groups[gid].append(iid)
+                else:
+                    self.groups[gid]=[iid]
+            else:
+                for chain in self.imer:
+                    if nseq==chain.mainseq():
+                        gid=chain.info['seq_group']
+                        if gid in self.groups:
+                            self.groups[gid].append(iid)
+                        else:
+                            self.groups[gid]=[iid]
+                        self.imer[iid].info['seq_group']=gid
+                        break
+                if gid is None:
+                    number=0
+                    for key in self.groups:
+                        if int(key)>number:
+                            number=str(key)
+                    self.groups[str(number+1)]=[iid]
+                    self.imer[iid].info['seq_group']=str(number+1) 
+
             if guesstype:
                 self.imer[iid].info['biotype']=guess_type(nseq)
 
@@ -633,10 +659,10 @@ class Sequence:
         """
         return len(self.imer)
 
-    def nidentical(self):
-        """Returns number of identical :class:`~crops.elements.sequence.monomer_sequence` objects in :class:`~crops.elements.sequence.Sequence`.
+    def ndiffseqs(self):
+        """Returns number of different :class:`~crops.elements.sequence.monomer_sequence` objects in :class:`~crops.elements.sequence.Sequence`.
 
-        :return: Number of identical :class:`~crops.elements.sequence.monomer_sequence` objects in :class:`~crops.elements.sequence.Sequence`.
+        :return: Number of different :class:`~crops.elements.sequence.monomer_sequence` objects in :class:`~crops.elements.sequence.Sequence`.
         :rtype: int
         """
         return len(self.groups)
