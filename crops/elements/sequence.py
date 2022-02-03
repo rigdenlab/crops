@@ -210,25 +210,45 @@ class monomer_sequence:
         else:
             self.seqs['mainseq']=add
 
-    def dump(self, out):
+    def dump(self, out, grouped=False):
         """Writes header and main sequence to a file. If file exists, output is appended.
 
         :param out: An output filepath (str) or an open file.
         :type out: str, file
+        :param grouped: If True, the sequence is presented with the format '>PDBID_group|Chains A,B,C', defaults to False.
+        :type grouped: bool, optional
         :raises TypeError: If out is neither a string nor an open file.
 
         """
         if not isinstance(out,str) and not isinstance(out,io.IOBase):
             raise TypeError("Argument 'out' should be a string or a file.")
 
+        if grouped and self.info['seq_group'] is None:
+            raise KeyError('Chains cannot be grouped. No groups have been defined.')
         if self.oligomer_id() is not None:
-            header='>'+self.oligomer_id().upper()+'_'+self.chain_id()
+            if grouped:
+                header='>'+self.oligomer_id().upper()+'_'+self.info['seq_group']+'|Chain'
+                header += 's ' if len(self.info['identical']) > 1 else += ' '
+                for chainid in self.info['identical']:
+                    header += chainid
+                    if chainid != self.info['identical'][-1]:
+                        header += ','
+            else:
+                header='>'+self.oligomer_id().upper()+'_'+self.chain_id()
             if self.header() is not None:
                 header+=retrieve_id(self.header(),extrainfo=True)
         else:
             if self.header() is not None:
                 ids=retrieve_id(self.header())
-                header='>'+ids[0].upper()+'_'+self.chain_id()+retrieve_id(self.header(),extrainfo=True)
+                if grouped:
+                    header='>'+ids[0].upper()+'_'+self.info['seq_group']+'|Chain'
+                    header += 's ' if len(self.info['identical']) > 1 else += ' '
+                    for chainid in self.info['identical']:
+                    header += chainid
+                    if chainid != self.info['identical'][-1]:
+                        header += ','
+                else:
+                    header='>'+ids[0].upper()+'_'+self.chain_id()+retrieve_id(self.header(),extrainfo=True)
             else:
                 header='>'+self.chain_id()+':CROPS'
 
@@ -601,14 +621,14 @@ class Sequence:
         else:
             logging.warning('Chain named '+ nid+' not found in Sequence.')
 
-    def write(self, outdir, infix="",single=None):
+    def write(self, outdir, infix="", single=None):
         """Writes all :class:`~crops.elements.sequence.monomer_sequence` objects to .fasta file.
 
         :param outdir: Output directory.
         :type outdir: str
         :param infix: Filename tag to distinguish from original input file, defaults to "".
         :type infix: str, optional
-        :param single: If not None, only :class:`~crops.elements.sequence.monomer_sequence` with ID given by single is written, defaults to None.
+        :param single: If not None, only :class:`~crops.elements.sequence.monomer_sequence` with chain or group ID given by single is written, defaults to None.
         :type single: str, optional
         :raises FileNotFoundError: Output directory not found.
         :raises TypeError: Argument 'single' should be a string.
@@ -627,11 +647,21 @@ class Sequence:
                 try:
                     single=str(single)
                 except:
-                    raise TypeError('single='+single+' should be a string.')
-            if single not in self.imer:
-                raise KeyError(single + " not found in Sequence "+ self.seq_id)
-            outpath=os.path.join(outdir,self.seq_id+"_"+single+infix+".fasta")
-            self.imer[single].dump(outpath)
+                    msg = 'single='+single+' should be a string.'
+                    raise TypeError(msg)
+            msg = single + " not found in Sequence "+ self.seq_id
+            if single in self.imer:
+                outpath=os.path.join(outdir,self.seq_id+"_"+single+infix+".fasta")
+                self.imer[single].dump(outpath)
+            else:
+                if self.groups is None:
+                    raise KeyError(msg)
+                else:
+                    if single in self.groups:
+                        outpath=os.path.join(outdir,self.seq_id+"_"+single+infix+".fasta")
+                        self.imer[self.groups[single][0]].dump(outpath, grouped=True)
+                    else:
+                        raise KeyError(msg)
 
     def length(self,chain):
         """Returns the length of a certain sequence.

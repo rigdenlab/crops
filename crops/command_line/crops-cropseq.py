@@ -34,8 +34,11 @@ def create_argument_parser():
     parser.add_argument("-o","--outdir",nargs=1,metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
 
-    parser.add_argument("-s","--sort",nargs=1, metavar="Sort_type",
+    outfiles=parser.add_mutually_exclusive_group(required=False)
+    outfiles.add_argument("-s","--sort",nargs=1, metavar="Sort_type",
                         help="Sort output sequences in descending order by criteria provided - 'ncrops' or 'percent'. Add 'T' ('ncropsIN', 'percentIN') to ignore numbers from terminals. Only for multiple ID fasta inputs.")
+    outfiles.add_argument("-i","--individual", action='store_true', default=False,
+                        help="Output sequences will be printed out as one file per identical sequence.")
 
     sections=parser.add_mutually_exclusive_group(required=False)
     sections.add_argument("-t","--terminals",action='store_true',default=False,
