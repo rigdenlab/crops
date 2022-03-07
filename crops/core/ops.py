@@ -1,7 +1,7 @@
 from crops.about import __prog__, __description__, __author__, __date__, __version__
 
 from crops.libs import ressymbol
-from crops.elements.sequence import monomer_sequence
+from crops.elements.sequences import sequence
 
 import copy
 import logging
@@ -10,15 +10,15 @@ def renumber_pdb(inseq,instr,seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
 
     :param inseq: Input sequence.
-    :type inseq: :class:`~crops.elements.sequence.Sequence`
+    :type inseq: :class:`~crops.elements.sequences.oligoseq`
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
-    :param seqback: If True, it additionally returns the Sequence with the gaps found in the structure, defaults to False.
+    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
     :type seqback: bool, optional
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
     :return inseq: Sequence with extra information about gaps, only if seqback==True.
-    :rtype inseq: :class:`~crops.elements.sequence.Sequence`
+    :rtype inseq: :class:`~crops.elements.sequences.oligoseq`
 
     """
     n_chains = 0
@@ -90,7 +90,7 @@ def renumber_pdb(inseq,instr,seqback=False):
                     nligands+=1
                     pos[n_chains][nligands-1]=-nligands
                 if ligandwarn==True:
-                    logging.warning('Some of the ligands contain Aminoacid or Nucleotide residues. Please check that they actually are ligands.')
+                    logging.warning('Some of the ligands contain Aminoacid or Nucleotide residues. Please check that they are actually ligands.')
                 solved=True
 
             if solved:
@@ -111,11 +111,11 @@ def renumber_pdb(inseq,instr,seqback=False):
     else:
         return instr
 
-def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MONOMERS
-    """Returns modified :class:`~crops.elements.sequence.monomer_sequence` without specified elements.
+def crop_seq(inseq, segments, cut_type, terms=False):
+    """Returns modified :class:`~crops.elements.sequences.sequence` without specified elements.
 
     :param inseq: Input sequence.
-    :type inseq: :class:`~crops.elements.sequence.monomer_sequence`
+    :type inseq: :class:`~crops.elements.sequences.sequence`
     :param segments: Input preservation interval.
     :type segments: :class:`~crops.elements.intervals.intinterval`
     :param cut_type: Additional header information.
@@ -124,7 +124,7 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
     :type terms: bool, optional
     :raises ValueError: If intervals given lie out of the sequence.
     :return: Cropped sequence.
-    :rtype: :class:`~crops.elements.sequence.monomer_sequence`
+    :rtype: :class:`~crops.elements.sequences.sequence`
 
     """
     if len(segments.subint)>0:
@@ -133,7 +133,8 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
             logging.debug('with '+str(segments))
             raise ValueError('One or many of the segment end values is outside the original sequence.')
 
-    newchain=monomer_sequence(chid=inseq.info['chain_id'],header=inseq.info['header'])
+    newchain=inseq.deepcopy()
+    newchain.seqs['mainseq']=''
     newchain.seqs['fullseq']=inseq.seqs['mainseq']
     newchain.seqs['cropseq']=''
 
@@ -165,9 +166,9 @@ def crop_seq(inseq, segments, cut_type, terms=False):  #INPUTS MUST BE SINGLE MO
             newchain.seqs['cropseq'] += '*'
 
     if newchain.length()<len(newchain.seqs['cropseq']):
-        newchain.info['header'] += cut_type
-    newchain.info['cropmap']=copy.deepcopy(cropmap['map'])
-    newchain.info['cropbackmap']=copy.deepcopy(cropmap['backmap'])
+        newchain.header += cut_type
+    newchain.cropmap=copy.deepcopy(cropmap['map'])
+    newchain.cropbackmap=copy.deepcopy(cropmap['backmap'])
 
     return newchain
 
@@ -177,7 +178,7 @@ def crop_pdb(instr, inseq, original_id=True):
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
     :param inseq: Input previously-cropped-sequence.
-    :type inseq: :class:`~crops.elements.sequence.Sequence`
+    :type inseq: :class:`~crops.elements.sequences.oligoseq`
     :param original_id: If True, it will keep residue ids alligned to original sequence, defaults to True
     :type original_id: bool, optional
     :return: Cropped structure.
@@ -186,15 +187,15 @@ def crop_pdb(instr, inseq, original_id=True):
     """
     for model in instr:
         for chain in model:
-            if chain.name in inseq.imer:
-                if 'cropmap' in inseq.imer[chain.name].info:
+            if chain.name in inseq.chainlist():
+                chseq=inseq.whatseq(chain.name)
+                if inseq.imer[chseq].cropmap is not None:
                     for res in reversed(range(len(chain))):
-                        if chain[res].seqid.num in inseq.imer[chain.name].info['cropmap']:
-                            if inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num] is not None:
+                        if chain[res].seqid.num in inseq.imer[chseq].cropmap:
+                            if inseq.imer[chseq].cropmap[chain[res].seqid.num] is not None:
                                 if not original_id:
-                                    chain[res].seqid.num=inseq.imer[chain.name].info['cropmap'][chain[res].seqid.num]
+                                    chain[res].seqid.num=inseq.imer[chseq].cropmap[chain[res].seqid.num]
                             else:
                                 del chain[res]
 
     return instr
-

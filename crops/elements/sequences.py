@@ -105,8 +105,9 @@ class sequence:
     """
 
     _kind='Sequence'
-    __slots__=['oligomer_id', 'name', 'chains', 'source', 'seqs',
-               'source_headers', 'crops_header', 'cropmap', 'backmap']
+    __slots__=['oligomer_id', 'name', 'chains', 'source', 'seqs', 'biotype',
+               'source_headers', 'crops_header', 'cropmap', 'cropbackmap',
+               'infostring']
     def __init__(self, seqid=None, oligomer=None, seq=None, chains=None, source=None,
                  header=None, biotype=None, extrainfo=None):
         self.oligomer_id=None
@@ -117,8 +118,7 @@ class sequence:
         self.crops_header=None
         self.seqs={}
         self.biotype=None
-        self.header_comments=None
-        self.extrainfo=None
+        self.infostring=None
         self.cropmap=None
         self.cropbackmap=None
 
@@ -199,8 +199,8 @@ class sequence:
         tempolig=self.oligomer_id if self.oligomer_id is not None else 'NOID'
         shortid=makeheader(mainid=tempolig, seqid=self.name,
                            chains=self.chains, short=True)
-        string=(self._kind+" object: ("+shortid+", seq="+str(showseq)+
-                ", type="+chtype+", length="+str(len(self.seqs['mainseq']))+" )")
+        string=(self._kind+" object "+shortid+" (seq="+str(showseq)+
+                ", type="+chtype+", length="+str(len(self.seqs['mainseq']))+")")
         return string
 
     def __iter__(self):
@@ -661,6 +661,28 @@ class oligoseq:
 
         return
 
+    def set_cropmaps(self, mapdict):
+        """Sets the parsed cropmaps from :class:`~crops.io.parsers.parsemapfile`.
+
+        :param mapdict: Parsed maps for this specific :class:`~crops.elements.sequences.oligoseq`.
+        :type mapdict: dict [str, dict [str, dict [int, int]]]
+        :raises TypeError: When 'mapdict' has not the appropriate format.
+
+        """
+        if not isinstance(mapdict,dict):
+            raise TypeError("'mapdict' should be a dictionary.")
+
+        for seqid in mapdict:
+            if not isinstance(seqid, str):
+                raise TypeError("Values in 'mapdict' should be strings.")
+            if seqid in self.imer:
+                if ('cropmap' not in mapdict[seqid] or
+                    'cropbackmap' not in mapdict[seqid]):
+                    raise TypeError("'mapdict' is not a crop map.")
+                self.imer[seqid].cropmap=copy.deepcopy(mapdict[seqid]['cropmap'])
+                self.imer[seqid].cropackmap=copy.deepcopy(mapdict[seqid]['cropbackmap'])
+        return
+
     def write(self, outdir, infix="", split=False, oneline=False):
         """Writes all :class:`~crops.elements.sequences.sequence` objects to .fasta file.
 
@@ -721,6 +743,20 @@ class oligoseq:
         :rtype: int
         """
         return len(self.imer)
+
+    def chainlist(self):
+        """
+        Returns a set with all the chain names in the :class:`~crops.elements.sequences.oligseq`.
+
+        :return: Chain names in :class:`~crops.elements.sequences.oligseq`.
+        :rtype: set [str]
+
+        """
+        newset=set()
+        for seq in self.imer:
+            newset=newset.union(seq.chains)
+
+        return newset
 
     def whatseq(self, chain):
         """Returns the sequence number corresponding to a chain.
