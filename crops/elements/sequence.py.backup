@@ -177,6 +177,11 @@ class monomer_sequence:
         :raises TypeError: If delid is not a string.
 
         """
+        if not isinstance(delid,str):
+            raise TypeError("Sequence ID 'delid' should be a string.")
+        if not isinstance(wipeall,bool):
+            raise TypeError("Boolean switch 'wipeall' is neither True nor False.")
+
         if wipeall:
             self.seqs={}
             self.seqs['mainseq']=''
@@ -184,10 +189,6 @@ class monomer_sequence:
         if delid is None:
             return
 
-        if not isinstance(delid,str):
-            raise TypeError("Sequence ID 'delid' should be a string.")
-        if not isinstance(wipeall,bool):
-            raise TypeError("Boolean switch 'wipeall' is neither True nor False.")
         if delid=='mainseq':
             self.seqs['mainseq']=''
         else:
@@ -210,7 +211,7 @@ class monomer_sequence:
         else:
             self.seqs['mainseq']=add
 
-    def dump(self, out, grouped=False):
+    def dump(self, out, grouped=True):
         """Writes header and main sequence to a file. If file exists, output is appended.
 
         :param out: An output filepath (str) or an open file.
@@ -228,7 +229,10 @@ class monomer_sequence:
         if self.oligomer_id() is not None:
             if grouped:
                 header='>'+self.oligomer_id().upper()+'_'+self.info['seq_group']+'|Chain'
-                header += 's ' if len(self.info['identical']) > 1 else += ' '
+                if len(self.info['identical']) > 1:
+                    header += 's '
+                else:
+                    header += ' '
                 for chainid in self.info['identical']:
                     header += chainid
                     if chainid != self.info['identical'][-1]:
@@ -242,11 +246,14 @@ class monomer_sequence:
                 ids=retrieve_id(self.header())
                 if grouped:
                     header='>'+ids[0].upper()+'_'+self.info['seq_group']+'|Chain'
-                    header += 's ' if len(self.info['identical']) > 1 else += ' '
+                    if len(self.info['identical']) > 1:
+                        header += 's '
+                    else:
+                        header += ' '
                     for chainid in self.info['identical']:
-                    header += chainid
-                    if chainid != self.info['identical'][-1]:
-                        header += ','
+                        header += chainid
+                        if chainid != self.info['identical'][-1]:
+                            header += ','
                 else:
                     header='>'+ids[0].upper()+'_'+self.chain_id()+retrieve_id(self.header(),extrainfo=True)
             else:
@@ -556,15 +563,12 @@ class Sequence:
         :raises KeyError: When :class:`~crops.elements.sequence.monomer_sequence` ID already in :class:`~crops.elements.sequence.Sequence` and forceentry=False.
 
         """
-        if nid is None:
-            nid=retrieve_id(nheader)
-            if (nheader is not None and nid is None):
-                nid=retrieve_id(nheader+'|')
-            nid=nid[1]
-            gid=nid[2]
-        else:
-            nid=[nid]
-            gid=None
+        if nid is None or sqnm is None:
+            newids=retrieve_id(nheader)
+            if (nheader is not None and newids is None):
+                newids=retrieve_id(nheader+'|')
+            nid = newids[1] if nid is None else [nid]
+            gid = newids[2] if sqnm is None else str(sqnm)
 
         for iid in nid:
             if iid in self.imer:
@@ -581,17 +585,17 @@ class Sequence:
             if gid is not None:
                 self.imer[iid].info['seq_group']=gid
                 if gid in self.groups:
-                    self.groups[gid].append(iid)
+                    self.groups[gid].add(iid)
                 else:
-                    self.groups[gid]=[iid]
+                    self.groups[gid]={iid}
             else:
                 for chain in self.imer:
                     if nseq==chain.mainseq():
                         gid=chain.info['seq_group']
                         if gid in self.groups:
-                            self.groups[gid].append(iid)
+                            self.groups[gid].add(iid)
                         else:
-                            self.groups[gid]=[iid]
+                            self.groups[gid]={iid}
                         self.imer[iid].info['seq_group']=gid
                         break
                 if gid is None:
@@ -599,11 +603,11 @@ class Sequence:
                     for key in self.groups:
                         if int(key)>number:
                             number=str(key)
-                    self.groups[str(number+1)]=[iid]
-                    self.imer[iid].info['seq_group']=str(number+1) 
+                    self.groups[str(number+1)]={iid}
+                    self.imer[gid].info['seq_group']=str(number+1)
 
             if guesstype:
-                self.imer[iid].info['biotype']=guess_type(nseq)
+                self.imer[gid].info['biotype']=guess_type(nseq)
 
     def del_monomer(self, nid):
         """Removes the selected :class:`~crops.elements.sequence.monomer_sequence` from the :class:`~crops.elements.sequence.Sequence`.
@@ -696,3 +700,19 @@ class Sequence:
         :rtype: int
         """
         return len(self.groups)
+
+    def whatgroup(self, chain):
+        """Returns the sequence number corresponding to a chain.
+
+        :param chain: The chain ID of a given monomer.
+        :type chain: str
+        :return: The group ID for chains with identical sequence to input.
+        :rtype: str
+
+        """
+        for g in self.groups:
+             if chain in g:
+                mygroup = g
+                break
+
+        return mygroup

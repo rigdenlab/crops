@@ -74,12 +74,12 @@ def main():
     else:
         outdir=check_path(os.path.join(args.outdir[0],''),'dir')
 
-    if args.sort is not None:
-        if (args.sort[0].lower()!='ncrops' and args.sort[0].lower()!='percent' and
-            args.sort[0].lower()!='ncropsin' and args.sort[0].lower()!='percentin'):
+    if args.outfiles.sort is not None:
+        if (args.outfiles.sort[0].lower()!='ncrops' and args.outfiles.sort[0].lower()!='percent' and
+            args.outfiles.sort[0].lower()!='ncropsin' and args.outfiles.sort[0].lower()!='percentin'):
             raise ValueError("Arguments for sorting option can only be either 'ncrops' or 'percent'.")
         else:
-            sorter=args.sort[0].lower()
+            sorter=args.outfiles.sort[0].lower()
 
     ###########################################
     logger.info('Parsing sequence file '+inseq)
@@ -107,7 +107,7 @@ def main():
         logger.info('Done\n')
 
     logger.info('Cropping sequence(s)...')
-    if len(seqset)>1 and args.sort is not None:
+    if len(seqset)>1 and args.outfiles.sort is not None:
         sorted_outseq={}
 
     cropmaps=['cropmap','cropbackmap']
@@ -137,7 +137,7 @@ def main():
 
                 else:
                     pass
-                if len(seqset)==1 or args.sort is None:
+                if len(seqset)==1 or args.outfiles.sort is None:
                     if len(seqset)>1:
                         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                         for cmap in cropmaps:
@@ -151,7 +151,7 @@ def main():
                                 outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.'+cmap,mksubdir=True)
                                 monomer.dumpmap(outmap,themap=cmap)
                     monomer.dump(outseq)
-                if len(seqset)>1 and args.sort is not None:
+                if len(seqset)>1 and args.outfiles.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
         else:
             for key2,monomer in S.imer.items():
@@ -159,7 +159,7 @@ def main():
                 for n in range(1,monomer.length()+1):
                     monomer.info['cropmap'][n]=n
                 monomer.info['cropbackmap']=copy.deepcopy(monomer.info['cropmap'])
-                if len(seqset)==1 or args.sort is None:
+                if len(seqset)==1 or args.outfiles.sort is None:
                     if len(seqset)>1:
                         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+os.path.splitext(os.path.basename(inseq))[1])
                         for cmap in cropmaps:
@@ -173,13 +173,13 @@ def main():
                                 outmap=outpathgen(outdir,subdir=key,filename=key+infixlbl["croprenum"]+'.'+cmap,mksubdir=True)
                                 monomer.dumpmap(outmap,themap=cmap)
                     monomer.dump(outseq)
-                if len(seqset)>1 and args.sort is not None:
+                if len(seqset)>1 and args.outfiles.sort is not None:
                     sorted_outseq[monomer.info['oligomer_id']+'_'+monomer.info['chain_id']]=monomer.deepcopy()
     croptime=time.time()
     logger.debug('Crop time = '+str(croptime-starttime)+ ' s')
     logger.info('Done\n')
 
-    if len(seqset)>1 and args.sort is not None:
+    if len(seqset)>1 and args.outfiles.sort is not None:
         logger.info('Sorting sequence(s)...')
         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["cropseq"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])
         outseq=outpathgen(outdir,filename=os.path.splitext(os.path.basename(inseq))[0]+infixlbl["croprenum"]+".sorted_"+sorter+os.path.splitext(os.path.basename(inseq))[1])

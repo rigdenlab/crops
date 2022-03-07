@@ -6,8 +6,9 @@ import csv
 import urllib3
 import copy
 
-from crops.elements.sequence import Sequence
-from crops.elements.sequence import guess_type
+from crops.elements.sequences import oligoseq
+from crops.elements.sequences import sequence
+from crops.elements.sequences import guess_type
 from crops.io.taggers import retrieve_id
 from crops.elements.intervals import intinterval
 
@@ -117,6 +118,119 @@ def parseseqfile(inpath,uniprot=None):
 
     :param inpath: Sequence file path.
     :type inpath: str
+    :param uniprot: A dictionary or set of Uniprot codes, defaults to None.
+    :type uniprot: str, dict [str, any], optional
+    :return: A dictionary containing parsed :class:`~crops.elements.sequences.oligoseq` objects.
+        If uniprot is not None, the dictionary will contain a single entry with a :class:`~crops.elements.sequences.oligoseq`
+        that will contain the requested Uniprot chains as :class:`~crops.elements.sequences.sequence` objects.
+    :rtype: dict [str, :class:`~crops.elements.sequences.oligoseq`]
+
+    """
+    newseqs={}
+    newid=[]
+    head=''
+    chain=''
+    ignore=False
+
+    if uniprot is not None:
+        if not isinstance(uniprot,str) and not isinstance(uniprot,dict):
+            raise TypeError('Input argument uniprot must be either a string or a dictionary.')
+        elif isinstance(uniprot,str):
+            unitemp=uniprot
+            uniprot={}
+            uniprot[unitemp]=None
+        for upcode in uniprot:
+            if not isinstance(upcode,str):
+                raise TypeError('Input argument uniprot must be either a string or a dictionary.')
+
+    if inpath == 'server-only' and uniprot is None:
+        raise TypeError('Input argument inpath cannot be "server-only" when a dict of uniprot ids is not provided.')
+    elif inpath == 'server-only' and uniprot is not None:
+        pass
+    else:
+        with open(inpath,'r') as f:
+            indx=-1
+            while True:
+                line=f.readline().rstrip()
+                if (not line or line.startswith(">")) and not ignore:
+                    if uniprot is not None:
+                        if indx>=0:
+                            if newid['mainid'].upper() not in newseqs:
+                                newseqs[newid['mainid']]=oligoseq(oligomer_id=newid['mainid'])
+                            aseq=sequence(seqid=newid['seqid'],
+                                          oligomer=newid['mainid'].upper(),
+                                          seq=chain, chains=newid['chains'],
+                                          source=newid['source'],
+                                          header=head, extrainfo=newid['comments'])
+                            newseqs[newid['mainid']].add_sequence(aseq)
+                            if len(newseqs)==len(uniprot):
+                                break
+                    else:
+                        if indx>=0:
+                            if newid['mainid'].lower() not in newseqs:
+                                newseqs[newid['mainid'].lower()]=oligoseq(oligomer_id=newid['mainid'].lower())
+                            aseq=sequence(seqid=newid['seqid'],
+                                          oligomer=newid['mainid'].upper(),
+                                          seq=chain, chains=newid['chains'],
+                                          source=newid['source'],
+                                          header=head, extrainfo=newid['comments'])
+                            newseqs[newid['mainid'].lower()].add_sequence(aseq)
+                    if not line:
+                        try:
+                            line=f.readline().rstrip()
+                            if not line:
+                                break
+                        except:
+                            break
+                if line.startswith(">"):
+                    newid=retrieve_id(line)
+                    head=line
+                    indx += 1
+                    chain = ''
+                    if uniprot is not None:
+                        ignore=False if newid['mainid'] in uniprot else True
+
+                elif line.startswith("#") or line.startswith(' #'):
+                    pass
+                else:
+                    if not ignore:
+                        chain += str(line)
+
+    if inpath == 'server-only' or uniprot is not None:
+        for upcode in uniprot:
+            if upcode.upper() not in newseqs:
+                try:
+                    for line in urllib3.urlopen('https://www.uniprot.org/uniprot/'+
+                                                upcode.upper()+'.fasta'):
+                        if line.startswith(">"):
+                            chain = ''
+                            head = line
+                            newid = retrieve_id(line)
+                        else:
+                            chain += str(line)
+                except:
+                    if inpath == 'server-only':
+                        msg='Uniprot sequence '+upcode.upper()+' not found online. Check your internet connexion.'
+                    else:
+                        msg='Uniprot sequence '+upcode.upper()+' not found in local file or online. Check your internet connexion.'
+                    raise OSError(msg)
+                if upcode.upper() not in newseqs:
+                    newseqs[newid['mainid']]=oligoseq(oligomer_id=newid['mainid'])
+                aseq=sequence(seqid=newid['seqid'],
+                              oligomer=newid['mainid'].upper(),
+                              seq=chain, chains=newid['chains'],
+                              source=newid['source'],
+                              header=head, extrainfo=newid['comments'])
+                newseqs[newid['mainid']].add_sequence(aseq)
+
+    return newseqs
+
+
+def parseseqfile_old(inpath,uniprot=None):
+    """Sequence file parser.
+
+    :param inpath: Sequence file path.
+    :type inpath: str
     :param uniprot: A dictionary of Uniprot codes, defaults to None.
     :type uniprot: str, dict [str, any], optional
     :return: A dictionary containing parsed :class:`~crops.elements.sequence.Sequence`.
@@ -177,11 +291,14 @@ def parseseqfile(inpath,uniprot=None):
                         if indx>=0:
                             if newid[0].lower() not in newseqs:
                                 newseqs[newid[0].lower()]=Sequence(seq_id=newid[0].lower(),source=os.path.basename(inpath))
-                                if newid[2] is not None and newid[2] not in newseqs[newid[0].lower()].groups:
-                                    newseqs[newid[0].lower()].groups[newid[2]] = newid[1]
+                                #if newid[2] is not None and newid[2] not in newseqs[newid[0].lower()].groups:
+                                #    newseqs[newid[0].lower()].groups[newid[2]] = newid[1]
                             for iid in newid[1]:
-                                newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid, guesstype=True)
-                                newseqs[newid[0].lower()].imer[iid].info['seq_group']=newid[2]
+                                if newid[2] is not None:
+                                    newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid, guesstype=True)
+                                else:
+                                    newseqs[newid[0].lower()].add_monomer(head,chain,nid=iid, sqnm=newid[2], guesstype=True)
+                                #newseqs[newid[0].lower()].imer[iid].info['seq_group']=newid[2]
                     if not line:
                         try:
                             line=f.readline().rstrip()
