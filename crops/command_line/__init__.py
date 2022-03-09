@@ -7,13 +7,13 @@ import sys
 
 
 def welcome():
-    msg="** Running "+__prog__+" v."+__version__+' **\n'
-    msg+="** "+__description__+'\n'
-    msg+="** Developed by "+__author__+". Copyright: "+__copyright__+'.\n'
+    msg = "** Running "+__prog__+" v."+__version__+' **\n'
+    msg += "** "+__description__+'\n'
+    msg += "** Developed by "+__author__+". Copyright: "+__copyright__+'.\n'
     return msg
 
 def ok():
-    msg="** "+__prog__+" finished **\n"
+    msg = "** "+__prog__+" finished **\n"
     return msg
 
 def crops_logger(level="info"):
@@ -31,8 +31,9 @@ def crops_logger(level="info"):
     class CropsFormatter(logging.Formatter):
 
         def __init__(self, fmt="%(levelname)s: %(message)s"):
-            #logging.Formatter.__init__(self, fmt=fmt)
-            super().__init__(fmt="%(levelname)s: %(message)s", datefmt=None, style='%')
+            # logging.Formatter.__init__(self, fmt=fmt)
+            super().__init__(fmt="%(levelname)s: %(message)s", datefmt=None,
+                             style='%')
 
         def format(self, record):
             # Save the original format configured by the user
@@ -68,12 +69,13 @@ def crops_logger(level="info"):
     logging.getLogger().setLevel(logging.DEBUG)
 
     # create console handler with a higher log level
-    custom_fmt=CropsFormatter()
+    custom_fmt = CropsFormatter()
     ch = logging.StreamHandler(stream=sys.stdout)
     ch.setLevel(logging_levels.get(level, logging.INFO))
     ch.setFormatter(custom_fmt)
     logging.getLogger().addHandler(ch)
 
-    logging.getLogger().debug("Console logger level: %s", logging_levels.get(level, logging.INFO))
+    logging.getLogger().debug("Console logger level: %s",
+                              logging_levels.get(level, logging.INFO))
 
     return logging.getLogger()
