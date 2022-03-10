@@ -243,37 +243,37 @@ def parsemapfile(inpath):
     :rtype: dict [str, dict[str, dict[str, dict[int, int]]]]
 
     """
-    mapdict={}
-    newid=[]
+    mapdict = {}
+    newid = []
     with open(inpath, 'r') as f:
         indx = -1
         while True:
-            line=f.readline().rstrip()
+            line = f.readline().rstrip()
             if (not line or line.startswith(">")):
                 if indx >= 0:
                     if newid['mainid'].lower() not in mapdict:
-                        mapdict[newid['mainid'].lower()]={}
+                        mapdict[newid['mainid'].lower()] = {}
                     if newid['seqid'] not in mapdict[newid['mainid'].lower()]:
-                        mapdict[newid['mainid'].lower()][newid['seqid']]={}
-                        mapdict[newid['mainid'].lower()][newid['seqid']]['cropmap']=copy.deepcopy(forthmap)
-                        mapdict[newid['mainid'].lower()][newid['seqid']]['cropbackmap']=copy.deepcopy(backmap)
+                        mapdict[newid['mainid'].lower()][newid['seqid']] = {}
+                        mapdict[newid['mainid'].lower()][newid['seqid']]['cropmap'] = copy.deepcopy(forthmap)
+                        mapdict[newid['mainid'].lower()][newid['seqid']]['cropbackmap'] = copy.deepcopy(backmap)
                 if not line:
                     try:
-                        line=f.readline().rstrip()
+                        line = f.readline().rstrip()
                         if not line:
                             break
                     except:
                         break
 
             if line.startswith(">"):
-                newid=retrieve_id(line)
+                newid = retrieve_id(line)
                 indx += 1
-                forthmap={}
-                backmap={}
+                forthmap = {}
+                backmap = {}
             elif line.startswith("#") or line.startswith(' #'):
                 pass
             else:
-                m=line.split('  ')
+                m = line.split('  ')
                 if m[1] != '0':
                     forthmap[int(m[0])] = int(m[1])
                     backmap[int(m[1])] = int(m[0])

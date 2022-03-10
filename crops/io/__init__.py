@@ -5,7 +5,7 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 import os
 import argparse
 
-def check_path(path,typeofpath=None):
+def check_path(path, typeofpath=None):
     """Returns full path if correct.
 
     :param path: Input (local) path.
@@ -18,32 +18,32 @@ def check_path(path,typeofpath=None):
     :rtype: str
 
     """
-    pathok=False
-    if typeofpath=='dir':
-        path=os.path.abspath(path)
-        if os.path.isdir(os.path.join(path,'')):
-            path=os.path.abspath(os.path.join(path,''))
-            pathok=True
-    elif typeofpath=='file':
-        path=os.path.abspath(path)
-        if os.path.isfile(path):
-            pathok=True
+    pathok = False
+    if typeofpath == 'dir':
+        path = os.path.abspath(path)
+        if os.path.isdir(os.path.join(path, '')) is True:
+            path = os.path.abspath(os.path.join(path, ''))
+            pathok = True
+    elif typeofpath == 'file':
+        path = os.path.abspath(path)
+        if os.path.isfile(path) is True:
+            pathok = True
     elif typeofpath is None:
-        if os.path.isdir(os.path.abspath(os.path.join(path,''))):
-            path=os.path.abspath(os.path.join(path,''))
-            pathok=True
+        if os.path.isdir(os.path.abspath(os.path.join(path, ''))) is True:
+            path = os.path.abspath(os.path.join(path, ''))
+            pathok = True
         else:
-            path=os.path.abspath(path)
-            if os.path.isfile(path):
-                pathok=True
+            path = os.path.abspath(path)
+            if os.path.isfile(path) is True:
+                pathok = True
     else:
         raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
-    if pathok:
+    if pathok is True:
         return path
     else:
         raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
 
-def outpathgen(globaldir,subdir=None,filename=None,mksubdir=False):
+def outpathgen(globaldir, subdir=None, filename=None, mksubdir=False):
     """Returns the desired output filepath.
 
     :param globaldir: General output dir.
@@ -60,17 +60,17 @@ def outpathgen(globaldir,subdir=None,filename=None,mksubdir=False):
 
     """
 
-    newpath=check_path(globaldir,'dir')
+    newpath = check_path(globaldir, 'dir')
 
     if subdir is not None:
-        newpath=os.path.join(newpath,subdir)
+        newpath = os.path.join(newpath, subdir)
 
-        if not os.path.isdir(newpath):
-            if mksubdir:
+        if os.path.isdir(newpath) is False:
+            if mksubdir is True:
                 os.mkdir(newpath)
             else:
                 raise FileNotFoundError('Directory does not exist')
     if filename is not None:
-        newpath=os.path.join(newpath,filename)
+        newpath = os.path.join(newpath,filename)
 
     return newpath

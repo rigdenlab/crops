@@ -75,7 +75,6 @@ def retrieve_id(seqheader):
     headerinfo['comments'] = None
     namechar = False
     idchar = False
-    # nameseq = ["", [], None, ""] #PDB ID, chain IDs for seqgroup, seqgroup, and extrainfo
     newchid = ''
     # UniProt Swiss-Prot/TrEMBL
     if seqheader.startswith('>sp|') or seqheader.startswith('>tr|'):
@@ -299,8 +298,8 @@ def retrieve_id(seqheader):
 
     return headerinfo
 
-def makeheader(mainid=None, seqid=None, chains=None, source=None, extrainfo=None,
-               short=False):
+def makeheader(mainid=None, seqid=None, chains=None,
+               source=None, extrainfo=None, short=False):
     """Returns a fasta header of the format ">MainID_seqID|Chains chain list|extrainfo".
 
     :param mainid: PDB ID, or Uniprot ID, etc.

@@ -42,7 +42,7 @@ def crops_logger(level="info"):
 
             # Replace the original format with one customized by logging level
             if record.levelno == logging.DEBUG:
-                self._style._fmt ="%(levelname)s: [%(module)s] (%(lineno)d) %(message)s"
+                self._style._fmt = "%(levelname)s: [%(module)s] (%(lineno)d) %(message)s"
             elif record.levelno == logging.INFO:
                 self._style._fmt = "%(message)s"
             else:

@@ -108,8 +108,8 @@ class sequence:
     __slots__ = ['oligomer_id', 'name', 'chains', 'source', 'seqs', 'biotype',
                  'source_headers', 'crops_header', 'cropmap', 'cropbackmap',
                  'infostring']
-    def __init__(self, seqid=None, oligomer=None, seq=None, chains=None, source=None,
-                 header=None, biotype=None, extrainfo=None):
+    def __init__(self, seqid=None, oligomer=None, seq=None, chains=None,
+                 source=None, header=None, biotype=None, extrainfo=None):
         self.oligomer_id = None
         self.name = None
         self.chains = set()

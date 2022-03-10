@@ -37,8 +37,9 @@ def renumber_pdb(inseq, instr, seqback=False):
     for model in instr:
         for chain in model:
             solved = False
-            if chain.name in inseq.imer:
-                original_seq = inseq.imer[chain.name].seqs['mainseq']
+            nseq = inseq.whatseq(chain.name)
+            if nseq in inseq.imer:
+                original_seq = inseq.imer[nseq].seqs['mainseq']
                 for shift in range(int(len(chain)/2)):
                     cnt = 0
                     gap = 0
@@ -101,8 +102,8 @@ def renumber_pdb(inseq, instr, seqback=False):
                         residue.seqid.num = pos[n_chains][cnt]
                     cnt += 1
             if seqback:
-                if chain.name in inseq.imer:
-                    inseq.imer[chain.name].seqs['gapseq'].append(newseq)
+                if nseq in inseq.imer:
+                    inseq.imer[nseq].seqs['gapseq'].append(newseq)
             n_chains += 1
             solved = False
     if seqback:
