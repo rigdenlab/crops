@@ -34,11 +34,11 @@ def create_argument_parser():
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
 
-    outfiles=parser.add_mutually_exclusive_group(required=False)
+    outfiles = parser.add_mutually_exclusive_group(required=False)
     outfiles.add_argument("-s", "--sort", nargs=1, metavar="Sort_type",
                           help="Sort output sequences in descending order by criteria provided - 'ncrops' or 'percent'. Add 'T' ('ncropsIN', 'percentIN') to ignore numbers from terminals. Only for multiple ID fasta inputs.")
     outfiles.add_argument("-i", "--individual", action='store_true', default=False,
-                          help="One separated output file per each sequence.")
+                          help="One separated fasta file per each sequence.")
 
     sections=parser.add_mutually_exclusive_group(required=False)
     sections.add_argument("-t", "--terminals", action='store_true', default=False,
@@ -80,14 +80,14 @@ def main():
     else:
         outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
 
-    if args.outfiles.sort is not None:
-        if (args.outfiles.sort[0].lower() != 'ncrops' and
-                args.outfiles.sort[0].lower() != 'percent' and
-                args.outfiles.sort[0].lower() != 'ncropsin' and
-                args.outfiles.sort[0].lower() != 'percentin'):
+    if args.sort is not None:
+        if (args.sort[0].lower() != 'ncrops' and
+                args.sort[0].lower() != 'percent' and
+                args.sort[0].lower() != 'ncropsin' and
+                args.sort[0].lower() != 'percentin'):
             raise ValueError("Arguments for sorting option can only be either 'ncrops' or 'percent'.")
         else:
-            sorter = args.outfiles.sort[0].lower()
+            sorter = args.sort[0].lower()
 
     ###########################################
     logger.info('Parsing sequence file ' + inseq)
@@ -117,7 +117,7 @@ def main():
         logger.info('Done\n')
 
     logger.info('Cropping sequence(s)...')
-    if len(seqset) > 1 and args.outfiles.sort is not None:
+    if len(seqset) > 1 and args.sort is not None:
         sorted_outseq = {}
 
     for key, S in seqset.items():
@@ -138,31 +138,32 @@ def main():
                             val = val / uniprotset[unicode].imer['1'].length()
                             if val >= minlen:
                                 newinterval = newinterval.union(intervals[key][key3].intersection(uniintervals))
-                                unilbl += unicode + '|'
+                                unilbl += unicode
                         monomer = cop.crop_seq(monomer, newinterval,
                                                targetlbl+unilbl,
                                                terms=args.terminals)
                     else:
                         monomer = cop.crop_seq(monomer, intervals[key][key3],
                                                targetlbl, terms=args.terminals)
-                        if monomer.ncrops() > 0:
-                            monomer.info['header'] += ' |'
-                    if monomer.ncrops() > 0:
-                        monomer.infostring += (' Units cropped: ' +
-                                               str(monomer.ncrops()) + ' (' +
-                                               str(monomer.ncrops(offmidseq=True)) +
-                                               ' not from terminals) ' +
-                                               '; % cropped: ' +
-                                               str(round(100*monomer.ncrops()/len(monomer.seqs['cropseq']), 2)) +
-                                               ' (' + str(round(100*monomer.ncrops(offmidseq=True)/len(monomer.seqs['cropseq']), 2)) +
-                                               ' not from terminals) ')
                 else:
                     monomer.cropmap = {}
                     for n in range(1, monomer.length()+1):
                         monomer.cropmap[n] = n
                         monomer.cropbackmap = copy.deepcopy(monomer.cropmap)
 
-            if args.outfiles.individual is True:
+            monomer.infostring += ('|#Residues cropped: ')
+            if monomer.ncrops() == 0:
+                monomer.infostring += '0'
+            else:
+                monomer.infostring += (str(monomer.ncrops()) + ' (' +
+                                       str(monomer.ncrops(offmidseq=True)) +
+                                       ' not from terminals) ' +
+                                       '; % cropped: ' +
+                                       str(round(100*monomer.ncrops()/len(monomer.seqs['cropseq']), 2)) +
+                                       ' (' + str(round(100*monomer.ncrops(offmidseq=True)/len(monomer.seqs['cropseq']), 2)) +
+                                       ' not from terminals) ')
+
+            if args.individual is True:
                 fout = (key + '_' + key2 + infixlbl["croprenum"] +
                         os.path.splitext(os.path.basename(inseq))[1])
                 outseq = outpathgen(outdir, subdir=key, filename=fout,
@@ -172,7 +173,7 @@ def main():
                             '.cropmap')
                     outmap = outpathgen(outdir, subdir=key, filename=fout,
                                         mksubdir=True)
-            elif len(seqset) == 1 or args.outfiles.sort is None:
+            elif len(seqset) == 1 or args.sort is None:
                 if len(seqset) > 1:
                     fout = (os.path.splitext(os.path.basename(inseq))[0] +
                             infixlbl["croprenum"] +
@@ -192,7 +193,7 @@ def main():
                         outmap = outpathgen(outdir, subdir=key,
                                             filename=fout, mksubdir=True)
 
-            if len(seqset) > 1 and args.outfiles.sort is not None:
+            if len(seqset) > 1 and args.sort is not None:
                 sorted_outseq[monomer.oligomer_id + '_' +
                               monomer.name] = monomer.deepcopy()
             else:
@@ -204,7 +205,7 @@ def main():
     logger.debug('Crop time = ' + str(croptime-starttime) + ' s')
     logger.info('Done\n')
 
-    if len(seqset) > 1 and args.outfiles.sort is not None:
+    if len(seqset) > 1 and args.sort is not None:
         logger.info('Sorting sequence(s)...')
         fout = (os.path.splitext(os.path.basename(inseq))[0] +
                 infixlbl["croprenum"] + ".sorted_" +

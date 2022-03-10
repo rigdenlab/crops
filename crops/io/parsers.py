@@ -29,16 +29,16 @@ def import_db(inpath, pdb_in=None):
 
     """
     database_out = {}
-    if isinstance(pdb_in, str):
+    if isinstance(pdb_in, str) is True:
         pdb_in_lower = set()
         pdb_in_lower.add(pdb_in.lower())
-    elif isinstance(pdb_in, dict) or isinstance(pdb_in, set):
+    elif isinstance(pdb_in, dict) is True or isinstance(pdb_in, set) is True:
         pdb_in_lower = set()
-        for element in pdb_in:
-            if not isinstance(element, str):
+        for key in pdb_in:
+            if isinstance(key, str) is False:
                 raise TypeError('Argument should be either None, a string, ' +
                                 'a set, or a dictionary with empty values.')
-            pdb_in_lower.add(pdb_in.lower())
+            pdb_in_lower.add(key.lower())
     elif pdb_in is None:
         pass
     else:

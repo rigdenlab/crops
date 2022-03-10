@@ -33,6 +33,9 @@ def create_argument_parser():
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
 
+    parser.add_argument("-i", "--individual", action='store_true', default=False,
+                          help="One separated output fasta file per each sequence.")
+
     sections = parser.add_mutually_exclusive_group(required=False)
     sections.add_argument("-t", "--terminals", action='store_true', default=False,
                           help="Ignore interval discontinuities and only crop the ends off.")
@@ -157,7 +160,7 @@ def main():
                         logger.warning('Chain-name ' + key + '_' + str(key3) +
                                        ' not found in database. Cropping not performed.')
 
-                hf = '_' + key2 if args.outfiles.individual is True else ''
+                hf = '_' + key2 if args.individual is True else ''
                 ifx = infixlbl["croprenum"] if cropped_seq is True else ''
                 fout = (key + hf + ifx +
                         os.path.splitext(os.path.basename(inseq))[1])
@@ -186,7 +189,7 @@ def main():
             logger.warning('PDB-ID ' + key.upper() +
                            ' not found in database. Cropping not performed.')
             for key2, monomer in newS.imer.items():
-                hf = '_' + key2 if args.outfiles.individual is True else ''
+                hf = '_' + key2 if args.individual is True else ''
                 fout = key + hf + os.path.splitext(os.path.basename(inseq))[1]
                 outseq = outpathgen(outdir, subdir=key,
                                     filename=fout, mksubdir=True)

@@ -165,8 +165,8 @@ def crop_seq(inseq, segments, cut_type, terms=False):
                     newchain.seqs['cropgapseq'][n] += '*'
             newchain.seqs['cropseq'] += '*'
 
-    if newchain.length() < len(newchain.seqs['cropseq']):
-        newchain.header += cut_type
+    newchain.infostring += cut_type
+
     newchain.cropmap = copy.deepcopy(cropmap['map'])
     newchain.cropbackmap = copy.deepcopy(cropmap['backmap'])
 

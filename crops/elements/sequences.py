@@ -321,13 +321,18 @@ class sequence:
                                             source=self.source,
                                             extrainfo=self.infostring))
         else:
-            outheader.append(self.crops_header)
+
+            outheader.append(makeheader(mainid=self.oligomer_id,
+                                        seqid=self.name,
+                                        chains=self.chains,
+                                        source=self.source,
+                                        extrainfo=self.infostring))
 
         if not oneline:
             lenseq = len(self.seqs['mainseq'])
             nlines = int((lenseq-1)/80)+1
         for header in outheader:
-            if isinstance(out, io.IOBase):
+            if isinstance(out, io.IOBase) is True:
                 out.write(header+'\n')
                 if oneline:
                     out.write(self.seqs['mainseq']+'\n')

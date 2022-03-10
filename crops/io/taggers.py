@@ -17,13 +17,13 @@ def target_format(inpath, terms=False, th=0):
     """
 
     if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
-        outcome = ' | CROPS | UNIPROT via SIFTS'
+        outcome = '|CROPS (UniProt via SIFTS)'
         if th > 0:
-            outcome += ' - UNIPROT CHAIN INCLUDED THRESHOLD = ' + str(th)
+            outcome += ' - UniProt chain included threshold = ' + str(th)
     else:
-        outcome = ' | CROPS | CUSTOM'
+        outcome = '|CROPS (Custom database)'
     if terms is True and th == 0:
-        outcome += ' - ONLY TERMINALS REMOVED'
+        outcome += ' - Only terminals removed'
 
     return outcome
 
