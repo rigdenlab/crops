@@ -386,7 +386,12 @@ class sequence:
                                             source=self.source,
                                             extrainfo=self.infostring))
         else:
-            outheader.append(self.crops_header)
+
+            outheader.append(makeheader(mainid=self.oligomer_id,
+                                        seqid=self.name,
+                                        chains=self.chains,
+                                        source=self.source,
+                                        extrainfo=self.infostring))
 
         for header in outheader:
             if isinstance(out, io.IOBase):
@@ -781,6 +786,7 @@ class oligoseq:
         :rtype: str
 
         """
+        myseq = None
         for seqid in self.imer:
             if chain in self.imer[seqid].chains:
                 myseq = seqid
