@@ -18,7 +18,7 @@ from crops.io import parsers as cin
 from crops.core import ops as cop
 from crops import command_line as ccl
 
-logger=None
+logger = None
 
 def create_argument_parser():
     """Create a parser for the command line arguments used in crops-renumber"""
@@ -26,12 +26,12 @@ def create_argument_parser():
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
 
-    parser.add_argument("input_seqpath",nargs=1, metavar="Sequence_filepath",
+    parser.add_argument("input_seqpath", nargs=1, metavar="Sequence_filepath",
                         help="Input sequence filepath.")
-    parser.add_argument("input_strpath",nargs=1, metavar="Structure_filepath",
+    parser.add_argument("input_strpath", nargs=1, metavar="Structure_filepath",
                         help="Input structure filepath or dir. If a directory is inserted, it will act on all structure files in such directory.")
 
-    parser.add_argument("-o","--outdir",nargs=1,metavar="Output_Directory",
+    parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
 
@@ -46,29 +46,30 @@ def main():
     logger = ccl.crops_logger(level="info")
     logger.info(ccl.welcome())
 
-    inseq=check_path(args.input_seqpath[0],'file')
-    instr=check_path(args.input_strpath[0])
+    inseq = check_path(args.input_seqpath[0],'file')
+    instr = check_path(args.input_strpath[0])
 
     if args.outdir is None:
-        outdir=check_path(os.path.dirname(inseq),'dir')
+        outdir = check_path(os.path.dirname(inseq), 'dir')
     else:
-        outdir=check_path(os.path.join(args.outdir[0],''),'dir')
+        outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
     infixlbl=".crops.seq"
 
     logger.info('Parsing sequence file '+inseq)
-    seqset=cin.parseseqfile(inseq)
+    seqset = cin.parseseqfile(inseq)
     logger.info('Done')
 
     logger.info('Parsing structure file '+instr)
-    strset, fileset=cin.parsestrfile(instr)
+    strset, fileset = cin.parsestrfile(instr)
     logger.info('Done')
 
     logger.info('Renumbering structure(s)...')
     for pdbid, structure in strset.items():
         if pdbid in seqset:
-            newstructure=cop.renumber_pdb(seqset[pdbid],structure)
-            outstr=outpathgen(outdir,subdir=pdbid,filename=pdbid+infixlbl+os.path.splitext(instr)[1],mksubdir=True)
-            #newstructure.write_pdb(outstr)
+            newstructure = cop.renumber_pdb(seqset[pdbid], structure)
+            fout = pdbid+infixlbl+os.path.splitext(instr)[1]
+            outstr = outpathgen(outdir, subdir=pdbid,
+                                filename=fout, mksubdir=True)
             newstructure.write_minimal_pdb(outstr)
     logger.info('Done\n')
 

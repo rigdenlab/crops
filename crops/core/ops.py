@@ -6,7 +6,7 @@ from crops.elements.sequences import sequence
 import copy
 import logging
 
-def renumber_pdb(inseq,instr,seqback=False):
+def renumber_pdb(inseq, instr, seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
 
     :param inseq: Input sequence.

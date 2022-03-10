@@ -61,18 +61,24 @@ def main():
     inseq = check_path(args.input_seqpath[0], 'file')
     indb = check_path(args.input_database[0], 'file')
     if args.uniprot_threshold is not None:
-        insprot = check_path(args.uniprot_threshold[1]) if args.uniprot_threshold != 'server-only' else 'server-only'
+        if args.uniprot_threshold != 'server-only':
+            insprot = check_path(args.uniprot_threshold[1])
+        else:
+            insprot = 'server-only'
     else:
         insprot = None
 
-    minlen = float(args.uniprot_threshold[0]) if args.uniprot_threshold is not None else 0.0
+    if args.uniprot_threshold is not None:
+        minlen = float(args.uniprot_threshold[0])
+    else:
+        minlen = 0.0
     targetlbl = ctg.target_format(indb, terms=args.terminals, th=minlen)
     infixlbl = ctg.infix_gen(indb, terms=args.terminals)
 
     if args.outdir is None:
-        outdir = check_path(os.path.dirname(inseq),'dir')
+        outdir = check_path(os.path.dirname(inseq), 'dir')
     else:
-        outdir = check_path(os.path.join(args.outdir[0],''),'dir')
+        outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
 
     if args.outfiles.sort is not None:
         if (args.outfiles.sort[0].lower() != 'ncrops' and
@@ -84,7 +90,7 @@ def main():
             sorter = args.outfiles.sort[0].lower()
 
     ###########################################
-    logger.info('Parsing sequence file '+inseq)
+    logger.info('Parsing sequence file ' + inseq)
     seqset = cin.parseseqfile(inseq)
     logger.info('Done')
 
