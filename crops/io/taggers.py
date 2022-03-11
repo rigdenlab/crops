@@ -1,4 +1,4 @@
-from crops.about import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__, __date__, __version__
 
 import os
 
@@ -196,8 +196,7 @@ def retrieve_id(seqheader):
                 newchid += seqheader[i]
 
     else:
-        # RCSB PDB
-        # CROPS standard format
+        # RCSB PDB, CROPS, MrBUMP, others
         if seqheader.startswith('>crops|'):
             seqheader = ">" + seqheader[7:]
             headerinfo['source'] = 'CROPS'
@@ -220,6 +219,8 @@ def retrieve_id(seqheader):
                             headerinfo['chains'] = set()
                         headerinfo['chains'].add(newchid)
                         headerinfo['comments'] = seqheader[j+1:]
+                        if seqheader[j+1:j+12] == "resolution:":
+                            headerinfo['source'] = 'MrBUMP'
                         break
                 else:
                     pass
