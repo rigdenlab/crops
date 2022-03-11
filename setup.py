@@ -1,7 +1,7 @@
 # Minimal installation version. To be updated for cross-platform availability.
 import setuptools
-from crops.about import __prog__, __description__, __version__
-from crops.about import __author__, __date__, __copyright__
+from crops import __prog__, __description__, __version__
+from crops import __author__, __date__, __copyright__
 import os
 
 with open("README.rst", "r") as fh:

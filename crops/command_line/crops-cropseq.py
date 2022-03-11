@@ -4,7 +4,7 @@ in agreement to the intervals and other details supplied.
 
 """
 
-from crops.about import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__, __date__, __version__
 
 import argparse
 import os

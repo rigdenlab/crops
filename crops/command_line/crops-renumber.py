@@ -7,7 +7,7 @@ same source (e.g. RCSB PDB) a source conflict might occur making the
 renumbering operation unsuccessful even if the program does not crash.
 """
 
-from crops.about import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__, __date__, __version__
 
 import argparse
 import os
