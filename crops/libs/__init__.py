@@ -4,7 +4,7 @@ from crops.about import __prog__, __description__, __author__, __date__, __versi
 
 from crops.libs import rescodes as rc
 
-def ressymbol(name,pick=None):
+def ressymbol(name, pick=None):
     """Conversion from residue 3-letter symbol to 1-letter symbol.
 
     :param name: Residue symbol (3-letter convention) or Nucleotide symbol (1,2-letter convention).
@@ -15,16 +15,16 @@ def ressymbol(name,pick=None):
     :rtype: str
 
     """
-    wholelist={**rc.reslist,**rc.mod_reslist,**rc.multiple_reslist,
-               **rc.nuclist,**rc.mod_nuclist,**rc.multiple_nuclist}
+    wholelist = {**rc.reslist, **rc.mod_reslist, **rc.multiple_reslist,
+                 **rc.nuclist, **rc.mod_nuclist, **rc.multiple_nuclist}
     try:
-        oneletter=wholelist[name]
-        if isinstance(oneletter,list):
+        oneletter = wholelist[name]
+        if isinstance(oneletter, list) is True:
             if pick is not None:
-                oneletter=pick if pick in oneletter else oneletter[0]
+                oneletter = pick if pick in oneletter else oneletter[0]
             else:
-                oneletter=oneletter[0]
+                oneletter = oneletter[0]
     except:
-        oneletter=0
+        oneletter = 0
 
     return oneletter
