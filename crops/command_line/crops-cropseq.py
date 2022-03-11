@@ -36,7 +36,7 @@ def create_argument_parser():
 
     outfiles = parser.add_mutually_exclusive_group(required=False)
     outfiles.add_argument("-s", "--sort", nargs=1, metavar="Sort_type",
-                          help="Sort output sequences in descending order by criteria provided - 'ncrops' or 'percent'. Add 'T' ('ncropsIN', 'percentIN') to ignore numbers from terminals. Only for multiple ID fasta inputs.")
+                          help="Sort output sequences in descending order by criteria provided - 'ncrops' or 'percent'. Add 'IN' ('ncropsIN', 'percentIN') to ignore numbers from terminals. Only for multiple ID fasta inputs.")
     outfiles.add_argument("-i", "--individual", action='store_true', default=False,
                           help="One separated fasta file per each sequence.")
 
