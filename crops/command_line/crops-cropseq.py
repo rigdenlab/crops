@@ -146,6 +146,7 @@ def main():
                         monomer = cop.crop_seq(monomer, intervals[key][key3],
                                                targetlbl, terms=args.terminals)
                 else:
+                    monomer.infostring += (targetlbl + ' (reference not found in database)')
                     monomer.cropmap = {}
                     for n in range(1, monomer.length()+1):
                         monomer.cropmap[n] = n

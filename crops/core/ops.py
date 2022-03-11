@@ -79,9 +79,16 @@ def renumber_pdb(inseq, instr, seqback=False):
                             newseq += '-'*(len(original_seq)-len(newseq))
                         break
                 if solved == False:
-                    raise ValueError('The .fasta sequence and the structure given do not match.')
+                    nerr = ("The .fasta sequence and the original "+
+                            "structure's numbering do not match. The number " +
+                            "of gaps in the structure must be consistent " +
+                            "with the number of residues in the sequence " +
+                            "in order for CROPS to make the renumbering.")
+                    raise ValueError(nerr)
             else:
-                logging.warning('.pdb chain '+str(chain.name)+' not found in .fasta file. All elements considered ligands.')
+                nwarn = ('.pdb chain '+str(chain.name) + ' not found in ' +
+                         '.fasta file. All elements considered ligands.')
+                logging.warning(nwarn)
                 ligandwarn = False
                 nligands = 0
                 for residue in chain:
@@ -90,7 +97,10 @@ def renumber_pdb(inseq, instr, seqback=False):
                     nligands += 1
                     pos[n_chains][nligands-1] = -nligands
                 if ligandwarn == True:
-                    logging.warning('Some of the ligands contain Aminoacid or Nucleotide residues. Please check that they are actually ligands.')
+                    nwarn = ('Some of the ligands contain Aminoacid or ' +
+                             'Nucleotide residues. Please check that ' +
+                             'they are actually ligands.')
+                    logging.warning(nwarn)
                 solved = True
 
             if solved:

@@ -589,9 +589,9 @@ class oligoseq:
     def add_sequence(self, newseq):
         """Adds a new :class:`~crops.elements.sequences.sequence` to the :class:`~crops.elements.sequences.oligoseq`.
 
-        :param seq: Sequence object.
-        :type seq: :class:`~crops.elements.sequences.sequence`
-        :raises TypeError: If 'seq' is not a :class:`~crops.elements.sequences.sequence` object.
+        :param newseq: Sequence object.
+        :type newseq: :class:`~crops.elements.sequences.sequence`
+        :raises TypeError: If 'newseq' is not a :class:`~crops.elements.sequences.sequence` object.
         :raises Exception: If sequence content is incompatible with that in oligoseq.
         """
         addall = None
@@ -608,12 +608,12 @@ class oligoseq:
                 else:
                     raise Exception(errormsg)
             else:
-                for seq in self.imer:
+                for seq in self.imer.values():
                     if seq.seqs['mainseq'] == newseq.seqs['mainseq']:
                         raise Exception(errormsg)
                 addall = True
         else:
-            for seq in self.imer:
+            for seq in self.imer.values():
                 if seq.seqs['mainseq'] == newseq.seqs['mainseq']:
                     addall = False
                     newseq.name = seq.name
@@ -627,7 +627,7 @@ class oligoseq:
 
         if addall is True:
             for ch in newseq.chains:
-                for seq in self.imer:
+                for seq in self.imer.values():
                     if ch in seq.chains:
                         raise Exception(errormsg)
             if newseq.name is None:
@@ -641,13 +641,13 @@ class oligoseq:
             self.imer[newseq.name] = newseq
             if self.id is None and newseq.oligomer_id is not None:
                 self.id = newseq.oligomer_id.lower()
-                for seq in self.imer:
+                for seq in self.imer.values():
                     seq.oligomer_id = newseq.oligomer_id.lower()
             elif self.id is not None and newseq.oligomer_id is None:
                 self.imer[newseq.name].oligomer_id = self.id
         else:
             for ch in newseq.chains:
-                for seq in self.imer:
+                for seq in self.imer.values():
                     if ch in seq.chains and seq.name != newseq.name:
                         raise Exception(errormsg)
                 self.imer[newseq.name].chains.add(ch)

@@ -71,6 +71,9 @@ def main():
             outstr = outpathgen(outdir, subdir=pdbid,
                                 filename=fout, mksubdir=True)
             newstructure.write_minimal_pdb(outstr)
+        else:
+            logger.warning("Identifier '"+pdbid+"' not found in sequence input.")
+
     logger.info('Done\n')
 
     return
