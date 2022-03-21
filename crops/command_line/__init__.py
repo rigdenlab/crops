@@ -4,16 +4,16 @@ from crops import __prog__, __description__, __author__, __date__, __version__,_
 
 import logging
 import sys
-
+from os import linesep
 
 def welcome():
-    msg = "** Running "+__prog__+" v."+__version__+' **\n'
-    msg += "** "+__description__+'\n'
-    msg += "** Developed by "+__author__+". Copyright: "+__copyright__+'.\n'
+    msg = "** Running "+__prog__+" v."+__version__+' **'+linesep
+    msg += "** "+__description__+linesep
+    msg += "** Developed by "+__author__+". Copyright: "+__copyright__+'.'+linesep
     return msg
 
 def ok():
-    msg = "** "+__prog__+" finished **\n"
+    msg = "** "+__prog__+" finished **"+linesep
     return msg
 
 def crops_logger(level="info"):

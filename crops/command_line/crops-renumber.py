@@ -24,7 +24,7 @@ def create_argument_parser():
     """Create a parser for the command line arguments used in crops-renumber"""
 
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
+                                     description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
 
     parser.add_argument("input_seqpath", nargs=1, metavar="Sequence_filepath",
                         help="Input sequence filepath.")
@@ -74,7 +74,7 @@ def main():
         else:
             logger.warning("Identifier '"+pdbid+"' not found in sequence input.")
 
-    logger.info('Done\n')
+    logger.info('Done' + os.linesep)
 
     return
 
