@@ -22,7 +22,7 @@ def create_argument_parser():
     """Create a parser for the command line arguments used in crops-renumber"""
 
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
+                                     description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
     parser.add_argument("input_seqpath", nargs=1, metavar="Sequence_filepath",
                         help="Input sequence filepath.")
     parser.add_argument("input_strpath", nargs=1, metavar="Structure_filepath",
@@ -90,7 +90,7 @@ def main():
         intervals = cin.import_db(indb, pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
-    logger.info('Done\n')
+    logger.info('Done'+os.linesep)
 
     if insprot is not None and minlen > 0.0:
         logger.info('Parsing uniprot sequence file: ' + insprot)
@@ -105,7 +105,7 @@ def main():
                             uniprotset.add(key.upper())
 
         uniprotset = cin.parseseqfile(insprot, uniprot=uniprotset)
-        logger.info('Done\n')
+        logger.info('Done'+os.linesep)
 
     ###########################################
     gseqset = {}
@@ -118,7 +118,7 @@ def main():
             fout = key + infixlbl["renumber"] + os.path.splitext(instr)[1]
             outstr = outpathgen(outdir, subdir=key, filename=fout, mksubdir=True)
             newstructure.write_minimal_pdb(outstr)
-    logger.info('Done\n')
+    logger.info('Done'+os.linesep)
     logger.info('Cropping renumbered structure(s)...')
     outseq = os.path.join(outdir, os.path.splitext(os.path.basename(inseq))[0] +
                           infixlbl["croprenum"] +
@@ -207,7 +207,7 @@ def main():
                                     filename=fout, mksubdir=True)
                 monomer.dump(outseq)
 
-    logger.info('Done\n')
+    logger.info('Done'+os.linesep)
 
     return
 

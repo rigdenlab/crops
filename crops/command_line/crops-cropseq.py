@@ -25,7 +25,7 @@ def create_argument_parser():
     """Create a parser for the command line arguments used in crops-renumber"""
 
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
-                                     description=__description__+' ('+__prog__+')  v.'+__version__+'\n'+__doc__)
+                                     description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
     parser.add_argument("input_seqpath", nargs=1, metavar="Sequence_filepath",
                         help="Input sequence filepath.")
     parser.add_argument("input_database",nargs=1, metavar="Intervals_database",
@@ -99,7 +99,7 @@ def main():
         intervals = cin.import_db(indb, pdb_in=seqset)
     else:
         raise ValueError('No chains were imported from sequence file.')
-    logger.info('Done\n')
+    logger.info('Done'+os.linesep)
 
     if insprot is not None and minlen > 0.0:
         logger.info('Parsing uniprot sequence file: '+insprot)
@@ -114,7 +114,7 @@ def main():
                             uniprotset.add(key.upper())
 
         uniprotset = cin.parseseqfile(insprot, uniprot=uniprotset)
-        logger.info('Done\n')
+        logger.info('Done'+os.linesep)
 
     logger.info('Cropping sequence(s)...')
     if len(seqset) > 1 and args.sort is not None:
@@ -204,7 +204,7 @@ def main():
 
     croptime = time.time()
     logger.debug('Crop time = ' + str(croptime-starttime) + ' s')
-    logger.info('Done\n')
+    logger.info('Done'+os.linesep)
 
     if len(seqset) > 1 and args.sort is not None:
         logger.info('Sorting sequence(s)...')
@@ -232,7 +232,7 @@ def main():
         for monomer in sorted_outseq2:
             monomer.dump(outseq)
         logger.debug('Sort time = '+str(time.time()-croptime)+ ' s')
-        logger.info('Done\n')
+        logger.info('Done'+os.linesep)
 
     return
 
