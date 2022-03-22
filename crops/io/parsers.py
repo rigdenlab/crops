@@ -3,7 +3,7 @@ from crops import __prog__, __description__, __author__, __date__, __version__
 import gemmi
 import os
 import csv
-import urllib3
+from urllib import request as ur
 import copy
 
 from crops.elements.sequences import oligoseq
@@ -207,7 +207,7 @@ def parseseqfile(inpath, uniprot=None):
         for upcode in uniprot:
             if upcode.upper() not in newseqs:
                 try:
-                    for line in urllib3.urlopen('https://www.uniprot.org/uniprot/' +
+                    for line in ur.urlopen('https://www.uniprot.org/uniprot/' +
                                                 upcode.upper()+'.fasta'):
                         if line.startswith(">"):
                             chain = ''
