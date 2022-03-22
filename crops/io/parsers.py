@@ -207,8 +207,9 @@ def parseseqfile(inpath, uniprot=None):
         for upcode in uniprot:
             if upcode.upper() not in newseqs:
                 try:
-                    for line in ur.urlopen('https://www.uniprot.org/uniprot/' +
-                                                upcode.upper()+'.fasta'):
+                    download = ur.urlopen('https://www.uniprot.org/uniprot/' +
+                                           upcode.upper() + '.fasta'):
+                    for line in download:
                         if line.startswith(">"):
                             chain = ''
                             head = line
