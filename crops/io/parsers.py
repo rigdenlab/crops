@@ -3,7 +3,7 @@ from crops import __prog__, __description__, __author__, __date__, __version__
 import gemmi
 import os
 import csv
-from urllib import reqest as ur
+from urllib import request as ur
 import copy
 
 from crops.elements.sequences import oligoseq
