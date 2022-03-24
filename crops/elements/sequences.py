@@ -713,8 +713,8 @@ class oligoseq:
                         if self.imer[seqid].cropmap[n+1] == 0:
                             self.imer[seqid].seqs['cropseq'] += '+'
                         else:
-                            self.imer[seqid].seqs['mainseq'] += str(self.imer[seqid].seqs['fullseq'][n])
-                            self.imer[seqid].seqs['cropseq'] += str(self.imer[seqid].seqs['fullseq'][n])
+                            self.imer[seqid].seqs['mainseq'] += self.imer[seqid].seqs['fullseq'][n]
+                            self.imer[seqid].seqs['cropseq'] += self.imer[seqid].seqs['fullseq'][n]
         return
 
 
