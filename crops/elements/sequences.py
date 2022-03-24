@@ -109,7 +109,7 @@ class sequence:
     _kind = 'Sequence'
     __slots__ = ['oligomer_id', 'name', 'chains', 'source', 'seqs', 'biotype',
                  'source_headers', 'crops_header', 'cropmap', 'cropbackmap',
-                 'infostring']
+                 'infostring', 'msa', 'cropmsa']
     def __init__(self, seqid=None, oligomer=None, seq=None, chains=None,
                  source=None, header=None, biotype=None, extrainfo=None):
         self.oligomer_id = None
@@ -123,6 +123,8 @@ class sequence:
         self.infostring = None
         self.cropmap = None
         self.cropbackmap = None
+        self.msa = None
+        self.cropmsa = None
 
         if seqid is not None:
             if isinstance(seqid, str):
