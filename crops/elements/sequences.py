@@ -680,11 +680,13 @@ class oligoseq:
 
         return
 
-    def set_cropmaps(self, mapdict):
+    def set_cropmaps(self, mapdict, cropmain=False):
         """Sets the parsed cropmaps from :class:`~crops.io.parsers.parsemapfile`.
 
         :param mapdict: Parsed maps for this specific :class:`~crops.elements.sequences.oligoseq`.
         :type mapdict: dict [str, dict [str, dict [int, int]]]
+        :param cropmain: If 'mainseq' is the original sequence (otherwise, this operation will yield wrong results), perform cropping from cropmap, defaults to False
+        :type cropmain: bool, optional
         :raises TypeError: When 'mapdict' has not the appropriate format.
 
         """
@@ -699,7 +701,17 @@ class oligoseq:
                         'cropbackmap' not in mapdict[seqid]):
                     raise TypeError("'mapdict' is not a crop map.")
                 self.imer[seqid].cropmap = copy.deepcopy(mapdict[seqid]['cropmap'])
-                self.imer[seqid].cropackmap = copy.deepcopy(mapdict[seqid]['cropbackmap'])
+                self.imer[seqid].cropbackmap = copy.deepcopy(mapdict[seqid]['cropbackmap'])
+                if cropmain is True:
+                    self.imer[seqid].seqs['fullseq'] = self.imer[seqid].seqs['mainseq']
+                    self.imer[seqid].seqs['mainseq'] = ''
+                    self.imer[seqid].seqs['cropseq'] = ''
+                    for n in range(len(self.imer[seqid].seqs['fullseq'])):
+                        if self.imer[seqid].cropmap[n+1] == 0:
+                            self.imer[seqid].seqs['cropseq'] += '+'
+                        else:
+                            self.imer[seqid].seqs['mainseq'] += str(self.imer[seqid].seqs['fullseq'][n])
+                            self.imer[seqid].seqs['cropseq'] += str(self.imer[seqid].seqs['fullseq'][n])
         return
 
     def write(self, outdir, infix="", split=False, oneline=False):
