@@ -10,6 +10,7 @@ from crops.io.taggers import makeheader
 from crops.libs.rescodes import reslist
 from crops.libs.rescodes import nuclist
 
+
 def guess_type(inseq):
     """Returns the biological type of the sequence as guessed from residue types.
 
@@ -52,6 +53,7 @@ def guess_type(inseq):
         outtype = 'DNA or RNA'
 
     return outtype
+
 
 class sequence:
     """A :class:`~crops.elements.sequences.sequence` object representing a single chain sequence.
@@ -516,6 +518,7 @@ class sequence:
                                            source=self.source,
                                            extrainfo=self.infostring)
 
+
 class oligoseq:
     """A :class:`~crops.elements.sequences.oligoseq` object grouping several
     :class:`~crops.elements.sequences.sequence` objects pertaining to a
@@ -714,6 +717,7 @@ class oligoseq:
                             self.imer[seqid].seqs['cropseq'] += str(self.imer[seqid].seqs['fullseq'][n])
         return
 
+
     def write(self, outdir, infix="", split=False, oneline=False):
         """Writes all :class:`~crops.elements.sequences.sequence` objects to .fasta file.
 
@@ -736,6 +740,7 @@ class oligoseq:
             seq.dump(outpath, split=split, oneline=oneline)
 
         return
+
 
     def length(self, seqid):
         """Returns the length of a certain sequence.
