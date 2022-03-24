@@ -710,7 +710,7 @@ class oligoseq:
                     self.imer[seqid].seqs['mainseq'] = ''
                     self.imer[seqid].seqs['cropseq'] = ''
                     for n in range(len(self.imer[seqid].seqs['fullseq'])):
-                        if self.imer[seqid].cropmap[n+1] == 0:
+                        if self.imer[seqid].cropmap[n+1] is None:
                             self.imer[seqid].seqs['cropseq'] += '+'
                         else:
                             self.imer[seqid].seqs['mainseq'] += self.imer[seqid].seqs['fullseq'][n]
