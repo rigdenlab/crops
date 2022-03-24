@@ -505,6 +505,12 @@ class sequence:
             return nterms
 
     def update_cropsheader(self):
+        """
+
+        :return: Updates self.crops_header
+        :rtype: str
+
+        """
         if self.oligomer_id is None:
             self.crops_header = makeheader(mainid='NOID',
                                            seqid=self.name,
@@ -517,6 +523,32 @@ class sequence:
                                            chains=self.chains,
                                            source=self.source,
                                            extrainfo=self.infostring)
+
+    def cropinfo(self):
+        """
+        Returns a string containing statistics about the cropped residues.
+
+        :return: Information, number of crops
+        :rtype: str
+
+        """
+        cropstr = ""
+        if 'cropseq' in self.seqs:
+            cropstr += ('#Residues cropped: ')
+            if self.ncrops() == 0:
+                cropstr += '0'
+            else:
+                cropstr += (str(self.ncrops()) + ' (' +
+                            str(self.ncrops(offmidseq=True)) +
+                            ' not from terminals) ' +
+                            '; % cropped: ' +
+                            str(round(100*self.ncrops()/len(self.seqs['cropseq']), 2)) +
+                            ' (' + str(round(100*self.ncrops(offmidseq=True)/len(self.seqs['cropseq']), 2)) +
+                            ' not from terminals) ')
+        else:
+            pass
+
+        return cropstr
 
 
 class oligoseq:
@@ -715,6 +747,9 @@ class oligoseq:
                         else:
                             self.imer[seqid].seqs['mainseq'] += self.imer[seqid].seqs['fullseq'][n]
                             self.imer[seqid].seqs['cropseq'] += self.imer[seqid].seqs['fullseq'][n]
+                self.imer[seqid].infostring += '|' + self.imer[seqid].cropinfo()
+                self.imer[seqid].update_cropsheader()
+
         return
 
 

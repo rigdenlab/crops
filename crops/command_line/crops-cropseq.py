@@ -152,18 +152,7 @@ def main():
                         monomer.cropmap[n] = n
                         monomer.cropbackmap = copy.deepcopy(monomer.cropmap)
 
-            monomer.infostring += ('|#Residues cropped: ')
-            if monomer.ncrops() == 0:
-                monomer.infostring += '0'
-            else:
-                monomer.infostring += (str(monomer.ncrops()) + ' (' +
-                                       str(monomer.ncrops(offmidseq=True)) +
-                                       ' not from terminals) ' +
-                                       '; % cropped: ' +
-                                       str(round(100*monomer.ncrops()/len(monomer.seqs['cropseq']), 2)) +
-                                       ' (' + str(round(100*monomer.ncrops(offmidseq=True)/len(monomer.seqs['cropseq']), 2)) +
-                                       ' not from terminals) ')
-
+            monomer.infostring += '|' + monomer.cropinfo()
             if args.individual is True:
                 fout = (key + '_' + key2 + infixlbl["croprenum"] +
                         os.path.splitext(os.path.basename(inseq))[1])

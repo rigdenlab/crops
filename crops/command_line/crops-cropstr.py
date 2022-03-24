@@ -160,17 +160,7 @@ def main():
                         logger.warning('Chain-name ' + key + '_' + str(key3) +
                                        ' not found in database. Cropping not performed.')
 
-                monomer.infostring += ('|#Residues cropped: ')
-                if monomer.ncrops() == 0:
-                    monomer.infostring += '0'
-                else:
-                    monomer.infostring += (str(monomer.ncrops()) + ' (' +
-                                           str(monomer.ncrops(offmidseq=True)) +
-                                           ' not from terminals) ' +
-                                           '; % cropped: ' +
-                                           str(round(100*monomer.ncrops()/len(monomer.seqs['cropseq']), 2)) +
-                                           ' (' + str(round(100*monomer.ncrops(offmidseq=True)/len(monomer.seqs['cropseq']), 2)) +
-                                           ' not from terminals) ')
+                monomer.infostring += '|' + monomer.cropinfo()
 
                 hf = '_' + key2 if args.individual is True else ''
                 ifx = infixlbl["croprenum"] if cropped_seq is True else ''
