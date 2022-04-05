@@ -9,6 +9,7 @@ from crops.io.taggers import retrieve_id
 from crops.io.taggers import makeheader
 from crops.libs.rescodes import reslist
 from crops.libs.rescodes import nuclist
+from crops.elements.intervals import intinterval
 
 
 def guess_type(inseq):
@@ -109,7 +110,7 @@ class sequence:
     _kind = 'Sequence'
     __slots__ = ['oligomer_id', 'name', 'chains', 'source', 'seqs', 'biotype',
                  'source_headers', 'crops_header', 'cropmap', 'cropbackmap',
-                 'infostring', 'msa', 'cropmsa']
+                 'infostring', 'msa', 'cropmsa', 'intervals']
     def __init__(self, seqid=None, oligomer=None, seq=None, chains=None,
                  source=None, header=None, biotype=None, extrainfo=None):
         self.oligomer_id = None
@@ -125,6 +126,7 @@ class sequence:
         self.cropbackmap = None
         self.msa = None
         self.cropmsa = None
+        self.intervals = None
 
         if seqid is not None:
             if isinstance(seqid, str):
@@ -739,6 +741,9 @@ class oligoseq:
                     raise TypeError("'mapdict' is not a crop map.")
                 self.imer[seqid].cropmap = copy.deepcopy(mapdict[seqid]['cropmap'])
                 self.imer[seqid].cropbackmap = copy.deepcopy(mapdict[seqid]['cropbackmap'])
+                self.imer[seqid].intervals = intinterval(description=self.id+'_'+str(seqid))
+                for resc, res0 in mapdict[seqid]['cropbackmap'].items():
+                    self.imer[seqid].intervals = self.imer[seqid].intervals.union(other=res0)
                 if cropmain is True:
                     self.imer[seqid].seqs['fullseq'] = self.imer[seqid].seqs['mainseq']
                     self.imer[seqid].seqs['mainseq'] = ''
