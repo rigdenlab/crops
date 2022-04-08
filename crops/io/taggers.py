@@ -78,6 +78,7 @@ def retrieve_id(seqheader):
     newchid = ''
     # UniProt Swiss-Prot/TrEMBL
     if seqheader.startswith('>sp|') or seqheader.startswith('>tr|'):
+        headerinfo['seqid'] = '1'
         if seqheader.startswith('>sp|'):
             headerinfo['source'] = 'UniProtKB/SwissProt'
         elif seqheader.startswith('>tr|'):
@@ -95,10 +96,10 @@ def retrieve_id(seqheader):
         if headerinfo['chains'] is None:
             headerinfo['chains'] = set()
         headerinfo['chains'].add(headerinfo['mainid'])
-        # headerinfo['seqid'] = headerinfo['mainid']
 
     # UniRef
     elif seqheader.startswith('>UniRef'):
+        headerinfo['seqid'] = '1'
         for i in range(1, len(seqheader)):
             if seqheader[i] == '_':
                 headerinfo['source'] = seqheader[1:i]
@@ -106,7 +107,6 @@ def retrieve_id(seqheader):
             elif seqheader[i] == ' ':
                 headerinfo['comments'] = seqheader[i+1:]
                 headerinfo['mainid'] = seqheader[chi:i]
-                # headerinfo['seqid'] = seqheader[chi:i]
                 if headerinfo['chains'] is None:
                     headerinfo['chains'] = set()
                 headerinfo['chains'].add(headerinfo['mainid'])
@@ -114,12 +114,12 @@ def retrieve_id(seqheader):
 
     # UniParc
     elif seqheader.startswith('>UPI'):
+        headerinfo['seqid'] = '1'
         for i in range(4, len(seqheader)):
             headerinfo['source'] = 'UniParc'
             if seqheader[i] == ' ':
                 headerinfo['comments'] = seqheader[i+1:]
                 headerinfo['mainid'] = seqheader[1:i]
-                # headerinfo['seqid'] = seqheader[1:i]
                 if headerinfo['chains'] is None:
                     headerinfo['chains'] = set()
                 headerinfo['chains'].add(headerinfo['mainid'])
