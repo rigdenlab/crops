@@ -109,15 +109,26 @@ def main():
 
     ###########################################
     gseqset = {}
+    strset2 = {}
     logger.info('Renumbering structure(s)...')
     for key, structure in strset.items():
-        if key in seqset:
-            newstructure, gseqset[key] = cop.renumber_pdb(seqset[key],
-                                                          structure,
-                                                          seqback=True)
-            fout = key + infixlbl["renumber"] + os.path.splitext(instr)[1]
-            outstr = outpathgen(outdir, subdir=key, filename=fout, mksubdir=True)
-            newstructure.write_minimal_pdb(outstr)
+        found = False
+        for seqname in seqset:
+            if ((seqname.lower() in key.lower()) or
+                    (len(seqset) == 1 and len(strset) == 1)):
+                finalid = seqname.lower()
+                newstructure, gseqset[seqname] = cop.renumber_pdb(seqset[seqname],
+                                                                  structure,
+                                                                  seqback=True)
+                fout = finalid + infixlbl["renumber"] + os.path.splitext(instr)[1]
+                outstr = outpathgen(outdir, subdir=finalid,
+                                    filename=fout, mksubdir=True)
+                newstructure.write_minimal_pdb(outstr)
+                strset2[finalid] = structure
+                found = True
+        if found is False:
+            logger.warning("Identifier '"+key+"' not found in sequence input.")
+
     logger.info('Done'+os.linesep)
     logger.info('Cropping renumbered structure(s)...')
     outseq = os.path.join(outdir, os.path.splitext(os.path.basename(inseq))[0] +
@@ -175,13 +186,13 @@ def main():
                                         filename=fout)
                     monomer.dumpmap(outmap)
 
-            cropped_str = cop.crop_pdb(strset[key], newS, original_id=True)
+            cropped_str = cop.crop_pdb(strset2[key], newS, original_id=True)
             fout = key + infixlbl["crop"] + os.path.splitext(instr)[1]
             outstr = outpathgen(outdir, subdir=key,
                                 filename=fout, mksubdir=True)
             cropped_str.write_minimal_pdb(outstr)
 
-            cropped_str2 = cop.crop_pdb(strset[key], newS, original_id=False)
+            cropped_str2 = cop.crop_pdb(strset2[key], newS, original_id=False)
 
             fout = key + infixlbl["croprenum"] + os.path.splitext(instr)[1]
             outstr = outpathgen(outdir, subdir=key,

@@ -65,13 +65,18 @@ def main():
 
     logger.info('Renumbering structure(s)...')
     for pdbid, structure in strset.items():
-        if pdbid in seqset:
-            newstructure = cop.renumber_pdb(seqset[pdbid], structure)
-            fout = pdbid+infixlbl+os.path.splitext(instr)[1]
-            outstr = outpathgen(outdir, subdir=pdbid,
-                                filename=fout, mksubdir=True)
-            newstructure.write_minimal_pdb(outstr)
-        else:
+        found = False
+        for seqname in seqset:
+            if ((seqname.lower() in pdbid.lower()) or
+                    (len(seqset) == 1 and len(strset) == 1)):
+                finalid = seqname.lower()
+                newstructure = cop.renumber_pdb(seqset[seqname], structure)
+                fout = finalid+infixlbl+os.path.splitext(instr)[1]
+                outstr = outpathgen(outdir, subdir=finalid,
+                                    filename=fout, mksubdir=True)
+                newstructure.write_minimal_pdb(outstr)
+                found = True
+        if found is False:
             logger.warning("Identifier '"+pdbid+"' not found in sequence input.")
 
     logger.info('Done' + os.linesep)
