@@ -1,10 +1,93 @@
+from Bio import Align
+from Bio.Align import substitution_matrices
+
 from crops import __prog__, __description__, __author__, __date__, __version__
 
 from crops.libs import ressymbol
 from crops.elements.sequences import sequence
 
 import copy
+import gemmi
 import logging
+
+
+def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score=-11, extend_gap_score=-2):
+    """Perform a sequence alignment using Needleman-Wunsch algorithm.
+
+    :param sequence_1: First input sequence.
+    :type sequence_1: str
+    :param sequence_2: Second input sequence.
+    :type sequence_2: str
+    :param mode: Alignment mode, defaults to global.
+    :type mode: str, optional
+    :param open_gap_score: Opening gap penalty, defaults to -11
+    :type open_gap_score: int
+    :param extend_gap_score: Extension gap penalty, defaults to -2
+    :type extend_gap_score: int
+    :return alignment_dict: Dictionary with the residue mapping between both input sequences.
+    :rtype alignment_dict: dict
+
+    """
+
+    aligner = Align.PairwiseAligner()
+    aligner.mode = mode
+    aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
+    aligner.open_gap_score = open_gap_score
+    aligner.extend_gap_score = extend_gap_score
+    try:
+        alignments = list(aligner.align(sequence_1, sequence_2))
+    except ValueError as e:
+        logging.warning('Needleman-Wunsch alignment failed due to wrong alphabet:\n{}'.format(e))
+        return None
+    alignments.sort(key=lambda x: x.score, reverse=True)
+    aligned_indices = alignments[0].aligned
+    alignment_dict = {}
+
+    for query_chunk, target_chunk in zip(*aligned_indices):
+        for query_index, target_index in zip(range(*query_chunk), range(*target_chunk)):
+            alignment_dict[target_index] = query_index
+
+    return alignment_dict
+
+
+def renumber_pdb_needleman(inseq, instr):
+    """Returns modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch
+    algorithm to perform the sequence alignment
+
+    :param inseq: Input sequence.
+    :type inseq: :class:`~crops.elements.sequences.oligoseq`
+    :param instr: Gemmi structure.
+    :type instr: :class:`gemmi.Structure`
+    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
+    :type seqback: bool, optional
+    :return instr: Renumbered structure.
+    :rtype instr: :class:`gemmi.Structure`
+    :return inseq: Sequence with extra information about gaps, only if seqback==True.
+    :rtype inseq: :class:`~crops.elements.sequences.oligoseq`
+
+    """
+    renumbered_structure = gemmi.Structure()
+
+    for model in instr:
+        renumbered_model = gemmi.Model(model.name)
+        for chain in model:
+            renumbered_chain = gemmi.Chain(chain.name)
+            nseq = inseq.whatseq(chain.name)
+            original_seq = inseq.imer[nseq].seqs['mainseq']
+            model_seq = ''.join([ressymbol(x.name) for x in chain])
+            aligned_dict = get_sequence_alignment(original_seq, model_seq)
+            if aligned_dict is None:
+                logging.warning('Alignment failed for chain {}, it will be excluded'.format(chain.name))
+                continue
+            for index, residue in enumerate(chain):
+                _residue = residue.clone()
+                _residue.seqid.num = aligned_dict[index] + 1
+                renumbered_chain.add(_residue)
+            renumbered_model.add_chain(chain)
+        renumbered_structure.add_model(renumbered_model)
+
+    return renumbered_structure
+
 
 def renumber_pdb(inseq, instr, seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.
