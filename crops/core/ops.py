@@ -204,6 +204,7 @@ def renumber_pdb(inseq, instr, seqback=False):
     else:
         return instr
 
+
 def crop_seq(inseq, segments, cut_type, terms=False):
     """Returns modified :class:`~crops.elements.sequences.sequence` without specified elements.
 

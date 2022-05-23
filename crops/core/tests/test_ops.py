@@ -3,7 +3,7 @@
 import unittest
 
 from crops.elements import sequences as csq
-from crops.core.ops import renumber_pdb_needleman
+import crops.core.ops
 
 import gemmi
 
@@ -618,6 +618,6 @@ class TestCropsOps(unittest.TestCase):
         monomer1 = csq.sequence(oligomer='5gup', seqid='1', seq=_FASTA_SEQUENCE_1, chains={'G'}, header=_HEADER)
         myseq.add_sequence(monomer1)
 
-        renumbered_pdb = renumber_pdb_needleman(myseq, pdb)
+        renumbered_pdb = crops.core.ops.renumber_pdb_needleman(myseq, pdb)
         renumbered_indexes = tuple((residue.seqid.num for residue in renumbered_pdb[0][0]))
         self.assertTupleEqual(renumbered_indexes, expected_indexes)
