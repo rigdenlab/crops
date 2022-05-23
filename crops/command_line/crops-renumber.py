@@ -70,7 +70,12 @@ def main():
             if ((seqname.lower() in pdbid.lower()) or
                     (len(seqset) == 1 and len(strset) == 1)):
                 finalid = seqname.lower()
-                newstructure = cop.renumber_pdb(seqset[seqname], structure)
+                try:
+                    newstructure = cop.renumber_pdb(seqset[seqname], structure)
+                except (AttributeError, IndexError) as e:
+                    logger.warning('Something has gone wrong during renumbering:\n{}'.format(e))
+                    logger.info('Attempting Needleman-Wunsch...')
+                    newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure)
                 fout = finalid+infixlbl+os.path.splitext(instr)[1]
                 outstr = outpathgen(outdir, subdir=finalid,
                                     filename=fout, mksubdir=True)
