@@ -578,36 +578,6 @@ _HEADER = ">5GUP_7|Chain G|NADH-ubiquinone oxidoreductase 75 kDa subunit, mitoch
 
 class TestCropsOps(unittest.TestCase):
     def test_renumber_pdb_needleman_1(self):
-        """ Testing the following alignment
-        MLRIPVTRALIGLSKSPKGCVRTTATAASNLIEVFVDGQSVMVEPGTTVLQACEKVGMQIPRFCYHERLSVAGNCRMCLVEIEKAPKVVAACAMPVMKGWNILTNSEKSK
-        -----------------------------|||||||||||||||||||||------------------------------------------------------------
-        -----------------------------NLIEVFVDGQSVMVEPGTTVL------------------------------------------------------------
-
-        KAREGVMEFLLANHPLDCPICDQGGECDLQDQSMMFGSDRSRFLEGKRAVEDKNIGPLVKTIMTRCIQCTRCIRFASEIAGVDDLGTTGRGNDMQVGTYIEKMFMSELSG
-        -----------------------------------------------------------------------------------------|||||||||||||||||||||
-        -----------------------------------------------------------------------------------------RGNDMQVGTYIEKMFMSELSG
-
-        NIIDICPVGALTSKPYAFTARPWETRKTESIDVMDAVGSNIVVSTRTGEVMRILPRMHEDINEEWISDKTRFAYDGLKRQRLTQPMIRNEKGLLTYTTWEDALSRVAGM
-        |||||--------------------------------------------------------------------------------------------------------
-        NIIDI--------------------------------------------------------------------------------------------------------
-
-        LQSFQGNDVAAIAGGLVDAEALVALKDLLNRVDSDSLCTEEVFPTAGAGTDLRSNYLLNTTIAGVEEADVILLVGTNPRFEAPLFNARIRKSWLHNDLKVALIGSPVDL
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-
-        TYRYDHLGDSPKILQDIASGNHPFSQILKEAKKPMVVLGSSALQRSDGTAILAAVSNIAQNIRLSSGVTGDWKVMNILHRIASQVAALDLGYKPGVEAIRKNPPKVLFL
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-
-        LGADGGCITRQDLPKDCFIIYQGHHGDVGAPMADVILPGAAYTEKSATYVNTEGRAQQTKVAVTPPGLAREDWKIIRALSEIAGMTLPYDTLDQVRSRLEEVSPNLVRY
-        -------------------------------------------------------------------------------------------------------------
-        -------------------------------------------------------------------------------------------------------------
-
-        DDVEGANYFQQANELSKLVNQQLLADPLVPPQLTIKDFYMTDSISRASQTMAKCVKAVTEGIQAVEEPSIC
-        ---------------------------------|||||||||||||||||||||||||||-----------
-        ---------------------------------TIKDFYMTDSISRASQTMAKCVKAVTE-----------
-        """
-
         expected_indexes = (30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
                             200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217,
                             218, 219, 220, 221, 222, 223, 224, 225, 690, 691, 692, 693, 694, 695, 696, 697, 698, 699,
