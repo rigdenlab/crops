@@ -82,8 +82,8 @@ def renumber_pdb_needleman(inseq, instr):
             for index, residue in enumerate(chain):
                 _residue = residue.clone()
                 _residue.seqid.num = aligned_dict[index] + 1
-                renumbered_chain.add(_residue)
-            renumbered_model.add_chain(chain)
+                renumbered_chain.add_residue(_residue)
+            renumbered_model.add_chain(renumbered_chain)
         renumbered_structure.add_model(renumbered_model)
 
     return renumbered_structure
