@@ -58,25 +58,26 @@ def import_db(inpath, pdb_in=None):
         rightend = 3
         up = None
 
-    csv_chain_file = open(inpath)
-    csv_chain = csv.reader(csv_chain_file)
-    for entry in csv_chain:
-        if entry[0][0] != "#" and entry[0] != "PDB":
-            if pdb_in is None or entry[mol].lower() in pdb_in_lower:
-                if entry[mol].lower() not in database_out:
-                    database_out[entry[mol].lower()] = {}
-                if entry[chain] not in database_out[entry[mol].lower()]:
-                    database_out[entry[mol].lower()][entry[chain]] = intinterval(description=entry[mol].lower()+'_'+entry[chain])
+    with open(inpath, 'r') as csv_chain_file:
+        csv_chain = csv.reader(csv_chain_file)
+        for entry in csv_chain:
+            if entry[0][0] != "#" and entry[0] != "PDB":
+                if pdb_in is None or entry[mol].lower() in pdb_in_lower:
+                    if entry[mol].lower() not in database_out:
+                        database_out[entry[mol].lower()] = {}
+                    if entry[chain] not in database_out[entry[mol].lower()]:
+                        database_out[entry[mol].lower()][entry[chain]] = intinterval(description=entry[mol].lower()+'_'+entry[chain])
+                        if up is not None:
+                            database_out[entry[mol].lower()][entry[chain]].tags['uniprot'] = {}
+                    database_out[entry[mol].lower()][entry[chain]] = \
+                        database_out[entry[mol].lower()][entry[chain]].union(other=[int(entry[leftend]), int(entry[rightend])])
                     if up is not None:
-                        database_out[entry[mol].lower()][entry[chain]].tags['uniprot'] = {}
-                database_out[entry[mol].lower()][entry[chain]] = \
-                    database_out[entry[mol].lower()][entry[chain]].union(other=[int(entry[leftend]), int(entry[rightend])])
-                if up is not None:
-                    if entry[up].upper() not in database_out[entry[mol].lower()][entry[chain]].tags['uniprot']:
+                        if entry[up].upper() not in database_out[entry[mol].lower()][entry[chain]].tags['uniprot']:
+                            database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]] = \
+                                intinterval(description=entry[up].upper())
                         database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]] = \
-                            intinterval(description=entry[up].upper())
-                    database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]] = \
-                        database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]].union([int(entry[leftend]), int(entry[rightend])])
+                            database_out[entry[mol].lower()][entry[chain]].tags['uniprot'][entry[up]].union([int(entry[leftend]), int(entry[rightend])])
+
     return database_out
 
 
