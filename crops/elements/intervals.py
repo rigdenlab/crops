@@ -1,6 +1,8 @@
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import copy
+import logging
 
 def _intervalise(subject):
     """Turns any integer or list of two integers into a :class:`~crops.elements.intervals.intinterval`.
@@ -16,21 +18,24 @@ def _intervalise(subject):
     if isinstance(subject, intinterval):
         return subject
 
-    raisemsg = ('Argument must be an intinterval, ' +
+    raisemsg = ('Argument must be an intinterval, '
                 'an integer or a list of two integers.')
 
     if isinstance(subject, list):
         if len(subject) != 2 and len(subject) != 0:
-            raise TypeError(raisemsg)
+            logging.critical(raisemsg)
+            raise TypeError
         elif len(subject) == 2:
             for s in subject:
                 if isinstance(s, float):
                     if s == int(s):
                         s = int(s)
                     else:
-                        raise TypeError(raisemsg)
+                        logging.critical(raisemsg)
+                        raise TypeError
                 if not isinstance(s, int):
-                    raise TypeError(raisemsg)
+                    logging.critical(raisemsg)
+                    raise TypeError
             if subject[0] > subject[1]:
                 subject = [[subject[1], subject[0]]]
             else:
@@ -39,7 +44,8 @@ def _intervalise(subject):
     elif isinstance(subject, int):
         subject = [[subject, subject]]
     else:
-        raise TypeError(raisemsg)
+        logging.critical(raisemsg)
+        raise TypeError
 
     intervalised = intinterval(description='other', subint=subject)
 
@@ -130,7 +136,8 @@ class intinterval:
 
         """
         if not isinstance(tag, str):
-            raise TypeError('Keys must be strings')
+            logging.critical('Keys must be strings')
+            raise TypeError
         self.tags[tag] = value
 
     def deltag(self, tag):
@@ -142,9 +149,11 @@ class intinterval:
 
         """
         if not isinstance(tag, str):
-            raise TypeError('Tags must be strings')
+            logging.critical('Keys must be strings')
+            raise TypeError
         if tag == 'description':
-            raise ValueError('Key "description" cannot be removed.')
+            logging.critical('Key "description" cannot be removed.')
+            raise ValueError
         self.tags.remove(tag)
 
     def copy(self):

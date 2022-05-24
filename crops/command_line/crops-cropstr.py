@@ -1,10 +1,11 @@
 """==========
-This script will remove a number of residues from a sequence file
+This script will remove a number of residues from sequence and structure files
 in agreement to the intervals and other details supplied.
 
 """
 
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import argparse
 import os
@@ -19,7 +20,7 @@ from crops import command_line as ccl
 logger = None
 
 def create_argument_parser():
-    """Create a parser for the command line arguments used in crops-renumber"""
+    """Create a parser for the command line arguments used in crops-cropstr"""
 
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
@@ -89,7 +90,8 @@ def main():
     if len(seqset) > 0:
         intervals = cin.import_db(indb, pdb_in=seqset)
     else:
-        raise ValueError('No chains were imported from sequence file.')
+        logger.critical('No chains were imported from sequence file.')
+        raise ValueError
     logger.info('Done'+os.linesep)
 
     if insprot is not None and minlen > 0.0:

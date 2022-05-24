@@ -1,10 +1,11 @@
-from Bio import Align
-from Bio.Align import substitution_matrices
-
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 from crops.libs import ressymbol
 from crops.elements.sequences import sequence
+
+from Bio import Align
+from Bio.Align import substitution_matrices
 
 import copy
 import gemmi
@@ -20,9 +21,9 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
     :type sequence_2: str
     :param mode: Alignment mode, defaults to global.
     :type mode: str, optional
-    :param open_gap_score: Opening gap penalty, defaults to -11
+    :param open_gap_score: Opening gap penalty, defaults to -11.
     :type open_gap_score: int
-    :param extend_gap_score: Extension gap penalty, defaults to -2
+    :param extend_gap_score: Extension gap penalty, defaults to -2.
     :type extend_gap_score: int
     :return alignment_dict: Dictionary with the residue mapping between both input sequences.
     :rtype alignment_dict: dict
@@ -49,7 +50,7 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
 
     return alignment_dict
 
-
+# TODO add seqback argument
 def renumber_pdb_needleman(inseq, instr):
     """Returns modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch
     algorithm to perform the sequence alignment
@@ -58,14 +59,13 @@ def renumber_pdb_needleman(inseq, instr):
     :type inseq: :class:`~crops.elements.sequences.oligoseq`
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
-    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
-    :type seqback: bool, optional
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
     :return inseq: Sequence with extra information about gaps, only if seqback==True.
     :rtype inseq: :class:`~crops.elements.sequences.oligoseq`
 
     """
+
     renumbered_structure = gemmi.Structure()
 
     for model in instr:
@@ -162,14 +162,15 @@ def renumber_pdb(inseq, instr, seqback=False):
                             newseq += '-'*(len(original_seq)-len(newseq))
                         break
                 if solved == False:
-                    nerr = ("The .fasta sequence and the original "+
-                            "structure's numbering do not match. The number " +
-                            "of gaps in the structure must be consistent " +
-                            "with the number of residues in the sequence " +
+                    nerr = ("The .fasta sequence and the original "
+                            "structure's numbering do not match. The number "
+                            "of gaps in the structure must be consistent "
+                            "with the number of residues in the sequence "
                             "in order for CROPS to make the renumbering.")
-                    raise ValueError(nerr)
+                    logging.critical(nerr)
+                    raise ValueError
             else:
-                nwarn = ('.pdb chain '+str(chain.name) + ' not found in ' +
+                nwarn = ('.pdb chain '+str(chain.name) + ' not found in '
                          '.fasta file. All elements considered ligands.')
                 logging.warning(nwarn)
                 ligandwarn = False
@@ -180,8 +181,8 @@ def renumber_pdb(inseq, instr, seqback=False):
                     nligands += 1
                     pos[n_chains][nligands-1] = -nligands
                 if ligandwarn == True:
-                    nwarn = ('Some of the ligands contain Aminoacid or ' +
-                             'Nucleotide residues. Please check that ' +
+                    nwarn = ('Some of the ligands contain Aminoacid or '
+                             'Nucleotide residues. Please check whether '
                              'they are actually ligands.')
                     logging.warning(nwarn)
                 solved = True
@@ -225,7 +226,9 @@ def crop_seq(inseq, segments, cut_type, terms=False):
         if segments.subint[-1][-1] > inseq.length():
             logging.debug('On '+str(inseq))
             logging.debug('with '+str(segments))
-            raise ValueError('One or many of the segment end values is outside the original sequence.')
+            logging.critical('One or many of the segment end values is '
+                             'outside the original sequence.')
+            raise ValueError
 
     newchain = inseq.deepcopy()
     newchain.seqs['mainseq'] = ''

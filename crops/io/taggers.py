@@ -1,6 +1,8 @@
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import os
+import logging
 
 def target_format(inpath, terms=False, th=0):
     """Returns extra information for .fasta headers.
@@ -66,7 +68,8 @@ def retrieve_id(seqheader):
     """
 
     if not isinstance(seqheader, str):
-        raise ValueError('Argument is not a string.')
+        logging.critical('Argument is not a string.')
+        raise ValueError
     headerinfo = {}
     headerinfo['mainid'] = ""
     headerinfo['chains'] = None
@@ -214,7 +217,7 @@ def retrieve_id(seqheader):
                         int(newchid)
                         headerinfo['seqid'] = newchid
                         newchid = ''
-                    except:
+                    except Exception:
                         if headerinfo['chains'] is None:
                             headerinfo['chains'] = set()
                         headerinfo['chains'].add(newchid)
@@ -323,8 +326,9 @@ def makeheader(mainid=None, seqid=None, chains=None,
     if not isinstance(mainid, str):
         try:
             mainid = str(mainid)
-        except:
-            raise ValueError("Argument 'mainid' is not a string.")
+        except Exception:
+            logging.critical("Argument 'mainid' is not a string.")
+            raise ValueError
 
     if short is True:
         newheader = '>' + mainid.upper()
@@ -334,18 +338,21 @@ def makeheader(mainid=None, seqid=None, chains=None,
         if not isinstance(seqid, str):
             try:
                 seqid = str(seqid)
-            except:
-                raise ValueError("Argument 'seqid' is not a string.")
+            except Exception:
+                logging.critical("Argument 'seqid' is not a string.")
+                raise ValueError
         newheader += '_'
         newheader += seqid
     newheader += '|'
     if chains is not None:
         if not isinstance(chains, set):
-            raise ValueError("Argument 'chains' is not a set of strings.")
+            logging.critical("Argument 'chains' is not a set of strings.")
+            raise ValueError
         else:
             for element in chains:
                 if not isinstance(element, str):
-                    raise ValueError("Argument 'chains' is not a set of strings.")
+                    logging.critical("Argument 'chains' is not a set of strings.")
+                    raise ValueError
 
         if len(chains) > 0:
             if len(chains) > 1:
@@ -364,8 +371,9 @@ def makeheader(mainid=None, seqid=None, chains=None,
         if not isinstance(source, str):
             try:
                 source = str(source)
-            except:
-                raise ValueError("Argument 'source' is not a string.")
+            except Exception:
+                logging.critical("Argument 'source' is not a string.")
+                raise ValueError
         newheader += 'Source: '
         newheader += source
         newheader += '|'
@@ -373,8 +381,9 @@ def makeheader(mainid=None, seqid=None, chains=None,
         if not isinstance(extrainfo, str):
             try:
                 extrainfo = str(extrainfo)
-            except:
-                raise ValueError('Argument extrainfo is not a list of strings.')
+            except Exception:
+                logging.critical('Argument extrainfo is not a list of strings.')
+                raise ValueError
         newheader += extrainfo
 
     return newheader

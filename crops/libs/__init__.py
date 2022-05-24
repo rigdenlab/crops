@@ -1,15 +1,17 @@
 """This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files"""
 
-from crops import __prog__, __description__, __author__, __date__, __version__, __copyright__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 from crops.libs import rescodes as rc
+import logging
 
 def ressymbol(name, pick=None):
     """Conversion from residue 3-letter symbol to 1-letter symbol.
 
     :param name: Residue symbol (3-letter convention) or Nucleotide symbol (1,2-letter convention).
     :type name: str
-    :param pick: If three-letter code yields multiple results, pick this one (if among results), defaults to None
+    :param pick: If three-letter code yields multiple results, pick this one (if among results), defaults to None.
     :type pick: str, optional
     :return: Residue/Nucleotide symbol (1-letter convention).
     :rtype: str
@@ -24,7 +26,9 @@ def ressymbol(name, pick=None):
                 oneletter = pick if pick in oneletter else oneletter[0]
             else:
                 oneletter = oneletter[0]
-    except:
+    except Exception:
+        logging.warning('Residue ' + name + ' not found in library. '
+                        'Assigning 0 to it.')
         oneletter = 0
 
     return oneletter

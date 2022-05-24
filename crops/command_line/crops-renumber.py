@@ -7,7 +7,8 @@ same source (e.g. RCSB PDB) a source conflict might occur making the
 renumbering operation unsuccessful even if the program does not crash.
 """
 
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import argparse
 import os
@@ -30,6 +31,9 @@ def create_argument_parser():
                         help="Input sequence filepath.")
     parser.add_argument("input_strpath", nargs=1, metavar="Structure_filepath",
                         help="Input structure filepath or dir. If a directory is inserted, it will act on all structure files in such directory.")
+
+    parser.add_argument("-f", "--force_alignment", action='store_true', default=False,
+                        help="Use Needleman-Wunsch algorithm to try to bypass small disagreements between fasta and pdb sequences.")
 
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
@@ -74,8 +78,14 @@ def main():
                     newstructure = cop.renumber_pdb(seqset[seqname], structure)
                 except (AttributeError, IndexError) as e:
                     logger.warning('Something has gone wrong during renumbering:\n{}'.format(e))
-                    logger.info('Attempting Needleman-Wunsch...')
-                    newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure)
+                    if args.force_alignment:
+                        logger.info('Attempting Needleman-Wunsch...')
+                        newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure)
+                    else:
+                        logger.critical('Unable to renumber the structure, exiting now. '
+                                         'Try again with -f option to force the alignment.')
+                        return
+
                 fout = finalid+infixlbl+os.path.splitext(instr)[1]
                 outstr = outpathgen(outdir, subdir=finalid,
                                     filename=fout, mksubdir=True)

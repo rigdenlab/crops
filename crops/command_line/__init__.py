@@ -1,19 +1,20 @@
 """This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files"""
 
-from crops import __prog__, __description__, __author__, __date__, __version__,__copyright__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import logging
 import sys
 from os import linesep
 
 def welcome():
-    msg = "** Running "+__prog__+" v."+__version__+' **'+linesep
-    msg += "** "+__description__+linesep
-    msg += "** Developed by "+__author__+". Copyright: "+__copyright__+'.'+linesep
+    msg = "** Running " + __prog__ + " v." + __version__ + ' **' + linesep
+    msg += "** " + __description__ + linesep
+    msg += "** Developed by " + __author__ + ". Copyright: " + __copyright__ + '.' + linesep
     return msg
 
 def ok():
-    msg = "** "+__prog__+" finished **"+linesep
+    msg = "** " + __prog__ + " finished **" + linesep
     return msg
 
 def crops_logger(level="info"):
