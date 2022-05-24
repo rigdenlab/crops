@@ -31,7 +31,7 @@ def create_argument_parser():
     parser.add_argument("input_strpath", nargs=1, metavar="Structure_filepath",
                         help="Input structure filepath or dir. If a directory is inserted, it will act on all structure files in such directory.")
 
-    parser.add_argument("-a", "--force_alignment", action='store_true', default=False,
+    parser.add_argument("-f", "--force_alignment", action='store_true', default=False,
                         help="Use Needleman-Wunsch algorithm to try to bypass small disagreements between fasta and pdb sequences.")
 
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
@@ -76,13 +76,14 @@ def main():
                 try:
                     newstructure = cop.renumber_pdb(seqset[seqname], structure)
                 except (AttributeError, IndexError) as e:
-                    if args.force_alignment is True:
-                        logger.warning('Something has gone wrong during renumbering:\n{}'.format(e))
+                    logger.warning('Something has gone wrong during renumbering:\n{}'.format(e))
+                    if args.force_alignment:
                         logger.info('Attempting Needleman-Wunsch...')
                         newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure)
                     else:
-                        logger.critical('Something has gone wrong during renumbering:\n{}'.format(e))
-                        raise RuntimeError from e
+                        logger.critical(('Unable to renumber the structure, exiting now. ' +
+                                         'Try again with -f option to force the alignment.'))
+                        return
 
                 fout = finalid+infixlbl+os.path.splitext(instr)[1]
                 outstr = outpathgen(outdir, subdir=finalid,

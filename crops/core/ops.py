@@ -49,8 +49,8 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
 
     return alignment_dict
 
-
-def renumber_pdb_needleman(inseq, instr): #  , seqback=False):
+# TODO add seqback argument
+def renumber_pdb_needleman(inseq, instr):
     """Returns modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch
     algorithm to perform the sequence alignment
 
@@ -64,8 +64,6 @@ def renumber_pdb_needleman(inseq, instr): #  , seqback=False):
     :rtype inseq: :class:`~crops.elements.sequences.oligoseq`
 
     """
-#    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
-#    :type seqback: bool, optional
 
     renumbered_structure = gemmi.Structure()
 
