@@ -81,8 +81,8 @@ def main():
                         logger.info('Attempting Needleman-Wunsch...')
                         newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure)
                     else:
-                        logger.critical(('Unable to renumber the structure, exiting now. ' +
-                                         'Try again with -f option to force the alignment.'))
+                        logger.critical('Unable to renumber the structure, exiting now. '
+                                         'Try again with -f option to force the alignment.')
                         return
 
                 fout = finalid+infixlbl+os.path.splitext(instr)[1]
