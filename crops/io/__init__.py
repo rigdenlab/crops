@@ -1,9 +1,11 @@
 """This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files"""
 
-from crops import __prog__, __description__, __author__, __date__, __version__, __copyright__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import os
 import argparse
+import logging
 
 def check_path(path, typeofpath=None):
     """Returns full path if correct.
@@ -37,11 +39,13 @@ def check_path(path, typeofpath=None):
             if os.path.isfile(path) is True:
                 pathok = True
     else:
-        raise ValueError("Input string 'typeofpath' should be either 'dir' or 'file'.")
+        logging.critical("Input string 'typeofpath' should be either 'dir' or 'file'.")
+        raise ValueError
     if pathok is True:
         return path
     else:
-        raise argparse.ArgumentTypeError(f"readable_dir:{path} is not a valid path")
+        logging.critical(f"readable_dir:{path} is not a valid path")
+        raise argparse.ArgumentTypeError
 
 def outpathgen(globaldir, subdir=None, filename=None, mksubdir=False):
     """Returns the desired output filepath.
@@ -69,7 +73,8 @@ def outpathgen(globaldir, subdir=None, filename=None, mksubdir=False):
             if mksubdir is True:
                 os.mkdir(newpath)
             else:
-                raise FileNotFoundError('Directory does not exist')
+                logging.critical('Directory does not exist')
+                raise FileNotFoundError
     if filename is not None:
         newpath = os.path.join(newpath,filename)
 

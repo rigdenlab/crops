@@ -1,10 +1,11 @@
 """==========
-This script will remove a number of residues from a sequence file
+This script will remove a number of residues from sequence and structure files
 in agreement to the intervals and other details supplied.
 
 """
 
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import argparse
 import os
@@ -89,7 +90,8 @@ def main():
     if len(seqset) > 0:
         intervals = cin.import_db(indb, pdb_in=seqset)
     else:
-        raise ValueError('No chains were imported from sequence file.')
+        logger.critical('No chains were imported from sequence file.')
+        raise ValueError
     logger.info('Done'+os.linesep)
 
     if insprot is not None and minlen > 0.0:

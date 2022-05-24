@@ -1,10 +1,12 @@
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import gemmi
 import os
 import csv
 from urllib import request as ur
 import copy
+import logging
 
 from crops.elements.sequences import oligoseq
 from crops.elements.sequences import sequence
@@ -36,14 +38,16 @@ def import_db(inpath, pdb_in=None):
         pdb_in_lower = set()
         for key in pdb_in:
             if isinstance(key, str) is False:
-                raise TypeError('Argument should be either None, a string, ' +
+                logging.critical('Argument should be either None, a string, '
                                 'a set, or a dictionary with empty values.')
+                raise TypeError
             pdb_in_lower.add(key.lower())
     elif pdb_in is None:
         pass
     else:
-        raise TypeError('Argument should be either None, a string, ' +
+        logging.critical('Argument should be either None, a string, '
                         'a set, or a dictionary with empty values.')
+        raise TypeError
 
     if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
         mol = 0
@@ -109,12 +113,15 @@ def parsestrfile(str_inpath):
                     structure = gemmi.read_structure(file)
                     pdbid = structure.name.lower()
                     if pdbid in strdict:
-                        raise KeyError('Structure '+pdbid+' loaded more ' +
-                                       'than once. Check files in directory ' +
-                                       'and remove duplicates.')
+                        logging.critical('Structure ' + pdbid + ' loaded more '
+                                         'than once. Check files in directory '
+                                         'and remove duplicates.')
+                        raise KeyError
                     strdict[pdbid] = structure
                     filedict[pdbid] = os.path.basename(str_inpath)
-                except:
+                except Exception:
+                    logging.warning("There was some error while processing '" +
+                                    pdbid + "'. Ignoring structure.")
                     pass
 
     return strdict, filedict
@@ -139,20 +146,22 @@ def parseseqfile(inpath, uniprot=None):
     if uniprot is not None:
         if (not isinstance(uniprot, str) and not isinstance(uniprot, dict) and
                 not isinstance(uniprot, set)):
-            raise TypeError('Input argument uniprot must be one of ' +
+            logging.critical('Input argument uniprot must be one of '
                             'a string, a set, or a dictionary.')
+            raise TypeError
         elif isinstance(uniprot, str):
             unitemp = uniprot
             uniprot = set()
             uniprot.add(unitemp)
         for upcode in uniprot:
             if not isinstance(upcode, str):
-                raise TypeError('Input argument uniprot must be one of ' +
+                logging.critical('Input argument uniprot must be one of '
                                 'a string, a set, or a dictionary.')
-
+                raise TypeError
     if inpath == 'server-only' and uniprot is None:
-        raise TypeError("Input argument inpath cannot be 'server-only' " +
+        logging.critical("Input argument inpath cannot be 'server-only' "
                         "when a set or dict of uniprot ids is not provided.")
+        raise TypeError
     elif inpath == 'server-only' and uniprot is not None:
         pass
     else:
@@ -188,7 +197,7 @@ def parseseqfile(inpath, uniprot=None):
                             line = f.readline().rstrip()
                             if not line:
                                 break
-                        except:
+                        except Exception:
                             break
                 if line.startswith(">"):
                     newid = retrieve_id(line)
@@ -217,14 +226,15 @@ def parseseqfile(inpath, uniprot=None):
                             newid = retrieve_id(line)
                         else:
                             chain += str(line)
-                except:
+                except Exception:
                     if inpath == 'server-only':
                         msg = ('Uniprot sequence ' + upcode.upper() +
                                ' not found online. Check your internet connexion.')
                     else:
                         msg = ('Uniprot sequence ' + upcode.upper() +
                                ' not found in local file or online. Check your internet connexion.')
-                    raise OSError(msg)
+                    logging.critical(msg)
+                    raise OSError
                 if upcode.upper() not in newseqs:
                     newseqs[newid['mainid']] = oligoseq(oligomer_id=newid['mainid'])
                 aseq = sequence(seqid=newid['seqid'],
@@ -264,7 +274,7 @@ def parsemapfile(inpath):
                         line = f.readline().rstrip()
                         if not line:
                             break
-                    except:
+                    except Exception:
                         break
 
             if line.startswith(">"):

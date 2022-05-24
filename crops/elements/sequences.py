@@ -1,4 +1,5 @@
-from crops import __prog__, __description__, __author__, __date__, __version__
+from crops import __prog__, __description__, __author__
+from crops import __date__, __version__, __copyright__
 
 import os
 import io
@@ -22,7 +23,8 @@ def guess_type(inseq):
 
     """
     if not isinstance(inseq, str):
-        raise TypeError("Sequence 'inseq' should be a string.")
+        logging.critical("Sequence 'inseq' should be a string.")
+        raise TypeError
 
     outtype = None
     for char in inseq:
@@ -132,13 +134,15 @@ class sequence:
             if isinstance(seqid, str):
                 self.name = seqid
             else:
-                raise TypeError("Sequence ID 'seqid' should be a string.")
+                logging.critical("Sequence ID 'seqid' should be a string.")
+                raise TypeError
 
         if seq is not None:
             if isinstance(seq, str):
                 self.seqs['mainseq'] = seq
             else:
-                raise TypeError("Chain sequence 'seq' should be a string.")
+                logging.critical("Chain sequence 'seq' should be a string.")
+                raise TypeError
         else:
             self.seqs['mainseq'] = ''
 
@@ -146,7 +150,8 @@ class sequence:
             if isinstance(oligomer, str):
                 self.oligomer_id = oligomer
             else:
-                raise TypeError("Oligomer ID 'oligomer' should be a string.")
+                logging.critical("Oligomer ID 'oligomer' should be a string.")
+                raise TypeError
 
         if chains is not None:
             if isinstance(chains, set):
@@ -154,21 +159,25 @@ class sequence:
                     if isinstance(ch, str):
                         self.chains.add(ch)
                     else:
-                        raise TypeError("Chain IDs in 'chains' set should be strings.")
+                        logging.critical("Chain IDs in 'chains' set should be strings.")
+                        raise TypeError
             else:
-                raise TypeError("Argument 'chains' should be a set of strings.")
+                logging.critical("Argument 'chains' should be a set of strings.")
+                raise TypeError
 
         if source is not None:
             if isinstance(source, str):
                 self.source = source
             else:
-                raise TypeError("Argument 'source' should be a string.")
+                logging.critical("Argument 'source' should be a string.")
+                raise TypeError
 
         if header is not None:
             if isinstance(header, str):
                 self.source_headers.append(header)
             else:
-                raise TypeError("Argument 'source' should be a string.")
+                logging.critical("Argument 'source' should be a string.")
+                raise TypeError
 
         if biotype is not None:
             if biotype.lower() == 'guess':
@@ -182,7 +191,8 @@ class sequence:
             if isinstance(extrainfo, str):
                 self.infostring = extrainfo
             else:
-                raise TypeError("Argument 'extrainfo' should be a string.")
+                logging.critical("Argument 'extrainfo' should be a string.")
+                raise TypeError
 
         if oligomer is None:
             self.crops_header = makeheader(mainid='NOID', seqid=self.name,
@@ -196,7 +206,8 @@ class sequence:
     def __repr__(self):
         chtype = self.biotype if self.biotype is not None else 'Undefined'
         if 'mainseq' not in self.seqs:
-            raise ValueError("'mainseq' sequence not found.")
+            logging.critical("'mainseq' sequence not found.")
+            raise ValueError
         if len(self.seqs['mainseq']) <= 20:
             showseq = self.seqs['mainseq']
         else:
@@ -231,11 +242,14 @@ class sequence:
 
         """
         if not isinstance(newid, str):
-            raise TypeError("New sequence ID 'newid' should be a string.")
+            logging.critical("New sequence ID 'newid' should be a string.")
+            raise TypeError
         if not isinstance(newseq, str):
-            raise TypeError("New sequence string 'newseq' should be a string.")
+            logging.critical("New sequence string 'newseq' should be a string.")
+            raise TypeError
         if newid in self.seqs:
-            raise KeyError("Key name 'newid' already exists.")
+            logging.critical("Key name 'newid' already exists.")
+            raise KeyError
 
         self.seqs[newid] = newseq
 
@@ -250,9 +264,11 @@ class sequence:
 
         """
         if not isinstance(delid, str):
-            raise TypeError("Sequence ID 'delid' should be a string.")
+            logging.critical("Sequence ID 'delid' should be a string.")
+            raise TypeError
         if not isinstance(wipeall, bool):
-            raise TypeError("Boolean switch 'wipeall' is neither True nor False.")
+            logging.critical("Boolean switch 'wipeall' is neither True nor False.")
+            raise TypeError
 
         if wipeall:
             self.seqs = {}
@@ -277,7 +293,8 @@ class sequence:
 
         """
         if not isinstance(add, str) and add is not None:
-            raise TypeError("If included, sequence 'add' should be a string.")
+            logging.critical("If included, sequence 'add' should be a string.")
+            raise TypeError
 
         if add is not None:
             self.seqs['mainseq'] = add
@@ -311,14 +328,16 @@ class sequence:
 
         """
         if not isinstance(out, str) and not isinstance(out, io.IOBase):
-            raise TypeError("Argument 'out' should be a string or a file.")
+            logging.critical("Argument 'out' should be a string or a file.")
+            raise TypeError
 
         outheader = []
 
         if split:
             if (self.chains is None or
                     (isinstance(self.chains, set) and len(self.chains) == 0)):
-                raise KeyError('No chains defined in sequence.')
+                logging.critical('No chains defined in sequence.')
+                raise KeyError
 
             for ch in self.chains:
                 outheader.append(makeheader(mainid=self.oligomer_id,
@@ -372,18 +391,21 @@ class sequence:
 
         """
         if not isinstance(out, str) and not isinstance(out, io.IOBase):
-            raise TypeError("Argument 'out' should be a string or a file.")
+            logging.critical("Argument 'out' should be a string or a file.")
+            raise TypeError
 
         if self.cropmap is None:
             stringerr = "Cropmap not found in sequence."
-            raise ValueError(stringerr)
+            logging.critical(stringerr)
+            raise ValueError
 
         outheader = []
 
         if split:
             if (self.chains is None or
                     (isinstance(self.chains, set) and len(self.chains) == 0)):
-                raise KeyError('No chains defined in sequence.')
+                logging.critical('No chains defined in sequence.')
+                raise KeyError
 
             for ch in self.chains:
                 outheader.append(makeheader(mainid=self.oligomer_id,
@@ -453,7 +475,8 @@ class sequence:
 
         """
         if not isinstance(seqid, str):
-            raise TypeError("Sequence ID 'seqid' should be a string.")
+            logging.critical("Sequence ID 'seqid' should be a string.")
+            raise TypeError
         n = 0
         if seqid in self.seqs:
             for char in self.seqs[seqid]:
@@ -477,7 +500,8 @@ class sequence:
 
         """
         if not isinstance(seqid, str):
-            raise TypeError("Sequence ID 'seqid' should be a string.")
+            logging.critical("Sequence ID 'seqid' should be a string.")
+            raise TypeError
 
         n = 0
         if seqid not in self.seqs:
@@ -594,14 +618,17 @@ class oligoseq:
     def __init__(self, oligomer_id=None, imer=None):
 
         if not isinstance(oligomer_id, str) and oligomer_id is not None:
-            raise TypeError("'oligomer_id' should be a string.")
+            logging.critical("'oligomer_id' should be a string.")
+            raise TypeError
         if not isinstance(imer, dict) and imer is not None:
-            raise TypeError("Sequence container 'imer' should be a dictionary.")
+            logging.critical("Sequence container 'imer' should be a dictionary.")
+            raise TypeError
         elif isinstance(imer, dict):
             for val in imer.values():
                 if not isinstance(val, sequence):
-                    raise TypeError("Sequence container 'imer' should only " +
+                    logging.critical("Sequence container 'imer' should only "
                                     "contain :class:`~crops.elements.sequences.sequence` objects.")
+                    raise TypeError
         self.id = oligomer_id
         self.imer = imer if imer is not None else {}
 
@@ -638,18 +665,21 @@ class oligoseq:
                     self.id + '.')
         if (newseq.oligomer_id is not None and self.id is not None and
                 newseq.oligomer_id.lower() != self.id):
-            raise Exception(errormsg)
+            logging.critical(errormsg)
+            raise Exception
 
         if newseq.name is not None:
             if newseq.name in self.imer:
                 if self.imer.seqs['mainseq'] == newseq.seqs['mainseq']:
                     addall = False
                 else:
-                    raise Exception(errormsg)
+                    logging.critical(errormsg)
+                    raise Exception
             else:
                 for seq in self.imer.values():
                     if seq.seqs['mainseq'] == newseq.seqs['mainseq']:
-                        raise Exception(errormsg)
+                        logging.critical(errormsg)
+                        raise Exception
                 addall = True
         else:
             for seq in self.imer.values():
@@ -662,13 +692,15 @@ class oligoseq:
 
         if self.id is not None and newseq.oligomer_id is not None:
             if self.id != newseq.oligomer_id.lower():
-                raise Exception(errormsg)
+                logging.critical(errormsg)
+                raise Exception
 
         if addall is True:
             for ch in newseq.chains:
                 for seq in self.imer.values():
                     if ch in seq.chains:
-                        raise Exception(errormsg)
+                        logging.critical(errormsg)
+                        raise Exception
             if newseq.name is None:
                 while True:
                     n = 1
@@ -688,7 +720,8 @@ class oligoseq:
             for ch in newseq.chains:
                 for seq in self.imer.values():
                     if ch in seq.chains and seq.name != newseq.name:
-                        raise Exception(errormsg)
+                        logging.critical(errormsg)
+                        raise Exception
                 self.imer[newseq.name].chains.add(ch)
 
             for header in newseq.source_headers:
@@ -730,15 +763,18 @@ class oligoseq:
 
         """
         if not isinstance(mapdict, dict):
-            raise TypeError("'mapdict' should be a dictionary.")
+            logging.critical("'mapdict' should be a dictionary.")
+            raise TypeError
 
         for seqid in mapdict:
             if not isinstance(seqid, str):
-                raise TypeError("Values in 'mapdict' should be strings.")
+                logging.critical("Values in 'mapdict' should be strings.")
+                raise TypeError
             if seqid in self.imer:
                 if ('cropmap' not in mapdict[seqid] or
                         'cropbackmap' not in mapdict[seqid]):
-                    raise TypeError("'mapdict' is not a crop map.")
+                    logging.critical("'mapdict' is not a crop map.")
+                    raise TypeError
                 self.imer[seqid].cropmap = copy.deepcopy(mapdict[seqid]['cropmap'])
                 self.imer[seqid].cropbackmap = copy.deepcopy(mapdict[seqid]['cropbackmap'])
                 self.imer[seqid].intervals = intinterval(description=self.id+'_'+str(seqid))
@@ -775,7 +811,8 @@ class oligoseq:
         """
 
         if not os.path.isdir(outdir):
-            raise FileNotFoundError(outdir + ' directory not found.')
+            logging.critical(outdir + ' directory not found.')
+            raise FileNotFoundError
 
         outpath = os.path.join(outdir, self.seq_id + infix + ".fasta")
         for seq in self.imer:
@@ -796,11 +833,13 @@ class oligoseq:
 
         """
         if not isinstance(seqid, str):
-            raise TypeError('chain input must be a string.')
+            logging.critical('chain input must be a string.')
+            raise TypeError
         if seqid in self.imer:
             return self.imer[seqid].length()
         else:
-            raise KeyError(seqid+' monomer not found in sequence.')
+            logging.critical(seqid+' monomer not found in sequence.')
+            raise KeyError
 
     def nchains(self):
         """Returns number of chains in :class:`~crops.elements.sequences.oligoseq`.
