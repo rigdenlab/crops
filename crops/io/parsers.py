@@ -139,20 +139,6 @@ def parsestrfile(str_input, intype='path'):
 
 
 def parseseqfile(seq_input, uniprot=None, intype='path'):
-    """
-
-    :param seq_input: DESCRIPTION
-    :type seq_input: TYPE
-    :param uniprot: DESCRIPTION, defaults to None
-    :type uniprot: TYPE, optional
-    :param intype: DESCRIPTION, defaults to 'path'
-    :type intype: TYPE, optional
-    :raises TypeError: DESCRIPTION
-    :raises OSError: DESCRIPTION
-    :return: DESCRIPTION
-    :rtype: TYPE
-
-    """
     """Sequence file parser.
 
     :param seq_input: Sequence file path.

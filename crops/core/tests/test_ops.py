@@ -581,6 +581,7 @@ _SEQUENCE_1 = "MLRIPVTRALIGLSKSPKGCVRTTATAASNLIEVFVDGQSVMVEPGTTVLQACEKVGMQIPRFCY
 _HEADER = ">5GUP_7|Chain G|NADH-ubiquinone oxidoreductase 75 kDa subunit, mitochondrial|Sus scrofa (9823)"
 _FASTA_SEQUENCE_1 = _HEADER + os.linesep + _SEQUENCE_1
 
+
 class TestCropsOps(unittest.TestCase):
     def test_renumber_pdb_needleman_1(self):
         """ Testing the following alignment
