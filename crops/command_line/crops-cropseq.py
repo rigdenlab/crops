@@ -22,7 +22,7 @@ import copy
 logger = None
 
 def create_argument_parser():
-    """Create a parser for the command line arguments used in crops-renumber"""
+    """Create a parser for the command line arguments used in crops-cropstr"""
 
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)

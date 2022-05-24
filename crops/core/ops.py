@@ -20,9 +20,9 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
     :type sequence_2: str
     :param mode: Alignment mode, defaults to global.
     :type mode: str, optional
-    :param open_gap_score: Opening gap penalty, defaults to -11
+    :param open_gap_score: Opening gap penalty, defaults to -11.
     :type open_gap_score: int
-    :param extend_gap_score: Extension gap penalty, defaults to -2
+    :param extend_gap_score: Extension gap penalty, defaults to -2.
     :type extend_gap_score: int
     :return alignment_dict: Dictionary with the residue mapping between both input sequences.
     :rtype alignment_dict: dict
@@ -50,7 +50,7 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
     return alignment_dict
 
 
-def renumber_pdb_needleman(inseq, instr):
+def renumber_pdb_needleman(inseq, instr): #  , seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch
     algorithm to perform the sequence alignment
 
@@ -58,14 +58,15 @@ def renumber_pdb_needleman(inseq, instr):
     :type inseq: :class:`~crops.elements.sequences.oligoseq`
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
-    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
-    :type seqback: bool, optional
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
     :return inseq: Sequence with extra information about gaps, only if seqback==True.
     :rtype inseq: :class:`~crops.elements.sequences.oligoseq`
 
     """
+#    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
+#    :type seqback: bool, optional
+
     renumbered_structure = gemmi.Structure()
 
     for model in instr:
