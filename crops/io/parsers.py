@@ -85,56 +85,86 @@ def import_db(inpath, pdb_in=None):
     return database_out
 
 
-def parsestrfile(str_inpath):
-    """Returns dictionary containing :class:`~gemmi.Structure` objects and another one with the file names.
+def parsestrfile(str_input, intype='path'):
+    """Structure file(s) parser.
 
-    :param str_inpath: Either a directory or file path.
-    :type str_inpath: str
+    :param str_input: Either a directory or file path.
+    :type str_input: str
+    :param intype: One of 'path' or 'string', defaults to 'path'.
+    :type intype: str, optional
     :raises KeyError: More than one structure file containing same identifier.
-    :return strdict: A dictionary containing imported :class:`~gemmi.Structure` objects.
-    :rtype strdict: dict [str, :class:`~gemmi.Structure`]
+    raises ValueError: If the argument 'intype' has an invalid value.
+    :return strdict: A dictionary containing imported :obj:`~gemmi.Structure` objects.
+    :rtype strdict: dict [str, :obj:`~gemmi.Structure`]
     :return filedict: A dictionary containing file names.
     :rtype filedict: dict [str, str]
 
     """
     strdict = {}
     filedict = {}
-    if os.path.isfile(str_inpath):
-
-        structure = gemmi.read_structure(str_inpath)
+    if intype == 'string':
+        structure = gemmi.read_structure(str_input)
         pdbid = structure.name.lower()
         strdict[pdbid] = structure
-        filedict[pdbid] = os.path.basename(str_inpath)
-    elif os.path.isdir(str_inpath):
-        filelist = os.listdir(str_inpath)
-        for file in filelist:
-            if os.isfile(file):
-                try:
-                    structure = gemmi.read_structure(file)
-                    pdbid = structure.name.lower()
-                    if pdbid in strdict:
-                        logging.critical('Structure ' + pdbid + ' loaded more '
-                                         'than once. Check files in directory '
-                                         'and remove duplicates.')
-                        raise KeyError
-                    strdict[pdbid] = structure
-                    filedict[pdbid] = os.path.basename(str_inpath)
-                except Exception:
-                    logging.warning("There was some error while processing '" +
-                                    pdbid + "'. Ignoring structure.")
-                    pass
+        filedict[pdbid] = None
+    elif intype == 'path':
+        if os.path.isfile(str_input):
+            structure = gemmi.read_structure(str_input)
+            pdbid = structure.name.lower()
+            strdict[pdbid] = structure
+            filedict[pdbid] = os.path.basename(str_input)
+        elif os.path.isdir(str_input):
+            filelist = os.listdir(str_input)
+            for file in filelist:
+                if os.isfile(file):
+                    try:
+                        structure = gemmi.read_structure(file)
+                        pdbid = structure.name.lower()
+                        if pdbid in strdict:
+                            logging.critical('Structure ' + pdbid + ' loaded more '
+                                             'than once. Check files in directory '
+                                             'and remove duplicates.')
+                            raise KeyError
+                        strdict[pdbid] = structure
+                        filedict[pdbid] = os.path.basename(str_input)
+                    except Exception:
+                        logging.warning("There was some error while processing '" +
+                                        pdbid + "'. Ignoring structure.")
+                        pass
+    else:
+        logging.critical("Invalid value for argument 'intype'")
+        raise ValueError
 
     return strdict, filedict
 
-def parseseqfile(inpath, uniprot=None):
+
+def parseseqfile(seq_input, uniprot=None, intype='path'):
+    """
+
+    :param seq_input: DESCRIPTION
+    :type seq_input: TYPE
+    :param uniprot: DESCRIPTION, defaults to None
+    :type uniprot: TYPE, optional
+    :param intype: DESCRIPTION, defaults to 'path'
+    :type intype: TYPE, optional
+    :raises TypeError: DESCRIPTION
+    :raises OSError: DESCRIPTION
+    :return: DESCRIPTION
+    :rtype: TYPE
+
+    """
     """Sequence file parser.
 
-    :param inpath: Sequence file path.
-    :type inpath: str
+    :param seq_input: Sequence file path.
+    :type seq_input: str
     :param uniprot: A dictionary or set of Uniprot codes, defaults to None.
     :type uniprot: str, dict [str, any], optional
-    :return: A dictionary containing parsed :class:`~crops.elements.sequences.oligoseq` objects.
-    :rtype: dict [str, :class:`~crops.elements.sequences.oligoseq`]
+    :param intype: One of 'path' or 'string', defaults to 'path'.
+    :type intype: str, optional
+    :raises TypeError: When uniprot is not a str, set [str] or dict [str, str]; or seq_input=='server-only' but uniprot is None.
+    :raises OSError: When Uniprot sequence is not found in either source.
+    :return: A dictionary containing parsed :obj:`~crops.elements.sequences.oligoseq` objects.
+    :rtype: dict [str, :obj:`~crops.elements.sequences.oligoseq`]
 
     """
     newseqs = {}
@@ -158,17 +188,23 @@ def parseseqfile(inpath, uniprot=None):
                 logging.critical('Input argument uniprot must be one of '
                                 'a string, a set, or a dictionary.')
                 raise TypeError
-    if inpath == 'server-only' and uniprot is None:
-        logging.critical("Input argument inpath cannot be 'server-only' "
+    if seq_input == 'server-only' and uniprot is None:
+        logging.critical("Input argument seq_input cannot be 'server-only' "
                         "when a set or dict of uniprot ids is not provided.")
         raise TypeError
-    elif inpath == 'server-only' and uniprot is not None:
+    elif seq_input == 'server-only' and uniprot is not None:
         pass
     else:
-        with open(inpath, 'r') as f:
-            indx = -1
-            while True:
-                line = f.readline().rstrip()
+        if intype == 'path':
+            with open(seq_input, 'r') as f:
+                inseq = f.read()
+        else:
+            inseq = seq_input
+
+        indx = -1
+        while True:
+            for rawline in inseq.splitlines():
+                line = rawline.rstrip()
                 if (not line or line.startswith(">")) and not ignore:
                     if uniprot is not None:
                         if indx >= 0:
@@ -213,7 +249,7 @@ def parseseqfile(inpath, uniprot=None):
                     if not ignore:
                         chain += str(line)
 
-    if inpath == 'server-only' or uniprot is not None:
+    if seq_input == 'server-only' or uniprot is not None:
         for upcode in uniprot:
             if upcode.upper() not in newseqs:
                 try:
@@ -227,7 +263,7 @@ def parseseqfile(inpath, uniprot=None):
                         else:
                             chain += str(line)
                 except Exception:
-                    if inpath == 'server-only':
+                    if seq_input == 'server-only':
                         msg = ('Uniprot sequence ' + upcode.upper() +
                                ' not found online. Check your internet connexion.')
                     else:
