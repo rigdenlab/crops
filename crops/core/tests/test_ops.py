@@ -619,7 +619,8 @@ class TestCropsOps(unittest.TestCase):
                             218, 219, 220, 221, 222, 223, 224, 225, 690, 691, 692, 693, 694, 695, 696, 697, 698, 699,
                             700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716)
 
-        pdb = cip.parsestrfile(_PDB_STRING, intype='string')
+        pdb, fpdb = cip.parsestrfile(_PDB_STRING, intype='string')
+        pdb = pdb['string']
         myseq = cip.parseseqfile(_FASTA_SEQUENCE_1, intype='string')['5gup']
 
         renumbered_pdb = crops.core.ops.renumber_pdb_needleman(myseq, pdb)

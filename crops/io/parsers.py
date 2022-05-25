@@ -103,7 +103,7 @@ def parsestrfile(str_input, intype='path'):
     strdict = {}
     filedict = {}
     if intype == 'string':
-        structure = gemmi.read_structure(str_input)
+        structure = gemmi.read_pdb_string(str_input)
         pdbid = structure.name.lower()
         strdict[pdbid] = structure
         filedict[pdbid] = None
