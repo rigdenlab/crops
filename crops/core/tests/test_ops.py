@@ -5,12 +5,9 @@ from crops import __date__, __version__, __copyright__
 
 import unittest
 
-from crops.elements import sequences as csq
 from crops.io import parsers as cip
 import crops.core.ops
 import os
-
-import gemmi
 
 _PDB_STRING = """
 ATOM      1  N   ASN G  30     232.282 170.090 363.316  1.00 30.00           N
