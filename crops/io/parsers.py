@@ -88,7 +88,7 @@ def import_db(inpath, pdb_in=None):
 def parsestrfile(str_input, intype='path'):
     """Structure file(s) parser.
 
-    :param str_input: Either a directory or file path.
+    :param str_input: Either a directory or file path or a structure in string format.
     :type str_input: str
     :param intype: One of 'path' or 'string', defaults to 'path'.
     :type intype: str, optional
@@ -141,7 +141,7 @@ def parsestrfile(str_input, intype='path'):
 def parseseqfile(seq_input, uniprot=None, intype='path'):
     """Sequence file parser.
 
-    :param seq_input: Sequence file path.
+    :param seq_input: Sequence file path or file content as a string.
     :type seq_input: str
     :param uniprot: A dictionary or set of Uniprot codes, defaults to None.
     :type uniprot: str, dict [str, any], optional
