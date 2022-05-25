@@ -188,52 +188,52 @@ def parseseqfile(seq_input, uniprot=None, intype='path'):
             inseq = seq_input
 
         indx = -1
-        while True:
-            for rawline in inseq.splitlines():
-                line = rawline.rstrip()
-                if (not line or line.startswith(">")) and not ignore:
-                    if uniprot is not None:
-                        if indx >= 0:
-                            if newid['mainid'].upper() not in newseqs:
-                                newseqs[newid['mainid']] = oligoseq(oligomer_id=newid['mainid'])
-                            aseq = sequence(seqid=newid['seqid'],
-                                            oligomer=newid['mainid'].upper(),
-                                            seq=chain, chains=newid['chains'],
-                                            source=newid['source'],
-                                            header=head, extrainfo=newid['comments'])
-                            newseqs[newid['mainid']].add_sequence(aseq)
-                            if len(newseqs) == len(uniprot):
-                                break
-                    else:
-                        if indx >= 0:
-                            if newid['mainid'].lower() not in newseqs:
-                                newseqs[newid['mainid'].lower()] = oligoseq(oligomer_id=newid['mainid'].lower())
-                            aseq = sequence(seqid=newid['seqid'],
-                                            oligomer=newid['mainid'].upper(),
-                                            seq=chain, chains=newid['chains'],
-                                            source=newid['source'],
-                                            header=head, extrainfo=newid['comments'])
-                            newseqs[newid['mainid'].lower()].add_sequence(aseq)
-                    if not line:
-                        try:
-                            line = f.readline().rstrip()
-                            if not line:
-                                break
-                        except Exception:
+        inseqlines = inseq.splitlines()
+        inseqlines.append('')
+        for raw in range(len(inseqlines)):
+            line = inseqlines[raw].rstrip()
+            if (not line or line.startswith(">")) and not ignore:
+                if uniprot is not None:
+                    if indx >= 0:
+                        if newid['mainid'].upper() not in newseqs:
+                            newseqs[newid['mainid']] = oligoseq(oligomer_id=newid['mainid'])
+                        aseq = sequence(seqid=newid['seqid'],
+                                        oligomer=newid['mainid'].upper(),
+                                        seq=chain, chains=newid['chains'],
+                                        source=newid['source'],
+                                        header=head, extrainfo=newid['comments'])
+                        newseqs[newid['mainid']].add_sequence(aseq)
+                        if len(newseqs) == len(uniprot):
                             break
-                if line.startswith(">"):
-                    newid = retrieve_id(line)
-                    head = line
-                    indx += 1
-                    chain = ''
-                    if uniprot is not None:
-                        ignore = False if newid['mainid'] in uniprot else True
-
-                elif line.startswith("#") or line.startswith(' #'):
-                    pass
                 else:
-                    if not ignore:
-                        chain += str(line)
+                    if indx >= 0:
+                        if newid['mainid'].lower() not in newseqs:
+                            newseqs[newid['mainid'].lower()] = oligoseq(oligomer_id=newid['mainid'].lower())
+                        aseq = sequence(seqid=newid['seqid'],
+                                        oligomer=newid['mainid'].upper(),
+                                        seq=chain, chains=newid['chains'],
+                                        source=newid['source'],
+                                        header=head, extrainfo=newid['comments'])
+                        newseqs[newid['mainid'].lower()].add_sequence(aseq)
+                if not line:
+                    try:
+                        line = f.readline().rstrip()
+                        if not line:
+                            break
+                    except Exception:
+                        break
+            if line.startswith(">"):
+                newid = retrieve_id(line)
+                head = line
+                indx += 1
+                chain = ''
+                if uniprot is not None:
+                    ignore = False if newid['mainid'] in uniprot else True
+            elif line.startswith("#") or line.startswith(' #'):
+                pass
+            else:
+                if not ignore:
+                    chain += str(line)
 
     if seq_input == 'server-only' or uniprot is not None:
         for upcode in uniprot:
