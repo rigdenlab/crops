@@ -1,7 +1,7 @@
 IO package
 ==========
 
-.. automodule:: crops.io
+.. automodule:: crops.iomod
    :members:
    :undoc-members:
    :show-inheritance:
@@ -9,5 +9,4 @@ IO package
 .. toctree::
    :glob:
 
-   generated/crops.io.*
-
+   generated/crops.iomod.*

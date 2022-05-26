@@ -10,10 +10,10 @@ from crops import __date__, __version__, __copyright__
 import argparse
 import os
 
-from crops.io import check_path
-from crops.io import outpathgen
-from crops.io import parsers as cin
-from crops.io import taggers as ctg
+from crops.iomod import check_path
+from crops.iomod import outpathgen
+from crops.iomod import parsers as cin
+from crops.iomod import taggers as ctg
 from crops.core import ops as cop
 from crops import command_line as ccl
 

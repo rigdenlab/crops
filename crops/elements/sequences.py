@@ -6,8 +6,8 @@ import io
 import copy
 import logging
 
-from crops.io.taggers import retrieve_id
-from crops.io.taggers import makeheader
+from crops.iomod.taggers import retrieve_id
+from crops.iomod.taggers import makeheader
 from crops.libs.rescodes import reslist
 from crops.libs.rescodes import nuclist
 from crops.elements.intervals import intinterval
@@ -99,7 +99,7 @@ class sequence:
     :example:
 
     >>> from crops.elements import sequences as csq
-    >>> from crops.io import parsers as csp
+    >>> from crops.iomod import parsers as csp
     >>> myseq = csp.parseseqfile('7M6C.fasta')
     >>> myseq
     Sequence object: (>7M6C_1|Chain A, seq=MRTLWIMAVL[...]KPLCKKADPC, type=Undefined, length=138)
@@ -666,7 +666,7 @@ class oligoseq:
         if (newseq.oligomer_id is not None and self.id is not None and
                 newseq.oligomer_id.lower() != self.id):
             logging.critical(errormsg)
-            raise Exception
+            raise ValueError
 
         if newseq.name is not None:
             if newseq.name in self.imer:
@@ -674,12 +674,12 @@ class oligoseq:
                     addall = False
                 else:
                     logging.critical(errormsg)
-                    raise Exception
+                    raise ValueError
             else:
                 for seq in self.imer.values():
                     if seq.seqs['mainseq'] == newseq.seqs['mainseq']:
                         logging.critical(errormsg)
-                        raise Exception
+                        raise ValueError
                 addall = True
         else:
             for seq in self.imer.values():
@@ -693,17 +693,17 @@ class oligoseq:
         if self.id is not None and newseq.oligomer_id is not None:
             if self.id != newseq.oligomer_id.lower():
                 logging.critical(errormsg)
-                raise Exception
+                raise ValueError
 
         if addall is True:
             for ch in newseq.chains:
                 for seq in self.imer.values():
                     if ch in seq.chains:
                         logging.critical(errormsg)
-                        raise Exception
+                        raise ValueError
             if newseq.name is None:
+                n = 1
                 while True:
-                    n = 1
                     if str(n) in self.imer:
                         n += 1
                     else:
@@ -721,7 +721,7 @@ class oligoseq:
                 for seq in self.imer.values():
                     if ch in seq.chains and seq.name != newseq.name:
                         logging.critical(errormsg)
-                        raise Exception
+                        raise ValueError
                 self.imer[newseq.name].chains.add(ch)
 
             for header in newseq.source_headers:
@@ -753,7 +753,7 @@ class oligoseq:
         return
 
     def set_cropmaps(self, mapdict, cropmain=False):
-        """Sets the parsed cropmaps from :class:`~crops.io.parsers.parsemapfile`.
+        """Sets the parsed cropmaps from :class:`~crops.iomod.parsers.parsemapfile`.
 
         :param mapdict: Parsed maps for this specific :class:`~crops.elements.sequences.oligoseq`.
         :type mapdict: dict [str, dict [str, dict [int, int]]]
