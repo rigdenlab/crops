@@ -6,8 +6,8 @@ import io
 import copy
 import logging
 
-from crops.io.taggers import retrieve_id
-from crops.io.taggers import makeheader
+from crops.iomod.taggers import retrieve_id
+from crops.iomod.taggers import makeheader
 from crops.libs.rescodes import reslist
 from crops.libs.rescodes import nuclist
 from crops.elements.intervals import intinterval
@@ -99,7 +99,7 @@ class sequence:
     :example:
 
     >>> from crops.elements import sequences as csq
-    >>> from crops.io import parsers as csp
+    >>> from crops.iomod import parsers as csp
     >>> myseq = csp.parseseqfile('7M6C.fasta')
     >>> myseq
     Sequence object: (>7M6C_1|Chain A, seq=MRTLWIMAVL[...]KPLCKKADPC, type=Undefined, length=138)
@@ -753,7 +753,7 @@ class oligoseq:
         return
 
     def set_cropmaps(self, mapdict, cropmain=False):
-        """Sets the parsed cropmaps from :class:`~crops.io.parsers.parsemapfile`.
+        """Sets the parsed cropmaps from :class:`~crops.iomod.parsers.parsemapfile`.
 
         :param mapdict: Parsed maps for this specific :class:`~crops.elements.sequences.oligoseq`.
         :type mapdict: dict [str, dict [str, dict [int, int]]]

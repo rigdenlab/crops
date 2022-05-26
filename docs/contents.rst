@@ -27,7 +27,7 @@ Documentation
 .. toctree::
    :maxdepth: 2
 
-   api/io.rst
+   api/iomod.rst
 
 .. toctree::
    :maxdepth: 2

@@ -5,7 +5,7 @@ from crops import __date__, __version__, __copyright__
 
 import unittest
 
-from crops.io import parsers as cip
+from crops.iomod import parsers as cip
 import crops.core.ops
 import os
 
