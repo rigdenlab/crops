@@ -6,6 +6,7 @@ from crops import __date__, __version__, __copyright__
 from crops.iomod import parsers as cip
 
 import unittest
+import gemmi
 
 
 _PDB_STRING = """HEADER    ISOMERASE                               25-APR-97   4PGM
@@ -9002,196 +9003,213 @@ _CSV_DATABASE_2 = """101m,A,1,154
 
 class TestCropsParsers(unittest.TestCase):
     def test_parseseq_1(self):
-        expected_ids = tuple({'5gup', '4pgm', '1ixy', '3bzf'})
-        expected_nseqs = tuple({1, 4, 3, 3})
-        expected_chains = (tuple({'G'}),
-                           tuple({'A', 'B', 'C', 'D'}),
-                           tuple({'C', 'D', 'E', 'F', 'A', 'B'}),
-                           tuple({'A', 'C', 'B', 'D', 'P', 'Q'}))
-        expected_nres = (tuple({727}),
-                         tuple({246}),
-                         tuple({13, 13, 351}),
-                         tuple({276, 97, 9}))
+        expected_ids = {'5gup', '4pgm', '1ixy', '3bzf'}
+        expected_nseqs = {'5gup': 1, '4pgm': 4,
+                          '1ixy': 3, '3bzf': 3}
+        expected_chains = {'5gup': {'G'},
+                           '4pgm': {'A', 'B', 'C', 'D'},
+                           '1ixy': {'C', 'D', 'E', 'F', 'A', 'B'},
+                           '3bzf': {'A', 'C', 'B', 'D', 'P', 'Q'}}
+        expected_nres = {'5gup': {727}, '4pgm': {246},
+                         '1ixy': {13, 13, 351}, '3bzf': {276, 97, 9}}
 
         seqdict = cip.parseseq(_FASTA_SEQUENCE_1)
         parsed_ids = set()
-        parsed_nseqs = set()
-        parsed_chains = set()
-        parsed_nres = set()
+        parsed_nseqs = {}
+        parsed_chains = {}
+        parsed_nres = {}
         for seq in seqdict:
             parsed_ids.add(seq)
-            parsed_nseqs.add(len(seqdict[seq].imer))
-            nresset = set()
-            parsed_nres.add(nresset)
-            chainset = set()
+            parsed_nseqs[seq] = len(seqdict[seq].imer)
+            if seq not in parsed_chains:
+                parsed_chains[seq] = set()
+            if seq not in parsed_nres:
+                parsed_nres[seq] = set()
             for monomer in seq.imer.values():
-                nresset = monomer.length()
+                parsed_nres[seq] = monomer.length()
                 for chain in monomer.chains:
-                    chainset.add(chain)
-            parsed_chains.add(chainset)
+                    parsed_nres[seq].add(chain)
 
-        parsed_ids = tuple(parsed_ids)
-        parsed_nseqs = tuple(parsed_nseqs)
-        parsed_chains = tuple(parsed_chains)
-        self.assertTupleEqual(parsed_ids, expected_ids)
-        self.assertTupleEqual(parsed_nseqs, expected_nseqs)
-        self.assertTupleEqual(parsed_chains, expected_chains)
-        self.assertTupleEqual(parsed_nres, expected_nres)
+        self.assertSetEqual(parsed_ids, expected_ids)
+        self.assertDictEqual(parsed_nseqs, expected_nseqs)
+        for seq in seqdict:
+            self.assertSetEqual(parsed_chains[seq], expected_chains[seq])
+            self.assertSetEqual(parsed_nres[seq], expected_nres[seq])
 
     def test_parsestr_1(self):
-
         structure = cip.parsestr(_PDB_STRING)
+        self.assertEqual(True, isinstance(structure, gemmi.Structure))
 
     def test_parsedb_1(self):
-        expected_ids = tuple({'101m', '102l', '102m', '103l', '103m', '104l',
-                              '104m', '105m', '106m', '107l', '107m', '108l',
-                              '108m', '109l', '109m', '10gs', '10mh', '110l',
-                              '110m', '111l', '111m', '112l', '112m', '113l',
-                              '114l', '115l', '117e', '118l', '119l', '11as'})
-        expected_chains = (tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A', 'B'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}))
+        expected_ids = {'101m', '102l', '102m', '103l', '103m', '104l',
+                        '104m', '105m', '106m', '107l', '107m', '108l',
+                        '108m', '109l', '109m', '10gs', '10mh', '110l',
+                        '110m', '111l', '111m', '112l', '112m', '113l',
+                        '114l', '115l', '117e', '118l', '119l', '11as'}
 
-        expected_subsets = (tuple([1, 154]), tuple([1, 40]), tuple([42, 165]),
-                            tuple([1, 154]), tuple([1, 40]), tuple([44,167]),
-                            tuple([1, 154]), tuple([1, 44]), tuple([47, 166]),
-                            tuple([1, 153]), tuple([1, 153]), tuple([1, 154]),
-                            tuple([1, 164]), tuple([1, 154]), tuple([1, 164]),
-                            tuple([1, 154]), tuple([1, 164]), tuple([1, 154]),
-                            tuple([1, 209]), tuple([1, 209]), tuple([1, 327]),
-                            tuple([1, 164]), tuple([1, 154]), tuple([1, 164]),
-                            tuple([1, 154]), tuple([1, 164]), tuple([1, 154]),
-                            tuple([1, 164]), tuple([1, 164]), tuple([1, 164]),
-                            tuple([1, 286]), tuple([1, 286]), tuple([1, 164]),
-                            tuple([1, 164]), tuple([1, 330]), tuple([1, 330]))
+        expected_chains = {'101m': {'A'}, '102l': {'A'}, '102m': {'A'},
+                           '103l': {'A'}, '103m': {'A'}, '104l': {'A', 'B'},
+                           '104m': {'A'}, '105m': {'A'}, '106m': {'A'},
+                           '107l': {'A'}, '107m': {'A'}, '108l': {'A'},
+                           '108m': {'A'}, '109l': {'A'}, '109m': {'A'},
+                           '10gs': {'A', 'B'}, '10mh': {'A'}, '110l': {'A'},
+                           '110m': {'A'}, '111l': {'A'}, '111m': {'A'},
+                           '112l': {'A'}, '112m': {'A'}, '113l': {'A'},
+                           '114l': {'A'}, '115l': {'A'}, '117e': {'A', 'B'},
+                           '118l': {'A'}, '119l': {'A'}, '11as': {'A', 'B'}}
+
+
+        expected_subsets =  {'101m': {'A': [[1, 154]]}, '102l': {'A': [[1, 40], [42, 165]]},
+                             '102m': {'A': [[1, 154]]}, '103l': {'A': [[1, 40], [44, 167]]},
+                             '103m': {'A': [[1, 154]]}, '104l': {'A': [[1, 44], [47, 166]],
+                                                                 'B': [[1, 44], [47, 166]]},
+                             '104m': {'A': [[1, 153]]}, '105m': {'A': [[1, 153]]},
+                             '106m': {'A': [[1, 154]]}, '107l': {'A': [[1, 164]]},
+                             '107m': {'A': [[1, 154]]}, '108l': {'A': [[1, 164]]},
+                             '108m': {'A': [[1, 154]]}, '109l': {'A': [[1, 164]]},
+                             '109m': {'A': [[1, 154]]}, '10gs': {'A': [[1, 209]],
+                                                                 'B': [[1, 209]]},
+                             '10mh': {'A': [[1, 327]]}, '110l': {'A': [[1, 164]]},
+                             '110m': {'A': [[1, 154]]}, '111l': {'A': [[1, 164]]},
+                             '111m': {'A': [[1, 154]]}, '112l': {'A': [[1, 164]]},
+                             '112m': {'A': [[1, 154]]}, '113l': {'A': [[1, 164]]},
+                             '114l': {'A': [[1, 164]]}, '115l': {'A': [[1, 164]]},
+                             '117e': {'A': [[1, 286]], 'B': [[1, 286]]}, '118l': {'A': [[1, 164]]},
+                             '119l': {'A': [[1, 164]]}, '11as': {'A': [[1, 330]], 'B': [[1, 330]]}}
+
 
         parsed_db = cip.parse_db(_CSV_DATABASE_1)
 
-        parsed_ids = tuple(parsed_db.keys())
-        parsed_chains = set()
-        parsed_subsets = set()
+        parsed_ids = set(parsed_db.keys())
+        parsed_chains = {}
+        parsed_subsets = {}
         for id1 in parsed_db.values():
+            if id1 not in parsed_chains:
+                parsed_chains[id1] = set()
+            if id1 not in parsed_subsets:
+                parsed_subsets[id1] = {}
             for id2, chain in id1.items():
-                parsed_chains.add(id2)
-                for subset in chain.subint:
-                    parsed_subsets.add(tuple(subset))
+                parsed_chains[id1].add(id2)
+                parsed_subsets[id1][id2] = chain.subint
 
-        parsed_chains = tuple(parsed_chains)
-        parsed_subsets = tuple(parsed_subsets)
-
-        self.assertTupleEqual(parsed_ids, expected_ids)
-        self.assertTupleEqual(parsed_chains, expected_chains)
-        self.assertTupleEqual(parsed_subsets, expected_subsets)
+        self.assertSetEqual(parsed_ids, expected_ids)
+        self.assertDictEqual(parsed_chains, expected_chains)
+        self.assertDictEqual(parsed_subsets, expected_subsets)
 
     def test_parsedb_2(self):
-        expected_ids = tuple({'101m', '102l', '102m', '103l', '103m', '104l',
-                              '104m', '105m', '106m', '107l', '107m', '108l',
-                              '108m', '109l', '109m', '10gs', '10mh', '110l',
-                              '110m', '111l', '111m', '112l', '112m', '113l',
-                              '114l', '115l', '117e', '118l', '119l', '11as'})
-        expected_chains = (tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A', 'B'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}),
-                           tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}))
+        expected_ids = {'101m', '102l', '102m', '103l', '103m', '104l',
+                        '104m', '105m', '106m', '107l', '107m', '108l',
+                        '108m', '109l', '109m', '10gs', '10mh', '110l',
+                        '110m', '111l', '111m', '112l', '112m', '113l',
+                        '114l', '115l', '117e', '118l', '119l', '11as'}
 
-        expected_subsets = (tuple([1, 154]), tuple([1, 40]), tuple([42, 165]),
-                            tuple([1, 154]), tuple([1, 40]), tuple([44,167]),
-                            tuple([1, 154]), tuple([1, 44]), tuple([47, 166]),
-                            tuple([1, 153]), tuple([1, 153]), tuple([1, 154]),
-                            tuple([1, 164]), tuple([1, 154]), tuple([1, 164]),
-                            tuple([1, 154]), tuple([1, 164]), tuple([1, 154]),
-                            tuple([1, 209]), tuple([1, 209]), tuple([1, 327]),
-                            tuple([1, 164]), tuple([1, 154]), tuple([1, 164]),
-                            tuple([1, 154]), tuple([1, 164]), tuple([1, 154]),
-                            tuple([1, 164]), tuple([1, 164]), tuple([1, 164]),
-                            tuple([1, 286]), tuple([1, 286]), tuple([1, 164]),
-                            tuple([1, 164]), tuple([1, 330]), tuple([1, 330]))
+        expected_chains = {'101m': {'A'}, '102l': {'A'}, '102m': {'A'},
+                           '103l': {'A'}, '103m': {'A'}, '104l': {'A', 'B'},
+                           '104m': {'A'}, '105m': {'A'}, '106m': {'A'},
+                           '107l': {'A'}, '107m': {'A'}, '108l': {'A'},
+                           '108m': {'A'}, '109l': {'A'}, '109m': {'A'},
+                           '10gs': {'A', 'B'}, '10mh': {'A'}, '110l': {'A'},
+                           '110m': {'A'}, '111l': {'A'}, '111m': {'A'},
+                           '112l': {'A'}, '112m': {'A'}, '113l': {'A'},
+                           '114l': {'A'}, '115l': {'A'}, '117e': {'A', 'B'},
+                           '118l': {'A'}, '119l': {'A'}, '11as': {'A', 'B'}}
+
+
+        expected_subsets =  {'101m': {'A': [[1, 154]]}, '102l': {'A': [[1, 40], [42, 165]]},
+                             '102m': {'A': [[1, 154]]}, '103l': {'A': [[1, 40], [44, 167]]},
+                             '103m': {'A': [[1, 154]]}, '104l': {'A': [[1, 44], [47, 166]],
+                                                                 'B': [[1, 44], [47, 166]]},
+                             '104m': {'A': [[1, 153]]}, '105m': {'A': [[1, 153]]},
+                             '106m': {'A': [[1, 154]]}, '107l': {'A': [[1, 164]]},
+                             '107m': {'A': [[1, 154]]}, '108l': {'A': [[1, 164]]},
+                             '108m': {'A': [[1, 154]]}, '109l': {'A': [[1, 164]]},
+                             '109m': {'A': [[1, 154]]}, '10gs': {'A': [[1, 209]],
+                                                                 'B': [[1, 209]]},
+                             '10mh': {'A': [[1, 327]]}, '110l': {'A': [[1, 164]]},
+                             '110m': {'A': [[1, 154]]}, '111l': {'A': [[1, 164]]},
+                             '111m': {'A': [[1, 154]]}, '112l': {'A': [[1, 164]]},
+                             '112m': {'A': [[1, 154]]}, '113l': {'A': [[1, 164]]},
+                             '114l': {'A': [[1, 164]]}, '115l': {'A': [[1, 164]]},
+                             '117e': {'A': [[1, 286]], 'B': [[1, 286]]}, '118l': {'A': [[1, 164]]},
+                             '119l': {'A': [[1, 164]]}, '11as': {'A': [[1, 330]], 'B': [[1, 330]]}}
+
 
         parsed_db = cip.parse_db(_CSV_DATABASE_2)
 
-        parsed_ids = tuple(parsed_db.keys())
-        parsed_chains = set()
-        parsed_subsets = set()
+        parsed_ids = set(parsed_db.keys())
+        parsed_chains = {}
+        parsed_subsets = {}
         for id1 in parsed_db.values():
+            if id1 not in parsed_chains:
+                parsed_chains[id1] = set()
+            if id1 not in parsed_subsets:
+                parsed_subsets[id1] = {}
             for id2, chain in id1.items():
-                parsed_chains.add(id2)
-                for subset in chain.subint:
-                    parsed_subsets.add(tuple(subset))
+                parsed_chains[id1].add(id2)
+                parsed_subsets[id1][id2] = chain.subint
 
-        parsed_chains = tuple(parsed_chains)
-        parsed_subsets = tuple(parsed_subsets)
-
-        self.assertTupleEqual(parsed_ids, expected_ids)
-        self.assertTupleEqual(parsed_chains, expected_chains)
-        self.assertTupleEqual(parsed_subsets, expected_subsets)
+        self.assertSetEqual(parsed_ids, expected_ids)
+        self.assertDictEqual(parsed_chains, expected_chains)
+        self.assertDictEqual(parsed_subsets, expected_subsets)
 
     def test_parsedb_3(self):
         set_ids = {'101m', '102l', '4pgm', '104l', '117e', '6ifq'}
 
-        expected_ids = tuple({'101m', '102l', '104l', '117e'})
+        expected_ids = {'101m', '102l', '104l', '117e'}
 
-        expected_chains = (tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}),
-                           tuple({'A', 'B'}))
+        expected_chains = {'101m': {'A'}, '102l': {'A'}, '104l': {'A', 'B'},
+                           '117e': {'A', 'B'}}
 
-        expected_subsets = (tuple([1, 154]), tuple([1, 40]), tuple([1, 44]),
-                            tuple([47, 166]), tuple([1, 286]), tuple([1, 286]))
 
-        parsed_db = cip.parse_db(_CSV_DATABASE_1, pdbset=set_ids)
+        expected_subsets =  {'101m': {'A': [[1, 154]]}, '102l': {'A': [[1, 40], [42, 165]]},
+                             '104l': {'A': [[1, 44], [47, 166]], 'B': [[1, 44], [47, 166]]},
+                             '117e': {'A': [[1, 286]], 'B': [[1, 286]]}}
 
-        parsed_ids = tuple(parsed_db.keys())
-        parsed_chains = set()
-        parsed_subsets = set()
+        parsed_db = cip.parse_db(_CSV_DATABASE_1)
+
+        parsed_ids = set(parsed_db.keys())
+        parsed_chains = {}
+        parsed_subsets = {}
         for id1 in parsed_db.values():
+            if id1 not in parsed_chains:
+                parsed_chains[id1] = set()
+            if id1 not in parsed_subsets:
+                parsed_subsets[id1] = {}
             for id2, chain in id1.items():
-                parsed_chains.add(id2)
-                for subset in chain.subint:
-                    parsed_subsets.add(tuple(subset))
+                parsed_chains[id1].add(id2)
+                parsed_subsets[id1][id2] = chain.subint
 
-        parsed_chains = tuple(parsed_chains)
-        parsed_subsets = tuple(parsed_subsets)
-
-        self.assertTupleEqual(parsed_ids, expected_ids)
-        self.assertTupleEqual(parsed_chains, expected_chains)
-        self.assertTupleEqual(parsed_subsets, expected_subsets)
+        self.assertSetEqual(parsed_ids, expected_ids)
+        self.assertDictEqual(parsed_chains, expected_chains)
+        self.assertDictEqual(parsed_subsets, expected_subsets)
 
     def test_parsedb_4(self):
         set_ids = {'101m', '102l', '4pgm', '104l', '117e', '6ifq'}
 
-        expected_ids = tuple({'101m', '102l', '104l', '117e'})
+        expected_ids = {'101m', '102l', '104l', '117e'}
 
-        expected_chains = (tuple({'A'}), tuple({'A'}), tuple({'A', 'B'}),
-                           tuple({'A', 'B'}))
+        expected_chains = {'101m': {'A'}, '102l': {'A'}, '104l': {'A', 'B'},
+                           '117e': {'A', 'B'}}
 
-        expected_subsets = (tuple([1, 154]), tuple([1, 40]), tuple([1, 44]),
-                            tuple([47, 166]), tuple([1, 286]), tuple([1, 286]))
 
-        parsed_db = cip.parse_db(_CSV_DATABASE_2, pdbset=set_ids)
+        expected_subsets =  {'101m': {'A': [[1, 154]]}, '102l': {'A': [[1, 40], [42, 165]]},
+                             '104l': {'A': [[1, 44], [47, 166]], 'B': [[1, 44], [47, 166]]},
+                             '117e': {'A': [[1, 286]], 'B': [[1, 286]]}}
 
-        parsed_ids = tuple(parsed_db.keys())
-        parsed_chains = set()
-        parsed_subsets = set()
+        parsed_db = cip.parse_db(_CSV_DATABASE_2)
+
+        parsed_ids = set(parsed_db.keys())
+        parsed_chains = {}
+        parsed_subsets = {}
         for id1 in parsed_db.values():
+            if id1 not in parsed_chains:
+                parsed_chains[id1] = set()
+            if id1 not in parsed_subsets:
+                parsed_subsets[id1] = {}
             for id2, chain in id1.items():
-                parsed_chains.add(id2)
-                for subset in chain.subint:
-                    parsed_subsets.add(tuple(subset))
+                parsed_chains[id1].add(id2)
+                parsed_subsets[id1][id2] = chain.subint
 
-        parsed_chains = tuple(parsed_chains)
-        parsed_subsets = tuple(parsed_subsets)
-
-        self.assertTupleEqual(parsed_ids, expected_ids)
-        self.assertTupleEqual(parsed_chains, expected_chains)
-        self.assertTupleEqual(parsed_subsets, expected_subsets)
+        self.assertSetEqual(parsed_ids, expected_ids)
+        self.assertDictEqual(parsed_chains, expected_chains)
+        self.assertDictEqual(parsed_subsets, expected_subsets)
