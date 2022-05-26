@@ -9030,7 +9030,7 @@ class TestCropsParsers(unittest.TestCase):
             for mid, monomer in seqobj.imer.items():
                 parsed_nres[seq][mid] = monomer.length()
                 for chain in monomer.chains:
-                    parsed_nres[seq].add(chain)
+                    parsed_chains[seq].add(chain)
 
         self.assertSetEqual(parsed_ids, expected_ids)
         self.assertDictEqual(parsed_nseqs, expected_nseqs)
