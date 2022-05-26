@@ -7,7 +7,7 @@ import sys
 from unittest import TestLoader, TextTestRunner, TestSuite
 
 ROOT_DIR = os.path.join(os.path.dirname(__file__), 'crops', '')
-PACKAGES = ["core"]
+PACKAGES = ["core", "io"]
 
 
 class UnittestFramework(object):
