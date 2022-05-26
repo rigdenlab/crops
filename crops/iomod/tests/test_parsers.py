@@ -9004,7 +9004,7 @@ _CSV_DATABASE_2 = """101m,A,1,154
 class TestCropsParsers(unittest.TestCase):
     def test_parseseq_1(self):
         expected_ids = {'5gup', '4pgm', '1ixy', '3bzf'}
-        expected_nseqs = {'5gup': 1, '4pgm': 4,
+        expected_nseqs = {'5gup': 1, '4pgm': 1,
                           '1ixy': 3, '3bzf': 3}
         expected_chains = {'5gup': {'G'},
                            '4pgm': {'A', 'B', 'C', 'D'},
