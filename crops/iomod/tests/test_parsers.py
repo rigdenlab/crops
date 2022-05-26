@@ -9018,14 +9018,14 @@ class TestCropsParsers(unittest.TestCase):
         parsed_nseqs = {}
         parsed_chains = {}
         parsed_nres = {}
-        for seq in seqdict:
+        for seq, seqobj in seqdict.items():
             parsed_ids.add(seq)
             parsed_nseqs[seq] = len(seqdict[seq].imer)
             if seq not in parsed_chains:
                 parsed_chains[seq] = set()
             if seq not in parsed_nres:
                 parsed_nres[seq] = set()
-            for monomer in seq.imer.values():
+            for monomer in seqobj.imer.values():
                 parsed_nres[seq] = monomer.length()
                 for chain in monomer.chains:
                     parsed_nres[seq].add(chain)
@@ -9083,12 +9083,12 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db:
+        for id1, oligomer in parsed_db.items():
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
                 parsed_subsets[id1] = {}
-            for id2, chain in id1.items():
+            for id2, chain in oligomer.items():
                 parsed_chains[id1].add(id2)
                 parsed_subsets[id1][id2] = chain.subint
 
@@ -9139,12 +9139,12 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db:
+        for id1, oligomer in parsed_db.items():
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
                 parsed_subsets[id1] = {}
-            for id2, chain in id1.items():
+            for id2, chain in oligomer.items():
                 parsed_chains[id1].add(id2)
                 parsed_subsets[id1][id2] = chain.subint
 
@@ -9170,12 +9170,12 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db:
+        for id1, oligomer in parsed_db.items():
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
                 parsed_subsets[id1] = {}
-            for id2, chain in id1.items():
+            for id2, chain in oligomer.items():
                 parsed_chains[id1].add(id2)
                 parsed_subsets[id1][id2] = chain.subint
 
@@ -9201,12 +9201,12 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db:
+        for id1, oligomer in parsed_db.items():
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
                 parsed_subsets[id1] = {}
-            for id2, chain in id1.items():
+            for id2, chain in oligomer.items():
                 parsed_chains[id1].add(id2)
                 parsed_subsets[id1][id2] = chain.subint
 
