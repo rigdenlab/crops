@@ -196,7 +196,10 @@ def retrieve_id(seqheader):
                 headerinfo[tag].add(newchid)
                 newchid = ''
             else:
-                newchid += seqheader[i]
+                if tag == 'mainid':
+                    newchid += seqheader[i].lower()
+                else:
+                    newchid += seqheader[i]
 
     else:
         # RCSB PDB, CROPS, MrBUMP, others
