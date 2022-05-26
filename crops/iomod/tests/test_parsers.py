@@ -9010,8 +9010,10 @@ class TestCropsParsers(unittest.TestCase):
                            '4pgm': {'A', 'B', 'C', 'D'},
                            '1ixy': {'C', 'D', 'E', 'F', 'A', 'B'},
                            '3bzf': {'A', 'C', 'B', 'D', 'P', 'Q'}}
-        expected_nres = {'5gup': {727}, '4pgm': {246},
-                         '1ixy': {13, 13, 351}, '3bzf': {276, 97, 9}}
+        expected_nres = {'5gup': {'7': 727},
+                         '4pgm': {'1': 246},
+                         '1ixy': {'1': 13, '2': 13, '3': 351},
+                         '3bzf': {'1': 276, '2': 97, '3': 9}}
 
         seqdict = cip.parseseq(_FASTA_SEQUENCE_1)
         parsed_ids = set()
@@ -9024,9 +9026,9 @@ class TestCropsParsers(unittest.TestCase):
             if seq not in parsed_chains:
                 parsed_chains[seq] = set()
             if seq not in parsed_nres:
-                parsed_nres[seq] = set()
-            for monomer in seqobj.imer.values():
-                parsed_nres[seq] = monomer.length()
+                parsed_nres[seq] = {}
+            for mid, monomer in seqobj.imer.items():
+                parsed_nres[seq][mid] = monomer.length()
                 for chain in monomer.chains:
                     parsed_nres[seq].add(chain)
 
@@ -9034,7 +9036,7 @@ class TestCropsParsers(unittest.TestCase):
         self.assertDictEqual(parsed_nseqs, expected_nseqs)
         for seq in seqdict:
             self.assertSetEqual(parsed_chains[seq], expected_chains[seq])
-            self.assertSetEqual(parsed_nres[seq], expected_nres[seq])
+            self.assertDictEqual(parsed_nres[seq], expected_nres[seq])
 
     def test_parsestr_1(self):
         structure = cip.parsestr(_PDB_STRING)
@@ -9165,7 +9167,7 @@ class TestCropsParsers(unittest.TestCase):
                              '104l': {'A': [[1, 44], [47, 166]], 'B': [[1, 44], [47, 166]]},
                              '117e': {'A': [[1, 286]], 'B': [[1, 286]]}}
 
-        parsed_db = cip.parse_db(_CSV_DATABASE_1)
+        parsed_db = cip.parse_db(_CSV_DATABASE_1, pdbset=set_ids)
 
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
@@ -9196,7 +9198,7 @@ class TestCropsParsers(unittest.TestCase):
                              '104l': {'A': [[1, 44], [47, 166]], 'B': [[1, 44], [47, 166]]},
                              '117e': {'A': [[1, 286]], 'B': [[1, 286]]}}
 
-        parsed_db = cip.parse_db(_CSV_DATABASE_2)
+        parsed_db = cip.parse_db(_CSV_DATABASE_2, pdbset=set_ids)
 
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
