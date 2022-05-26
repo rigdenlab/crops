@@ -9083,7 +9083,7 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db.values():
+        for id1 in parsed_db:
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
@@ -9139,7 +9139,7 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db.values():
+        for id1 in parsed_db:
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
@@ -9170,7 +9170,7 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db.values():
+        for id1 in parsed_db:
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
@@ -9201,7 +9201,7 @@ class TestCropsParsers(unittest.TestCase):
         parsed_ids = set(parsed_db.keys())
         parsed_chains = {}
         parsed_subsets = {}
-        for id1 in parsed_db.values():
+        for id1 in parsed_db:
             if id1 not in parsed_chains:
                 parsed_chains[id1] = set()
             if id1 not in parsed_subsets:
