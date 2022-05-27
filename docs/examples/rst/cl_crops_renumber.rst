@@ -7,7 +7,7 @@ With CROPS you can use a simple command to renumber the residues in a structure 
 
 .. code-block:: shell-session
 
-   crops-renumber 3org.fasta 3org.pdb -o mydir/
+   crops-renumber 3org.fasta 3org.pdb --output mydir/
 
 The result of the above call is a new content in the output file ``mydir/3org/3org.seqs.pdb`` containing a minimal output of the original ``3org.pdb`` with the residues of all models and chains renumbered according to residue position in the ``3org.fasta`` sequence. Ligands are renumbered with consecutive indices right after the chain ends.
 

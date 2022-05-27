@@ -3,11 +3,11 @@
 Sequence file croppping
 ----------------------
 
-For the removal of residues out of a sequence file containing one or more sequences, this CROPS command will do it for you: 
+For the removal of residues out of a sequence file containing one or more sequences, this CROPS command will do it for you:
 
 .. code-block:: shell-session
 
-   crops-cropseq 5hea.fasta dbs/pdb_chain_uniprot.csv --o mydir/
+   crops-cropseq 5hea.fasta dbs/pdb_chain_uniprot.csv --output mydir/
 
 This command produces a new sequence file ``mydir/5hea/5hea.crops.to_uniprot.fasta`` containing sequences without the residues cropped as per the interval database ``dbs/pdb_chain_uniprot.csv``. The interval database ``dbs/pdb_chain_uniprot.csv`` in this case is the SIFTS database mapping each residue to a Uniprot reference or none at all (and hence the *to_uniprot* filetag). When a custom interval database is provided (the custom ``.csv`` database format must be *pdb_ID*, *monomer_ID*, *integer*, *integer*), the filetag name will be *custom* instead.
 
@@ -46,4 +46,3 @@ In the above case, the returned list contains the sequences sorted in descendent
 .. note::
 
    When the file contains sequences with a single PDB ID, the ``--sort`` option will be ignored.
-
