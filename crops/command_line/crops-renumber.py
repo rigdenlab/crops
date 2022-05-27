@@ -71,9 +71,9 @@ def main():
     for pdbid, structure in strset.items():
         found = False
         for seqname in seqset:
-            if ((seqname.lower() in pdbid.lower()) or
+            if ((seqname in pdbid) or
                     (len(seqset) == 1 and len(strset) == 1)):
-                finalid = seqname.lower()
+                finalid = seqname
                 try:
                     newstructure = cop.renumber_pdb(seqset[seqname], structure)
                 except (AttributeError, IndexError) as e:

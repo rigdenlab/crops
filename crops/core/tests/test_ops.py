@@ -587,7 +587,7 @@ class TestCropsOps(unittest.TestCase):
                             700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716)
 
         pdb = cip.parsestr(_PDB_STRING)
-        myseq = cip.parseseq(_FASTA_SEQUENCE_1)['5gup']
+        myseq = cip.parseseq(_FASTA_SEQUENCE_1)['5GUP']
 
         renumbered_pdb = crops.core.ops.renumber_pdb_needleman(myseq, pdb)
         renumbered_indexes = tuple((residue.seqid.num for residue in renumbered_pdb[0][0]))

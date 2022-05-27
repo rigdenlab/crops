@@ -663,10 +663,10 @@ class oligoseq:
         addall = None
         errormsg = ('Sequence content is incompatible with oligoseq ' +
                     self.id + '.')
-        if (newseq.oligomer_id is not None and self.id is not None and
-                newseq.oligomer_id.lower() != self.id):
-            logging.critical(errormsg)
-            raise ValueError
+        if self.id is not None and newseq.oligomer_id is not None:
+            if self.id.upper() != newseq.oligomer_id.upper():
+                logging.critical(errormsg)
+                raise ValueError
 
         if newseq.name is not None:
             if newseq.name in self.imer:
@@ -690,11 +690,6 @@ class oligoseq:
             if addall is not False:
                 addall = True
 
-        if self.id is not None and newseq.oligomer_id is not None:
-            if self.id != newseq.oligomer_id.lower():
-                logging.critical(errormsg)
-                raise ValueError
-
         if addall is True:
             for ch in newseq.chains:
                 for seq in self.imer.values():
@@ -711,11 +706,11 @@ class oligoseq:
                         break
             self.imer[newseq.name] = newseq
             if self.id is None and newseq.oligomer_id is not None:
-                self.id = newseq.oligomer_id.lower()
+                self.id = newseq.oligomer_id.upper()
                 for seq in self.imer.values():
-                    seq.oligomer_id = newseq.oligomer_id.lower()
+                    seq.oligomer_id = newseq.oligomer_id.upper()
             elif self.id is not None and newseq.oligomer_id is None:
-                self.imer[newseq.name].oligomer_id = self.id
+                self.imer[newseq.name].oligomer_id = self.id.upper()
         else:
             for ch in newseq.chains:
                 for seq in self.imer.values():

@@ -95,7 +95,7 @@ def retrieve_id(seqheader):
                 headerinfo['comments'] = seqheader[i+1:]
                 break
             else:
-                headerinfo['mainid'] += seqheader[i]
+                headerinfo['mainid'] += seqheader[i].upper()
         if headerinfo['chains'] is None:
             headerinfo['chains'] = set()
         headerinfo['chains'].add(headerinfo['mainid'])
@@ -109,7 +109,7 @@ def retrieve_id(seqheader):
                 chi = i+1
             elif seqheader[i] == ' ':
                 headerinfo['comments'] = seqheader[i+1:]
-                headerinfo['mainid'] = seqheader[chi:i]
+                headerinfo['mainid'] = seqheader[chi:i].upper()
                 if headerinfo['chains'] is None:
                     headerinfo['chains'] = set()
                 headerinfo['chains'].add(headerinfo['mainid'])
@@ -122,7 +122,7 @@ def retrieve_id(seqheader):
             headerinfo['source'] = 'UniParc'
             if seqheader[i] == ' ':
                 headerinfo['comments'] = seqheader[i+1:]
-                headerinfo['mainid'] = seqheader[1:i]
+                headerinfo['mainid'] = seqheader[1:i].upper()
                 if headerinfo['chains'] is None:
                     headerinfo['chains'] = set()
                 headerinfo['chains'].add(headerinfo['mainid'])
@@ -159,7 +159,7 @@ def retrieve_id(seqheader):
                     newchid += seqheader[ii]
                     ii += 1
                     if seqheader[ii] == ' ':
-                        headerinfo['mainid'] = newchid
+                        headerinfo['mainid'] = newchid.upper()
                         break
             elif seqheader[i:i+8] == 'Members=':
                 newchid = ''
@@ -179,11 +179,17 @@ def retrieve_id(seqheader):
         tag = 'mainid'
         for i in range(5, len(seqheader)):
             if seqheader[i] == '|':
-                headerinfo[tag] = newchid
+                if tag == 'mainid':
+                    headerinfo[tag] = newchid.upper()
+                else:
+                    headerinfo[tag] = newchid
                 tag = 'chains'
                 newchid = ''
             elif seqheader[i] == '_':
-                headerinfo[tag] = newchid
+                if tag == 'mainid':
+                    headerinfo[tag] = newchid.upper()
+                else:
+                    headerinfo[tag] = newchid
                 tag = 'seqid'
                 newchid = ''
             elif (seqheader[i] == ' ' or
@@ -197,7 +203,7 @@ def retrieve_id(seqheader):
                 newchid = ''
             else:
                 if tag == 'mainid':
-                    newchid += seqheader[i].lower()
+                    newchid += seqheader[i].upper()
                 else:
                     newchid += seqheader[i]
 
@@ -301,7 +307,7 @@ def retrieve_id(seqheader):
                 if namechar is True:
                     newchid += seqheader[j]
                 elif idchar is True:
-                    headerinfo['mainid'] += seqheader[j].lower()
+                    headerinfo['mainid'] += seqheader[j].upper()
 
     return headerinfo
 
