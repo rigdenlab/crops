@@ -16,3 +16,7 @@
      - .. cssclass:: btn btn-primary btn-sm btn-example
 
        :ref:`Show <cl_crops_cropstr>`
+   * - - Split sequence file into several files, one per sequence/chain
+     - .. cssclass:: btn btn-primary btn-sm btn-example
+
+       :ref:`Show <cl_crops_splitseqs>`
