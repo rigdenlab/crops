@@ -84,7 +84,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_7(self):
-        expected_tags = {'mainid': '3j4f', 'chains': {'A'},
+        expected_tags = {'mainid': '3J4F', 'chains': {'A'},
                          'seqid': None, 'source': 'RCSB PDB',
                          'comments': 'PDBID|CHAIN|SEQUENCE'}
 
@@ -93,7 +93,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_8(self):
-        expected_tags = {'mainid': '3j4f', 'chains': {'D'},
+        expected_tags = {'mainid': '3J4F', 'chains': {'D'},
                          'seqid': None, 'source': 'MrBUMP',
                          'comments': 'resolution: 8.60 experiment: EMIC release_date: 2013-07-24 [ 3 : ALL ]'}
 
@@ -102,7 +102,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_9(self):
-        expected_tags = {'mainid': '6ln2', 'chains': {'A'},
+        expected_tags = {'mainid': '6LN2', 'chains': {'A'},
                          'seqid': None, 'source': 'MrBUMP',
                          'comments': "resolution: 3.20 experiment: XRAY release_date: 2020-03-18 [ 476678 : ALL ] ['29-1054'] <SEQSE>29,1054<SEQSE> <100>1<100> <95>1<95> <90>1<90> <70>0<70> <50>0<50>"}
 
@@ -111,7 +111,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_10(self):
-        expected_tags = {'mainid': '6avg', 'chains': {'B', 'C'},
+        expected_tags = {'mainid': '6AVG', 'chains': {'B', 'C'},
                          'seqid': '2', 'source': 'RCSB PDB',
                          'comments': 'T-cell receptor alpha variable 4,TCR alpha chain|Homo sapiens'}
 
@@ -120,7 +120,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_11(self):
-        expected_tags = {'mainid': 'abcde', 'chains': {'j', 'k', 'l'},
+        expected_tags = {'mainid': 'ABCDE', 'chains': {'j', 'k', 'l'},
                          'seqid': None, 'source': 'RCSB PDB', 'comments': None}
 
         retrieved_tags = cit.retrieve_id(_HEADERS_LIST.splitlines()[10])
@@ -128,7 +128,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_12(self):
-        expected_tags = {'mainid': '6avg', 'chains': {'B', 'C'},
+        expected_tags = {'mainid': '6AVG', 'chains': {'B', 'C'},
                          'seqid': '2', 'source': 'PDBe', 'comments': None}
 
         retrieved_tags = cit.retrieve_id(_HEADERS_LIST.splitlines()[11])
@@ -136,7 +136,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_13(self):
-        expected_tags = {'mainid': '6dwu',
+        expected_tags = {'mainid': '6DWU',
                          'chains': {'AA', 'AC', 'AE', 'AG', 'AI', 'AK', 'AM',
                                     'AO', 'AQ', 'AS', 'AU', 'BA', 'BC', 'BE',
                                     'BG', 'BI', 'BK', 'BM', 'BO', 'BQ', 'BS',
@@ -153,7 +153,7 @@ class TestCropsTaggers(unittest.TestCase):
         self.assertDictEqual(retrieved_tags, expected_tags)
 
     def test_retrieve_id_14(self):
-        expected_tags = {'mainid': 'hj41', 'chains': {'A', 'B', 'C'},
+        expected_tags = {'mainid': 'HJ41', 'chains': {'A', 'B', 'C'},
                          'seqid': '1', 'source': 'CROPS',
                          'comments': 'these are some comments'}
 

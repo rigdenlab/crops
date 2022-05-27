@@ -116,9 +116,9 @@ def main():
     for key, structure in strset.items():
         found = False
         for seqname in seqset:
-            if ((seqname.lower() in key.lower()) or
+            if ((seqname in key) or
                     (len(seqset) == 1 and len(strset) == 1)):
-                finalid = seqname.lower()
+                finalid = seqname
                 newstructure, gseqset[seqname] = cop.renumber_pdb(seqset[seqname],
                                                                   structure,
                                                                   seqback=True)
