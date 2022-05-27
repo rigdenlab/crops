@@ -664,7 +664,7 @@ class oligoseq:
         errormsg = ('Sequence content is incompatible with oligoseq ' +
                     self.id + '.')
         if (newseq.oligomer_id is not None and self.id is not None and
-                newseq.oligomer_id.lower() != self.id):
+                newseq.oligomer_id.lower() != self.id.lower()):
             logging.critical(errormsg)
             raise ValueError
 
@@ -691,7 +691,7 @@ class oligoseq:
                 addall = True
 
         if self.id is not None and newseq.oligomer_id is not None:
-            if self.id != newseq.oligomer_id.lower():
+            if self.id.lower() != newseq.oligomer_id.lower():
                 logging.critical(errormsg)
                 raise ValueError
 
