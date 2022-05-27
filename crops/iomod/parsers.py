@@ -43,7 +43,7 @@ def parse_db(instream, pdbset=None):
                 logging.critical('Argument pdbset should be either None, a string, '
                                  'a set, or a dictionary with empty values.')
                 raise TypeError
-            pdb_in_upper.add(key.lower())
+            pdb_in_upper.add(key.upper())
     elif pdbset is None:
         pdb_in_upper = set()
     else:
