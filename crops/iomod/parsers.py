@@ -149,6 +149,10 @@ def parsestrfile(str_input, intype='path'):
             with open(str_input, 'r') as f:
                 strfile = f.read()
             structure = parsestr(strfile)
+            if os.path.splitext(os.path.basename(str_input))[1].lower() == '.pdb':
+                structure.name = os.path.splitext(os.path.basename(str_input))[0]
+            else:
+                structure.name = os.path.basename(str_input)
             pdbid = structure.name.upper()
             strdict[pdbid] = structure
             filedict[pdbid] = os.path.basename(str_input)
