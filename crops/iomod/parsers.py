@@ -386,6 +386,6 @@ def parsemapfile(input_map):
     with open(input_map, 'r') as f:
         infile = f.read()
 
-    mdict = parsemap(input_map)
+    mdict = parsemap(infile)
 
     return mdict
