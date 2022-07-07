@@ -66,7 +66,7 @@ class TestCropsIntervals(unittest.TestCase):
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_union_3(self):
-        expected_subint = [[5, 12], [30, 30]]
+        expected_subint = [[5, 12], [20, 2222220]]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
         calc_subint = interval.union(_INTEGER_3).subint
@@ -260,7 +260,7 @@ class TestCropsIntervals(unittest.TestCase):
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_symdiff_2(self):
-        expected_subint = [[5, 12], [20, 22]]
+        expected_subint = [[1, 1], [5, 12], [20, 22]]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
         interval = interval.union(_INTEGER_LIST_4)
@@ -280,7 +280,7 @@ class TestCropsIntervals(unittest.TestCase):
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_symdiff_4(self):
-        expected_subint = [[5, 12], [20, 22]]
+        expected_subint = [[5, 12], [17, 17], [20, 22]]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
         interval = interval.union(_INTEGER_LIST_4)
@@ -300,7 +300,7 @@ class TestCropsIntervals(unittest.TestCase):
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_symdiff_6(self):
-        expected_subint = [[1, 4], [6, 12], [20, 22]]
+        expected_subint = [[1, 4], [7, 12], [20, 22]]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
         interval = interval.union(_INTEGER_LIST_4)
@@ -330,21 +330,21 @@ class TestCropsIntervals(unittest.TestCase):
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_terminals_1(self):
-        expected_subint = [[5, 12]]
+        expected_subint = [5, 12]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
 
-        calc_subint = interval.terminals().subint
+        calc_subint = interval.terminals()
 
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_terminals_2(self):
-        expected_subint = [[5, 22]]
+        expected_subint = [5, 22]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
         interval = interval.union(_INTEGER_LIST_4)
 
-        calc_subint = interval.terminals().subint
+        calc_subint = interval.terminals()
 
         self.assertListEqual(calc_subint, expected_subint)
 
@@ -355,7 +355,7 @@ class TestCropsIntervals(unittest.TestCase):
 
         calc_number = interval.n_elements()
 
-        self.assertListEqual(calc_number, expected_number)
+        self.assertEqual(calc_number, expected_number)
 
     def test_intinterval_n_elements_2(self):
         expected_number = 11
@@ -365,7 +365,7 @@ class TestCropsIntervals(unittest.TestCase):
 
         calc_number = interval.n_elements()
 
-        self.assertListEqual(calc_number, expected_number)
+        self.assertEqual(calc_number, expected_number)
 
     def test_intinterval_contains_1(self):
         interval = cei._intervalise(_INTEGER_LIST_1)
