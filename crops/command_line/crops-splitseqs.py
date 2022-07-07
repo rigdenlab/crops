@@ -27,7 +27,10 @@ def create_argument_parser():
                         help="Input sequence filepath.")
 
     parser.add_argument("-i", "--individual", action='store_true', default=False,
-                          help="One separated output fasta file per each sequence.")
+                        help="One separated output fasta file per each sequence.")
+
+    parser.add_argument("-s", "--subset_ids", nargs='+', metavar="Oligoseq_ids", default=None,
+                        help="From all the sequences in the input sequence file, just print out this subset.")
 
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
@@ -51,8 +54,15 @@ def main():
         outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
 
     logger.info('Parsing sequence file '+inseq)
-    seqset = cin.parseseqfile(inseq)
+    wholeseqset = cin.parseseqfile(inseq)
     logger.info('Done')
+
+    if args.subset_ids is not None:
+        for id in set(args.subset_ids):
+            if id.upper() in wholeseqset:
+                seqset[id.upper()] = wholeseqset[id.upper()]
+    else:
+        seqset = wholeseqset
 
     for key, S in seqset.items():
         for key2, monomer in S.imer.items():
