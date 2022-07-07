@@ -209,7 +209,7 @@ def parseseq(instream, inset=None):
             temp = inset
             inset = set()
             inset.add(temp)
-        upperset = {}
+        upperset = set()
         for element in inset:
             if not isinstance(element, str):
                 logging.critical('Elements in inseq should be strings.')
@@ -286,7 +286,7 @@ def parseseqfile(seq_input='server-only', inset=None, use_UPserver=False):
             temp = inset
             inset = set()
             inset.add(temp)
-        upperset = {}
+        upperset = set()
         for element in inset:
             if not isinstance(element, str):
                 logging.critical('Elements in inseq should be strings.')
@@ -296,24 +296,24 @@ def parseseqfile(seq_input='server-only', inset=None, use_UPserver=False):
     if seq_input != 'server-only':
         with open(seq_input, 'r') as f:
             inseq = f.read()
-        newseqs = parseseq(inseq, inset)
+        newseqs = parseseq(inseq, inset=upperset)
     else:
         newseqs = {}
 
     inseq=''
     if use_UPserver:
-        for upcode in inset:
-            if upcode.upper() not in newseqs:
+        for upcode in upperset:
+            if upcode not in newseqs:
                 try:
                     download = ur.urlopen('https://www.uniprot.org/uniprot/' +
                                            upcode.upper() + '.fasta')
                     inseq += download + os.linesep
                 except Exception:
                     if seq_input == 'server-only':
-                        msg = ('Uniprot sequence ' + upcode.upper() +
+                        msg = ('Uniprot sequence ' + upcode +
                                ' not found online. Check your internet connexion.')
                     else:
-                        msg = ('Uniprot sequence ' + upcode.upper() +
+                        msg = ('Uniprot sequence ' + upcode +
                                ' not found either in local file or online. '
                                'Check your internet connexion.')
                     logging.warning(msg)

@@ -54,16 +54,10 @@ def main():
         outdir = check_path(args.outdir[0], 'dir')
 
     logger.info('Parsing sequence file '+inseq)
-    wholeseqset = cin.parseseqfile(inseq)
-    logger.info('Done'+os.linesep)
-
     if args.subset_ids is not None:
-        seqset = {}
-        for id in set(args.subset_ids):
-            if id.upper() in wholeseqset:
-                seqset[id.upper()] = wholeseqset[id.upper()]
-    else:
-        seqset = wholeseqset
+        subset = set(args.subset_ids)
+    seqset = cin.parseseqfile(seq_input=inseq, inset=subset)
+    logger.info('Done'+os.linesep)
 
     logger.info('Printing sequences out...')
 
