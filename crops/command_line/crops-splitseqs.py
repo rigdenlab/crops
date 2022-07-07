@@ -66,10 +66,7 @@ def main():
             fout = key
             if args.individual is True:
                 fout += '_' + key2
-            extension = os.path.splitext(os.path.basename(inseq))[1]
-            fout += extension
-            if extension != (os.extsep+'fasta'):
-                fout += os.extsep + 'fasta'
+            fout += os.extsep + 'fasta'
             outseq = outpathgen(outdir, filename=fout)
             monomer.dump(outseq)
 

@@ -15,6 +15,14 @@ The output directory argument ``--output`` or ``-o`` is optional. If not provide
 
 --------------------------------------------------------------
 
+From a large fasta file where only a few sequences are required, the option ``--subset_ids`` or ``-s`` allows to select as many molecule ids as needed:
+
+.. code-block:: shell-session
+
+   crops-splitseqs PDBall.fasta --output mydir/ --subset_ids 7m6c 4n5b 1o98
+
+--------------------------------------------------------------
+
 Additionally, the option to separate the sequences by sequence is also available by typing ``--individual`` or ``-i``:
 
 .. code-block:: shell-session
@@ -22,3 +30,5 @@ Additionally, the option to separate the sequences by sequence is also available
    crops-splitseqs PDBall.fasta --output mydir/ --individual
 
 This command produces new sequence files of the format ``mydir/PDBID_X.fasta`` containing just a single sequence of Protein ID PDBID and (numerical) sequence id X.
+
+Options ``--subset_ids`` and ``--individual`` can be combined to produce individual sequence files only from the selected molecules.
