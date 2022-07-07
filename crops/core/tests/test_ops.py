@@ -602,7 +602,7 @@ class TestCropsOps(unittest.TestCase):
         pdb = cip.parsestr(_PDB_STRING)
         myseq = cip.parseseq(_FASTA_SEQUENCE_1)['5GUP']
 
-        renumbered_pdb, updated_seq = crops.core.ops.renumber_pdb_needleman(myseq, pdb)
+        renumbered_pdb, updated_seq = crops.core.ops.renumber_pdb_needleman(myseq, pdb, seqback=True)
 
         nseq = updated_seq.whatseq(renumbered_pdb[0][0].name)
         self.assertTrue('gapseq' in updated_seq.imer[nseq].seqs)
