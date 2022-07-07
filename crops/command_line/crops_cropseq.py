@@ -35,6 +35,9 @@ def create_argument_parser():
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
 
+    parser.add_argument("-p", "--preselect", nargs='+', metavar="Oligoseq_ids", default=None,
+                        help="From all the sequences in the input sequence file, just print out this preselected subset.")
+
     outfiles = parser.add_mutually_exclusive_group(required=False)
     outfiles.add_argument("-s", "--sort", nargs=1, metavar="Sort_type",
                           help="Sort output sequences in descending order by criteria provided - 'ncrops' or 'percent'. Add 'IN' ('ncropsIN', 'percentIN') to ignore numbers from terminals. Only for multiple ID fasta inputs.")
@@ -94,7 +97,9 @@ def main():
 
     ###########################################
     logger.info('Parsing sequence file ' + inseq)
-    seqset = cin.parseseqfile(inseq)
+    if args.preselect is not None:
+        subset = set(args.preselect)
+    seqset = cin.parseseqfile(seq_input=inseq, inset=subset)
     logger.info('Done')
 
     logger.info('Parsing interval database file '+indb)
