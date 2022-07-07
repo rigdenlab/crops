@@ -35,6 +35,9 @@ def create_argument_parser():
     parser.add_argument("-f", "--force_alignment", action='store_true', default=False,
                         help="Use Needleman-Wunsch algorithm to try to bypass small disagreements between fasta and pdb sequences.")
 
+    parser.add_argument("-p", "--preselect", nargs='+', metavar="Oligoseq_ids", default=None,
+                        help="From all the sequences in the input sequence file, just print out this preselected subset.")
+
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
     parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
@@ -60,7 +63,9 @@ def main():
     infixlbl=".crops.seq"
 
     logger.info('Parsing sequence file '+inseq)
-    seqset = cin.parseseqfile(inseq)
+    if args.preselect is not None:
+        subset = set(args.preselect)
+    seqset = cin.parseseqfile(seq_input=inseq, inset=subset)
     logger.info('Done')
 
     logger.info('Parsing structure file '+instr)
