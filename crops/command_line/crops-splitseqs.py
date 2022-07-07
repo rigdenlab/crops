@@ -51,26 +51,33 @@ def main():
     if args.outdir is None:
         outdir = check_path(os.path.dirname(inseq), 'dir')
     else:
-        outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
+        outdir = check_path(args.outdir[0], 'dir')
 
     logger.info('Parsing sequence file '+inseq)
     wholeseqset = cin.parseseqfile(inseq)
-    logger.info('Done')
+    logger.info('Done'+os.linesep)
 
     if args.subset_ids is not None:
+        seqset = {}
         for id in set(args.subset_ids):
             if id.upper() in wholeseqset:
                 seqset[id.upper()] = wholeseqset[id.upper()]
     else:
         seqset = wholeseqset
 
+    logger.info('Printing sequences out...')
+
     for key, S in seqset.items():
         for key2, monomer in S.imer.items():
+            fout = key
             if args.individual is True:
-                fout = (key + '_' + key2 +
-                        os.path.splitext(os.path.basename(inseq))[1])
-                outseq = outpathgen(outdir, filename=fout)
-                monomer.dump(outseq)
+                fout += '_' + key2
+            extension = os.path.splitext(os.path.basename(inseq))[1]
+            fout += extension
+            if extension != (os.extsep+'fasta'):
+                fout += os.extsep + 'fasta'
+            outseq = outpathgen(outdir, filename=fout)
+            monomer.dump(outseq)
 
     logger.info('Done' + os.linesep)
 
