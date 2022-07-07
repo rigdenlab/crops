@@ -66,7 +66,7 @@ class TestCropsIntervals(unittest.TestCase):
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_union_3(self):
-        expected_subint = [[5, 12], [20, 2222220]]
+        expected_subint = [[5, 12], [20, 20]]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
         calc_subint = interval.union(_INTEGER_3).subint
