@@ -592,3 +592,23 @@ class TestCropsOps(unittest.TestCase):
         renumbered_pdb = crops.core.ops.renumber_pdb_needleman(myseq, pdb)
         renumbered_indexes = tuple((residue.seqid.num for residue in renumbered_pdb[0][0]))
         self.assertTupleEqual(renumbered_indexes, expected_indexes)
+
+    def test_renumber_pdb_needleman_2(self):
+        expected_indexes = (30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
+                            200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217,
+                            218, 219, 220, 221, 222, 223, 224, 225, 690, 691, 692, 693, 694, 695, 696, 697, 698, 699,
+                            700, 701, 702, 703, 704, 705, 706, 707, 708, 709, 710, 711, 712, 713, 714, 715, 716)
+
+        pdb = cip.parsestr(_PDB_STRING)
+        myseq = cip.parseseq(_FASTA_SEQUENCE_1)['5GUP']
+
+        renumbered_pdb, updated_seq = crops.core.ops.renumber_pdb_needleman(myseq, pdb)
+
+        nseq = updated_seq.whatseq(renumbered_pdb[0][0].name)
+        self.assertTrue('gapseq' in updated_seq.imer[nseq].seqs)
+
+        renumbered_indexes = tuple((residue.seqid.num for residue in renumbered_pdb[0][0]))
+        partial_seq = ''
+        for n in renumbered_indexes:
+            partial_seq += updated_seq.imer[nseq].seqs['gapseq'][0][n-1]
+        self.assertTrue('-' not in partial_seq)
