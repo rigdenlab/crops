@@ -51,7 +51,7 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
     return alignment_dict
 
 # TODO add seqback argument
-def renumber_pdb_needleman(inseq, instr):
+def renumber_pdb_needleman(inseq, instr, seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch
     algorithm to perform the sequence alignment
 
@@ -59,6 +59,8 @@ def renumber_pdb_needleman(inseq, instr):
     :type inseq: :class:`~crops.elements.sequences.oligoseq`
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
+    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
+    :type seqback: bool, optional
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
     :return inseq: Sequence with extra information about gaps, only if seqback==True.
@@ -67,6 +69,11 @@ def renumber_pdb_needleman(inseq, instr):
     """
 
     renumbered_structure = gemmi.Structure()
+    renumbered_structure.name = instr.name
+
+    if seqback:
+        for monkey in inseq.imer:
+            inseq.imer[monkey].seqs['gapseq'] = []
 
     for model in instr:
         renumbered_model = gemmi.Model(model.name)
@@ -84,10 +91,21 @@ def renumber_pdb_needleman(inseq, instr):
                 _residue.seqid.num = aligned_dict[index] + 1
                 renumbered_chain.add_residue(_residue)
             renumbered_model.add_chain(renumbered_chain)
+            if seqback:
+                res_set = {residue.seqid.num for residue in renumbered_chain}
+                newseq = ''
+                for n in range(len(original_seq)):
+                    if (n+1) in res_set:
+                        newseq += original_seq[n]
+                    else:
+                        newseq += '-'
+                inseq.imer[nseq].seqs['gapseq'].append(newseq)
         renumbered_structure.add_model(renumbered_model)
 
-    return renumbered_structure
-
+    if seqback:
+        return renumbered_structure, inseq
+    else:
+        return renumbered_structure
 
 def renumber_pdb(inseq, instr, seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers.

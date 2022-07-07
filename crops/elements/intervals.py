@@ -47,7 +47,7 @@ def _intervalise(subject):
         logging.critical(raisemsg)
         raise TypeError
 
-    intervalised = intinterval(description='other', subint=subject)
+    intervalised = intinterval(description='intinterval', subint=subject)
 
     return intervalised
 
@@ -154,7 +154,7 @@ class intinterval:
         if tag == 'description':
             logging.critical('Key "description" cannot be removed.')
             raise ValueError
-        self.tags.remove(tag)
+        self.tags.pop(tag)
 
     def copy(self):
 
