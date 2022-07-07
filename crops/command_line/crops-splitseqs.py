@@ -27,7 +27,10 @@ def create_argument_parser():
                         help="Input sequence filepath.")
 
     parser.add_argument("-i", "--individual", action='store_true', default=False,
-                          help="One separated output fasta file per each sequence.")
+                        help="One separated output fasta file per each sequence.")
+
+    parser.add_argument("-s", "--subset_ids", nargs='+', metavar="Oligoseq_ids", default=None,
+                        help="From all the sequences in the input sequence file, just print out this subset.")
 
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
@@ -48,19 +51,27 @@ def main():
     if args.outdir is None:
         outdir = check_path(os.path.dirname(inseq), 'dir')
     else:
-        outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
+        outdir = check_path(args.outdir[0], 'dir')
 
     logger.info('Parsing sequence file '+inseq)
-    seqset = cin.parseseqfile(inseq)
-    logger.info('Done')
+    if args.subset_ids is not None:
+        subset = set(args.subset_ids)
+    seqset = cin.parseseqfile(seq_input=inseq, inset=subset)
+    logger.info('Done'+os.linesep)
+
+    logger.info('Printing sequences out...')
 
     for key, S in seqset.items():
         for key2, monomer in S.imer.items():
+            fout = key
             if args.individual is True:
-                fout = (key + '_' + key2 +
-                        os.path.splitext(os.path.basename(inseq))[1])
-                outseq = outpathgen(outdir, filename=fout)
-                monomer.dump(outseq)
+                fout += '_' + key2
+            extension = os.path.splitext(os.path.basename(inseq))[1]
+            fout += extension
+            if extension != (os.extsep+'fasta'):
+                fout += os.extsep + 'fasta'
+            outseq = outpathgen(outdir, filename=fout)
+            monomer.dump(outseq)
 
     logger.info('Done' + os.linesep)
 
