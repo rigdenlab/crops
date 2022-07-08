@@ -1,2 +1,2 @@
-gemmi ==0.4.3
+gemmi >=0.4.3
 biopython==1.79
