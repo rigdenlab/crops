@@ -6,23 +6,26 @@ from crops import __date__, __version__, __copyright__
 from crops.elements import sequences as ces
 
 import unittest
+import os
 
-_SEQUENCE_1 = """MLRIPVTRALIGLSKSPKGCVRTTATAASNLIEVFVDGQSVMVEPGTTVLQACEKVGMQIPRFCYHERLSVAGNCRMCL
-VEIEKAPKVVAACAMPVMKGWNILTNSEKSKKAREGVMEFLLANHPLDCPICDQGGECDLQDQSMMFGSDRSRFLEGKR
-AVEDKNIGPLVKTIMTRCIQCTRCIRFASEIAGVDDLGTTGRGNDMQVGTYIEKMFMSELSGNIIDICPVGALTSKPYA
-FTARPWETRKTESIDVMDAVGSNIVVSTRTGEVMRILPRMHEDINEEWISDKTRFAYDGLKRQRLTQPMIRNEKGLLTY
-TTWEDALSRVAGMLQSFQGNDVAAIAGGLVDAEALVALKDLLNRVDSDSLCTEEVFPTAGAGTDLRSNYLLNTTIAGVE
-EADVILLVGTNPRFEAPLFNARIRKSWLHNDLKVALIGSPVDLTYRYDHLGDSPKILQDIASGNHPFSQILKEAKKPMV
-VLGSSALQRSDGTAILAAVSNIAQNIRLSSGVTGDWKVMNILHRIASQVAALDLGYKPGVEAIRKNPPKVLFLLGADGG
-CITRQDLPKDCFIIYQGHHGDVGAPMADVILPGAAYTEKSATYVNTEGRAQQTKVAVTPPGLAREDWKIIRALSEIAGM
-TLPYDTLDQVRSRLEEVSPNLVRYDDVEGANYFQQANELSKLVNQQLLADPLVPPQLTIKDFYMTDSISRASQTMAKCV
-KAVTEGIQAVEEPSIC
-"""
-_SEQUENCE_2 = """PKLVLVRHGQSEWNEKNLFTGWVDVKLSAKGQQEAARAGELLKEKKVYPDVLYTSKLSRAIQTANIALEKADRLWIPVN
-RSWRLNERHYGDLQGKDKAETLKKFGEEKFNTYRRSFDVPPPPIDASSPFSQKGDERYKYVDPNVLPETESLALVIDRL
-LPYWQDVIAKDLLSGKTVMIAAHGNSLRGLVKHLEGISDADIAKLNIPTGIPLVFELDENLKPSKPSYYLDPEAAAAGA
-AAVANQGKK
-"""
+_SEQUENCE_1 = ("MLRIPVTRALIGLSKSPKGCVRTTATAASNLIEVFVDGQSVMVEPGTTVLQACEKVGMQIP" +
+               "RFCYHERLSVAGNCRMCLVEIEKAPKVVAACAMPVMKGWNILTNSEKSKKAREGVMEFLLA" +
+               "NHPLDCPICDQGGECDLQDQSMMFGSDRSRFLEGKRAVEDKNIGPLVKTIMTRCIQCTRCI" +
+               "RFASEIAGVDDLGTTGRGNDMQVGTYIEKMFMSELSGNIIDICPVGALTSKPYAFTARPWE" +
+               "TRKTESIDVMDAVGSNIVVSTRTGEVMRILPRMHEDINEEWISDKTRFAYDGLKRQRLTQP" +
+               "MIRNEKGLLTYTTWEDALSRVAGMLQSFQGNDVAAIAGGLVDAEALVALKDLLNRVDSDSL" +
+               "CTEEVFPTAGAGTDLRSNYLLNTTIAGVEEADVILLVGTNPRFEAPLFNARIRKSWLHNDL" +
+               "KVALIGSPVDLTYRYDHLGDSPKILQDIASGNHPFSQILKEAKKPMVVLGSSALQRSDGTA" +
+               "ILAAVSNIAQNIRLSSGVTGDWKVMNILHRIASQVAALDLGYKPGVEAIRKNPPKVLFLLG" +
+               "ADGGCITRQDLPKDCFIIYQGHHGDVGAPMADVILPGAAYTEKSATYVNTEGRAQQTKVAV" +
+               "TPPGLAREDWKIIRALSEIAGMTLPYDTLDQVRSRLEEVSPNLVRYDDVEGANYFQQANEL" +
+               "SKLVNQQLLADPLVPPQLTIKDFYMTDSISRASQTMAKCVKAVTEGIQAVEEPSIC")
+
+_SEQUENCE_2 = ("PKLVLVRHGQSEWNEKNLFTGWVDVKLSAKGQQEAARAGELLKEKKVYPDVLYTSKLSRAI" +
+               "QTANIALEKADRLWIPVNRSWRLNERHYGDLQGKDKAETLKKFGEEKFNTYRRSFDVPPPP" +
+               "IDASSPFSQKGDERYKYVDPNVLPETESLALVIDRLLPYWQDVIAKDLLSGKTVMIAAHGN" +
+               "SLRGLVKHLEGISDADIAKLNIPTGIPLVFELDENLKPSKPSYYLDPEAAAAGAAAVANQGKK")
+
 _SEQUENCE_3 = "GATACTCAGATAG"
 _SEQUENCE_4 = "CUAUCUGAGUAUC"
 _SEQUENCE_5 = "GATACTNAGATAG"
@@ -69,7 +72,7 @@ class TestCropsSequences(unittest.TestCase):
     def test_sequence_addseq_1(self):
         expected_seq = _SEQUENCE_3
 
-        seq = ces.sequence(seqid=1, oligomer_id='1IXY', chains={'C', 'D'},
+        seq = ces.sequence(seqid=1, oligomer='1IXY', chains={'C', 'D'},
                            seq=_SEQUENCE_5)
 
         seq.addseq(newid="alternative", newseq=_SEQUENCE_3)
@@ -80,7 +83,7 @@ class TestCropsSequences(unittest.TestCase):
     def test_sequence_delseq_1(self):
         expected_seq = _SEQUENCE_5
 
-        seq = ces.sequence(seqid=1, oligomer_id='1IXY', chains={'C', 'D'},
+        seq = ces.sequence(seqid=1, oligomer='1IXY', chains={'C', 'D'},
                            seq=_SEQUENCE_5)
 
         seq.addseq(newid="alternative", newseq=_SEQUENCE_3)
@@ -94,7 +97,7 @@ class TestCropsSequences(unittest.TestCase):
     def test_sequence_delseq_2(self):
         expected_seq = ""
 
-        seq = ces.sequence(seqid=1, oligomer_id='1IXY', chains={'C', 'D'},
+        seq = ces.sequence(seqid=1, oligomer='1IXY', chains={'C', 'D'},
                            seq=_SEQUENCE_5)
 
         seq.addseq(newid="alternative", newseq=_SEQUENCE_3)
@@ -108,7 +111,7 @@ class TestCropsSequences(unittest.TestCase):
     def test_sequence_mainseq_1(self):
         expected_seq = _SEQUENCE_5
 
-        seq = ces.sequence(seqid=1, oligomer_id='1IXY', chains={'C', 'D'},
+        seq = ces.sequence(seqid=1, oligomer='1IXY', chains={'C', 'D'},
                            seq=_SEQUENCE_5)
 
         returned_seq = seq.mainseq()
@@ -118,7 +121,7 @@ class TestCropsSequences(unittest.TestCase):
     def test_sequence_mainseq_2(self):
         expected_seq = _SEQUENCE_3
 
-        seq = ces.sequence(seqid=1, oligomer_id='1IXY', chains={'C', 'D'},
+        seq = ces.sequence(seqid=1, oligomer='1IXY', chains={'C', 'D'},
                            seq=_SEQUENCE_5)
 
         seq.mainseq(add=_SEQUENCE_3)
@@ -129,7 +132,7 @@ class TestCropsSequences(unittest.TestCase):
     def test_sequence_guess_biotype_1(self):
         expected_type = ces.guess_type(_SEQUENCE_3)
 
-        seq = ces.sequence(seqid=1, oligomer_id='1IXY', chains={'C', 'D'},
+        seq = ces.sequence(seqid=1, oligomer='1IXY', chains={'C', 'D'},
                            seq=_SEQUENCE_3)
 
         returned_type = seq.guess_biotype()
@@ -137,10 +140,8 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_type, returned_type)
 
     def test_sequence_dump_1(self):
-        expected_output = """>crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|
-        GATACTNAGATAG
-        """
-
+        expected_output = (">crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|" +
+                           + os.linesep + "GATACTNAGATAG" + os.linesep)
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
 
         returned_output = seq.dump(out='string')
@@ -148,11 +149,10 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_dump_2(self):
-        expected_output = """>crops|2IXY_2|Chains A,C|Source: MADEUP|No info
-        GATACTNAGATAG
-        """
+        expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info" +
+                           + os.linesep + "GATACTNAGATAG" + os.linesep)
 
-        seq = ces.sequence(seqid=2, oligomer_id='2IXY', chains={'A', 'C'},
+        seq = ces.sequence(seqid=2, oligomer='2IXY', chains={'A', 'C'},
                            seq=_SEQUENCE_5, header=_HEADER_1, extrainfo='No info',
                            source='MADEUP')
 
@@ -161,21 +161,13 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_dumpmap_1(self):
-        expected_output = """>crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|
-        1  0
-        2  1
-        3  2
-        4  0
-        5  3
-        6  4
-        7  5
-        8  6
-        9  0
-        10  7
-        11  8
-        12  9
-        13  10
-        """
+        expected_output = (">crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|" +
+                           os.linesep + "1  0" + os.linesep + "2  1" + os.linesep +
+                           "3  2" + os.linesep + "4  0" + os.linesep + "5  3" +
+                           os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +
+                           "8  6" + os.linesep + "9  0" + os.linesep + "10  7" +
+                           os.linesep + "11  8" + os.linesep + "12  9" + os.linesep +
+                           "13  10")
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
 
@@ -190,23 +182,14 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_dumpmap_2(self):
-        expected_output = """>crops|2IXY_2|Chains A,C|Source: MADEUP|No info
-        1  0
-        2  1
-        3  2
-        4  0
-        5  3
-        6  4
-        7  5
-        8  6
-        9  0
-        10  7
-        11  8
-        12  9
-        13  10
-        """
-
-        seq = ces.sequence(seqid=2, oligomer_id='2IXY', chains={'A', 'C'},
+        expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info" +
+                           os.linesep + "1  0" + os.linesep + "2  1" + os.linesep +
+                           "3  2" + os.linesep + "4  0" + os.linesep + "5  3" +
+                           os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +
+                           "8  6" + os.linesep + "9  0" + os.linesep + "10  7" +
+                           os.linesep + "11  8" + os.linesep + "12  9" + os.linesep +
+                           "13  10")
+        seq = ces.sequence(seqid=2, oligomer='2IXY', chains={'A', 'C'},
                            seq=_SEQUENCE_5, header=_HEADER_1, extrainfo='No info',
                            source='MADEUP')
 
@@ -221,7 +204,7 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_length_1(self):
-        expected_length = 249
+        expected_length = 246
 
         seq = ces.sequence(seq=_SEQUENCE_2)
 
@@ -239,7 +222,7 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_length, obtained_length)
 
     def test_sequence_full_length_1(self):
-        expected_length = 10
+        expected_length = 13
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
 
@@ -313,6 +296,6 @@ class TestCropsSequences(unittest.TestCase):
         seq.seqs['fullseq'] = seq.seqs['mainseq']
         seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('*')
 
-        obtained_info = seq.ncrops()
+        obtained_info = seq.cropinfo()
 
         self.assertEqual(expected_info, obtained_info)
