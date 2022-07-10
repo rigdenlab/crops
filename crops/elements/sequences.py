@@ -527,6 +527,8 @@ class sequence:
             if isinstance(self.seqs[seqid], str):
                 nseqid = [self.seqs[seqid]]
                 ng = []
+            else:
+                nseqid = self.seqs[seqid]
             for altseq in nseqid:
                 n = 0
                 for char in altseq:

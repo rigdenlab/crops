@@ -141,7 +141,7 @@ class TestCropsSequences(unittest.TestCase):
 
     def test_sequence_dump_1(self):
         expected_output = (">crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|" +
-                           + os.linesep + "GATACTNAGATAG" + os.linesep)
+                           os.linesep + "GATACTNAGATAG" + os.linesep)
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
 
         returned_output = seq.dump(out='string')
@@ -150,7 +150,7 @@ class TestCropsSequences(unittest.TestCase):
 
     def test_sequence_dump_2(self):
         expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info" +
-                           + os.linesep + "GATACTNAGATAG" + os.linesep)
+                           os.linesep + "GATACTNAGATAG" + os.linesep)
 
         seq = ces.sequence(seqid=2, oligomer='2IXY', chains={'A', 'C'},
                            seq=_SEQUENCE_5, header=_HEADER_1, extrainfo='No info',
