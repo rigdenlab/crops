@@ -292,6 +292,8 @@ def parseseqfile(seq_input='server-only', inset=None, use_UPserver=False):
                 logging.critical('Elements in inseq should be strings.')
                 raise TypeError
             upperset.add(element.upper())
+    else:
+        upperset = None
 
     if seq_input != 'server-only':
         with open(seq_input, 'r') as f:

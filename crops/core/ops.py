@@ -50,7 +50,6 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
 
     return alignment_dict
 
-# TODO add seqback argument
 def renumber_pdb_needleman(inseq, instr, seqback=False):
     """Returns modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch
     algorithm to perform the sequence alignment
