@@ -99,6 +99,8 @@ def main():
     logger.info('Parsing sequence file ' + inseq)
     if args.preselect is not None:
         subset = set(args.preselect)
+    else:
+        subset = None
     seqset = cin.parseseqfile(seq_input=inseq, inset=subset)
     logger.info('Done')
 

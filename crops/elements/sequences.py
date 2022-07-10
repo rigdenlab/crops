@@ -130,12 +130,34 @@ class sequence:
         self.cropmsa = None
         self.intervals = None
 
+        if header is not None:
+            if isinstance(header, str):
+                self.source_headers.append(header)
+                try:
+                    header_info = retrieve_id(header)
+                except Exception:
+                    logging.warning('Header format not recognised. Information not extracted.')
+                    header_info = None
+            else:
+                logging.critical("Argument 'header' should be a string.")
+                raise TypeError
+        else:
+            header_info = None
+
         if seqid is not None:
             if isinstance(seqid, str):
                 self.name = seqid
+            elif isinstance(seqid, int):
+                self.name = str(seqid)
             else:
                 logging.critical("Sequence ID 'seqid' should be a string.")
                 raise TypeError
+        else:
+            if header_info is not None:
+                if 'seqid' in header_info:
+                    self.name = header_info['seqid']
+            else:
+                self.name='1'
 
         if seq is not None:
             if isinstance(seq, str):
@@ -152,6 +174,10 @@ class sequence:
             else:
                 logging.critical("Oligomer ID 'oligomer' should be a string.")
                 raise TypeError
+        else:
+            if header_info is not None:
+                if 'mainid' in header_info:
+                    self.oligomer_id = header_info['mainid']
 
         if chains is not None:
             if isinstance(chains, set):
@@ -164,6 +190,10 @@ class sequence:
             else:
                 logging.critical("Argument 'chains' should be a set of strings.")
                 raise TypeError
+        else:
+            if header_info is not None:
+                if 'chains' in header_info:
+                    self.chains = header_info['chains']
 
         if source is not None:
             if isinstance(source, str):
@@ -171,13 +201,10 @@ class sequence:
             else:
                 logging.critical("Argument 'source' should be a string.")
                 raise TypeError
-
-        if header is not None:
-            if isinstance(header, str):
-                self.source_headers.append(header)
-            else:
-                logging.critical("Argument 'source' should be a string.")
-                raise TypeError
+        else:
+            if header_info is not None:
+                if 'source' in header_info:
+                    self.source = header_info['source']
 
         if biotype is not None:
             if biotype.lower() == 'guess':
@@ -193,6 +220,10 @@ class sequence:
             else:
                 logging.critical("Argument 'extrainfo' should be a string.")
                 raise TypeError
+        else:
+            if header_info is not None:
+                if 'comments' in header_info:
+                    self.infostring = header_info['comments']
 
         if oligomer is None:
             self.crops_header = makeheader(mainid='NOID', seqid=self.name,
@@ -263,7 +294,7 @@ class sequence:
         :raises TypeError: If delid is not a string.
 
         """
-        if not isinstance(delid, str):
+        if not isinstance(delid, str) and delid is not None:
             logging.critical("Sequence ID 'delid' should be a string.")
             raise TypeError
         if not isinstance(wipeall, bool):
@@ -318,27 +349,31 @@ class sequence:
     def dump(self, out, split=False, oneline=False):
         """Writes header and main sequence to a file. If file exists, output is appended.
 
-        :param out: An output filepath (str) or an open file.
+        :param out: An output filepath (str), 'string', or an open file.
         :type out: str, file
         :param split: If True, identical sequences are dumped for every chain, defaults to False.
         :type split: bool, optional
         :param oneline: If True, sequences are not split in 80 residue-lines, defaults to False.
         :type oneline: bool, optional
         :raises TypeError: If out is neither a string nor an open file.
+        :raises KeyError: If :obj:`~crops.elements.sequences.sequence` contains no chains.
+
+        :return: A string containing the text to dump if and only if out=='string'.
+        :rtype: str
 
         """
         if not isinstance(out, str) and not isinstance(out, io.IOBase):
             logging.critical("Argument 'out' should be a string or a file.")
             raise TypeError
 
+        if (self.chains is None or
+                (isinstance(self.chains, set) and len(self.chains) == 0)):
+            logging.critical('No chains defined in sequence.')
+            raise KeyError
+
         outheader = []
 
         if split:
-            if (self.chains is None or
-                    (isinstance(self.chains, set) and len(self.chains) == 0)):
-                logging.critical('No chains defined in sequence.')
-                raise KeyError
-
             for ch in self.chains:
                 outheader.append(makeheader(mainid=self.oligomer_id,
                                             seqid=self.name,
@@ -356,6 +391,7 @@ class sequence:
         if not oneline:
             lenseq = len(self.seqs['mainseq'])
             nlines = int((lenseq-1)/80)+1
+        output = ''
         for header in outheader:
             if isinstance(out, io.IOBase) is True:
                 out.write(header+'\n')
@@ -365,16 +401,20 @@ class sequence:
                     for n in range(nlines):
                         out.write(self.seqs['mainseq'][n*80:(n+1)*80]+'\n')
             else:
+                output += header + os.linesep
+                if oneline:
+                    output += self.seqs['mainseq'] + os.linesep
+                else:
+                    for n in range(nlines):
+                        output += self.seqs['mainseq'][n*80:(n+1)*80] + os.linesep
+        if isinstance(out, io.IOBase) is False:
+            if out.lower() == 'string':
+                return output
+            else:
                 outpath = out
                 op = 'a' if os.path.isfile(outpath) else 'w'
                 with open(outpath, op) as out:
-                    out.write(header+'\n')
-                    if oneline:
-                        out.write(self.seqs['mainseq']+'\n')
-                    else:
-                        for n in range(nlines):
-                            out.write(self.seqs['mainseq'][n*80:(n+1)*80]+'\n')
-
+                    out.write(output)
         return
 
     def dumpmap(self, out, split=False):
@@ -388,6 +428,7 @@ class sequence:
         :type split: bool, optional
         :raises TypeError: If out is neither a string nor an open file.
         :raises ValueError: If self.cropmap / self.cropbackmap does not exist.
+        :raises KeyError: If :obj:`~crops.elements.sequences.sequence` contains no chains.
 
         """
         if not isinstance(out, str) and not isinstance(out, io.IOBase):
@@ -399,14 +440,14 @@ class sequence:
             logging.critical(stringerr)
             raise ValueError
 
+        if (self.chains is None or
+                (isinstance(self.chains, set) and len(self.chains) == 0)):
+            logging.critical('No chains defined in sequence.')
+            raise KeyError
+
         outheader = []
 
         if split:
-            if (self.chains is None or
-                    (isinstance(self.chains, set) and len(self.chains) == 0)):
-                logging.critical('No chains defined in sequence.')
-                raise KeyError
-
             for ch in self.chains:
                 outheader.append(makeheader(mainid=self.oligomer_id,
                                             seqid=self.name,
@@ -414,13 +455,13 @@ class sequence:
                                             source=self.source,
                                             extrainfo=self.infostring))
         else:
-
             outheader.append(makeheader(mainid=self.oligomer_id,
                                         seqid=self.name,
                                         chains=self.chains,
                                         source=self.source,
                                         extrainfo=self.infostring))
 
+        output = ''
         for header in outheader:
             if isinstance(out, io.IOBase):
                 out.write(header+'\n')
@@ -430,16 +471,21 @@ class sequence:
                     else:
                         out.write(str(key)+'  0\n')
             else:
+                output += header + os.linesep
+                for key, value in self.cropmap.items():
+                    if value is not None:
+                        output += str(key) + '  ' + str(value) + os.linesep
+                    else:
+                        output += str(key) + '  0' + os.linesep
+
+        if isinstance(out, io.IOBase) is False:
+            if out.lower() == 'string':
+                return output
+            else:
                 outpath = out
                 op = 'a' if os.path.isfile(outpath) else 'w'
                 with open(outpath, op) as out:
-                    out.write(header+'\n')
-                    for key, value in self.cropmap.items():
-                        if value is not None:
-                            out.write(str(key)+'  '+str(value)+'\n')
-                        else:
-                            out.write(str(key)+'  0\n')
-
+                    out.write(output)
         return
 
     def length(self):
@@ -464,25 +510,37 @@ class sequence:
 
         return len(self.seqs['fullseq'])
 
-    def ngaps(self,seqid='gapseq'):
+    def ngaps(self, seqid='gapseq'):
         """Returns the number of gaps ('-') in a sequence.
 
         :param seqid: The ID of the sequence containing the gaps, defaults to 'gapseq'.
         :type seqid: str, optional
         :raises TypeError: If seqid is not a string.
-        :return: Number of gaps in seqid. If seqid not found, ngaps=0.
-        :rtype: int
+        :return: Number of gaps in seqid. If 'gapseq' is a list of several models, a list is returned. If seqid not found, ngaps=0.
+        :rtype: int or list [int]
 
         """
         if not isinstance(seqid, str):
             logging.critical("Sequence ID 'seqid' should be a string.")
             raise TypeError
-        n = 0
         if seqid in self.seqs:
-            for char in self.seqs[seqid]:
-                if char == '-':
-                    n += 1
-        return n
+            if isinstance(self.seqs[seqid], str):
+                nseqid = [self.seqs[seqid]]
+            else:
+                nseqid = self.seqs[seqid]
+            ng = []
+            for altseq in nseqid:
+                n = 0
+                for char in altseq:
+                    if char == '-':
+                        n += 1
+                ng.append(n)
+            if len(ng) == 1:
+                ng = ng[0]
+        else:
+            ng = 0
+
+        return ng
 
     def ncrops(self, seqid='cropseq', offterminals=False, offmidseq=False):
 
@@ -533,7 +591,7 @@ class sequence:
             return nterms
 
     def update_cropsheader(self):
-        """
+        """Update cropsheader. Useful after updating any information from the sequence.
 
         :return: Updates self.crops_header
         :rtype: str
@@ -572,7 +630,7 @@ class sequence:
                             '; % cropped: ' +
                             str(round(100*self.ncrops()/len(self.seqs['cropseq']), 2)) +
                             ' (' + str(round(100*self.ncrops(offmidseq=True)/len(self.seqs['cropseq']), 2)) +
-                            ' not from terminals) ')
+                            ' not from terminals)')
         else:
             pass
 
