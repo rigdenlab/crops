@@ -167,7 +167,7 @@ class TestCropsSequences(unittest.TestCase):
                            os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +
                            "8  6" + os.linesep + "9  0" + os.linesep + "10  7" +
                            os.linesep + "11  8" + os.linesep + "12  9" + os.linesep +
-                           "13  10")
+                           "13  10" + os.linesep)
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
 
@@ -188,7 +188,7 @@ class TestCropsSequences(unittest.TestCase):
                            os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +
                            "8  6" + os.linesep + "9  0" + os.linesep + "10  7" +
                            os.linesep + "11  8" + os.linesep + "12  9" + os.linesep +
-                           "13  10")
+                           "13  10" + os.linesep)
         seq = ces.sequence(seqid=2, oligomer='2IXY', chains={'A', 'C'},
                            seq=_SEQUENCE_5, header=_HEADER_1, extrainfo='No info',
                            source='MADEUP')
