@@ -179,7 +179,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('+')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         returned_output = seq.dumpmap(out='string')
 
@@ -201,7 +201,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('+')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         returned_output = seq.dumpmap(out='string')
 
@@ -234,7 +234,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('+')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         obtained_length = seq.full_length()
 
@@ -249,7 +249,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('+')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         obtained_ncrops = seq.ncrops()
 
@@ -298,7 +298,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('+')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         obtained_info = seq.cropinfo()
 
@@ -360,10 +360,10 @@ class TestCropsSequences(unittest.TestCase):
         expected_seqs = []
         expected_seqs.append(_SEQUENCE_5)
         expected_seqs.append(_SEQUENCE_6)
-        expected_seqs.append(_SEQUENCE_6.strip('+'))
+        expected_seqs.append(_SEQUENCE_6.replace("+", ""))
         expected_seqs.append(_SEQUENCE_5_2)
         expected_seqs.append(_SEQUENCE_6_2)
-        expected_seqs.append(_SEQUENCE_6_2.strip('+'))
+        expected_seqs.append(_SEQUENCE_6_2.replace("+", ""))
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
         seq_2 = ces.sequence(seq=_SEQUENCE_5_2, header=_HEADER_2)
@@ -398,7 +398,7 @@ class TestCropsSequences(unittest.TestCase):
         expected_length_2 = 10
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
-        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.strip('+'), header=_HEADER_2)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
 
         oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
         oseq.add_sequence(seq_2)
@@ -413,7 +413,7 @@ class TestCropsSequences(unittest.TestCase):
         expected_value = 4
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
-        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.strip('+'), header=_HEADER_2)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
 
         oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
         oseq.add_sequence(seq_2)
@@ -426,7 +426,7 @@ class TestCropsSequences(unittest.TestCase):
         expected_value = 2
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
-        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.strip('+'), header=_HEADER_2)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
 
         oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
         oseq.add_sequence(seq_2)
@@ -439,7 +439,7 @@ class TestCropsSequences(unittest.TestCase):
         expected_chains = {'C', 'D', 'E', 'F'}
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
-        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.strip('+'), header=_HEADER_2)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
 
         oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
         oseq.add_sequence(seq_2)
@@ -454,7 +454,7 @@ class TestCropsSequences(unittest.TestCase):
         expected_seqnum = ['1', '1', '2', '2']
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
-        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.strip('+'), header=_HEADER_2)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
 
         oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
         oseq.add_sequence(seq_2)

@@ -795,6 +795,8 @@ class oligoseq:
         :raises TypeError: When 'seqid' is not a string.
 
         """
+        if isinstance(seqid, int):
+            seqid = str(seqid)
         if not isinstance(seqid, str):
             raise TypeError("'seqid' should be a string.")
 
