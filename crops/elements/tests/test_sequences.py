@@ -376,7 +376,7 @@ class TestCropsSequences(unittest.TestCase):
             cropmaps[key] = {'cropmap': _CROPMAP_1,
                              'cropbackmap': _CROPMAP_2}
 
-        oseq.set_cropmaps(cropmaps)
+        oseq.set_cropmaps(cropmaps, cropmain=True)
 
         obtained_seqs = []
         obtained_seqs.append(oseq.imer['1'].seqs['fullseq'])
