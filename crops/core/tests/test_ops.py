@@ -8865,7 +8865,7 @@ class TestCropsOps(unittest.TestCase):
 
     def test_crop_seq_1(self):
         expected_seq = (_SEQUENCE_2[1:70] + _SEQUENCE_2[187:268] +
-                        _SEQUENCE_2[618:634])
+                        _SEQUENCE_2[618:632])
 
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG'].imer['1']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
@@ -8881,7 +8881,7 @@ class TestCropsOps(unittest.TestCase):
         self.assertEqual(original_seq, newseq.seqs['fullseq'])
 
     def test_crop_seq_2(self):
-        expected_seq = (_SEQUENCE_2[1:634])
+        expected_seq = (_SEQUENCE_2[1:632])
 
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG'].imer['1']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
