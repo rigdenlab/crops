@@ -8876,7 +8876,7 @@ class TestCropsOps(unittest.TestCase):
         original_seq = myseq.mainseq()
 
         self.assertEqual(expected_seq, cropped_seq)
-        self.assertTrue('cropseq' in newseq)
+        self.assertTrue('cropseq' in newseq.seqs)
         self.assertEqual(original_seq, newseq.seqs['fullseq'])
 
     def test_crop_seq_2(self):
@@ -8893,7 +8893,7 @@ class TestCropsOps(unittest.TestCase):
         original_seq = myseq.mainseq()
 
         self.assertEqual(expected_seq, cropped_seq)
-        self.assertTrue('cropseq' in newseq)
+        self.assertTrue('cropseq' in newseq.seqs)
         self.assertEqual(original_seq, newseq.seqs['fullseq'])
 
     def test_crop_pdb_1(self):
