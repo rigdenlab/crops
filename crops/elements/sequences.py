@@ -795,6 +795,8 @@ class oligoseq:
         :raises TypeError: When 'seqid' is not a string.
 
         """
+        if isinstance(seqid, int):
+            seqid = str(seqid)
         if not isinstance(seqid, str):
             raise TypeError("'seqid' should be a string.")
 
@@ -885,6 +887,8 @@ class oligoseq:
         :rtype: int
 
         """
+        if isinstance(seqid, int):
+            seqid = str(seqid)
         if not isinstance(seqid, str):
             logging.critical('chain input must be a string.')
             raise TypeError
@@ -915,8 +919,7 @@ class oligoseq:
         return len(self.imer)
 
     def chainlist(self):
-        """
-        Returns a set with all the chain names in the :class:`~crops.elements.sequences.oligseq`.
+        """Returns a set with all the chain names in the :class:`~crops.elements.sequences.oligseq`.
 
         :return: Chain names in :class:`~crops.elements.sequences.oligseq`.
         :rtype: set [str]

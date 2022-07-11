@@ -29,7 +29,9 @@ _SEQUENCE_2 = ("PKLVLVRHGQSEWNEKNLFTGWVDVKLSAKGQQEAARAGELLKEKKVYPDVLYTSKLSRAI" +
 _SEQUENCE_3 = "GATACTCAGATAG"
 _SEQUENCE_4 = "CUAUCUGAGUAUC"
 _SEQUENCE_5 = "GATACTNAGATAG"
-_SEQUENCE_6 = "*AT*CTNA*ATAG"
+_SEQUENCE_5_2 = "CTATCTGAGTATC"
+_SEQUENCE_6 = "+AT+CTNA+ATAG"
+_SEQUENCE_6_2 = "+TA+CTGA+TATC"
 _SEQUENCE_7 = "-AT-CTNA-ATAG"
 _SEQUENCE_8 = "G-T-CTN-GATAG"
 
@@ -39,6 +41,8 @@ _CROPMAP_2 = {1: 2, 2: 3, 3: 5, 4: 6, 5: 7,
               6: 8, 7: 10, 8: 11, 9: 12, 10: 13}
 
 _HEADER_1 = ">1IXY_1|Chains A[auth C], C[auth D]|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|"
+_HEADER_2 = ">1IXY_2|Chains B[auth E], D[auth F]|5'-D(*CP*TP*AP*TP*CP*TP*GP*AP*GP*TP*AP*TP*C)-3'|"
+
 
 class TestCropsSequences(unittest.TestCase):
     def test_guess_type_1(self):
@@ -175,7 +179,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('*')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         returned_output = seq.dumpmap(out='string')
 
@@ -197,7 +201,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('*')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         returned_output = seq.dumpmap(out='string')
 
@@ -230,7 +234,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('*')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         obtained_length = seq.full_length()
 
@@ -245,7 +249,7 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('*')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         obtained_ncrops = seq.ncrops()
 
@@ -294,8 +298,170 @@ class TestCropsSequences(unittest.TestCase):
         seq.cropbackmap = _CROPMAP_2
         seq.seqs['cropseq'] = _SEQUENCE_6
         seq.seqs['fullseq'] = seq.seqs['mainseq']
-        seq.seqs['mainseq'] = seq.seqs['cropseq'].strip('*')
+        seq.seqs['mainseq'] = seq.seqs['cropseq'].replace("+", "")
 
         obtained_info = seq.cropinfo()
 
         self.assertEqual(expected_info, obtained_info)
+
+    def test_oligoseq_add_sequence_1(self):
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_5_2, header=_HEADER_2)
+
+        expected_keys = {'1', '2'}
+        expected_seqs = {seq, seq_2}
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        obtained_keys = set(oseq.imer.keys())
+        obtained_seqs = set(oseq.imer.values())
+
+        self.assertEqual(expected_keys, obtained_keys)
+        self.assertEqual(expected_seqs, obtained_seqs)
+
+    def test_oligoseq_del_sequence_1(self):
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_5_2, header=_HEADER_2)
+
+        expected_keys = {'2'}
+        expected_seqs = {seq_2}
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        oseq.del_sequence(1)
+
+        obtained_keys = set(oseq.imer.keys())
+        obtained_seqs = set(oseq.imer.values())
+
+        self.assertEqual(expected_keys, obtained_keys)
+        self.assertEqual(expected_seqs, obtained_seqs)
+
+    def test_oligoseq_purge_1(self):
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_5_2, header=_HEADER_2)
+
+        expected_keys = set()
+        expected_seqs = set()
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        oseq.purge()
+
+        obtained_keys = set(oseq.imer.keys())
+        obtained_seqs = set(oseq.imer.values())
+
+        self.assertEqual(expected_keys, obtained_keys)
+        self.assertEqual(expected_seqs, obtained_seqs)
+
+    def test_oligoseq_set_cropmaps_1(self):
+        expected_seqs = []
+        expected_seqs.append(_SEQUENCE_5)
+        expected_seqs.append(_SEQUENCE_6)
+        expected_seqs.append(_SEQUENCE_6.replace("+", ""))
+        expected_seqs.append(_SEQUENCE_5_2)
+        expected_seqs.append(_SEQUENCE_6_2)
+        expected_seqs.append(_SEQUENCE_6_2.replace("+", ""))
+
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_5_2, header=_HEADER_2)
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        cropmaps = {}
+        for key in oseq.imer:
+            cropmaps[key] = {'cropmap': _CROPMAP_1,
+                             'cropbackmap': _CROPMAP_2}
+
+        oseq.set_cropmaps(cropmaps, cropmain=True)
+
+        obtained_seqs = []
+        obtained_seqs.append(oseq.imer['1'].seqs['fullseq'])
+        obtained_seqs.append(oseq.imer['1'].seqs['cropseq'])
+        obtained_seqs.append(oseq.imer['1'].seqs['mainseq'])
+        obtained_seqs.append(oseq.imer['2'].seqs['fullseq'])
+        obtained_seqs.append(oseq.imer['2'].seqs['cropseq'])
+        obtained_seqs.append(oseq.imer['2'].seqs['mainseq'])
+
+        self.assertDictEqual(oseq.imer['1'].cropmap, _CROPMAP_1)
+        self.assertDictEqual(oseq.imer['1'].cropbackmap, _CROPMAP_2)
+        self.assertDictEqual(oseq.imer['2'].cropmap, _CROPMAP_1)
+        self.assertDictEqual(oseq.imer['2'].cropbackmap, _CROPMAP_2)
+        for n in range(len(expected_seqs)):
+            self.assertEqual(expected_seqs[n], obtained_seqs[n])
+
+    def test_oligoseq_length_1(self):
+        expected_length_1 = 13
+        expected_length_2 = 10
+
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        obtained_length_1 = oseq.length(1)
+        obtained_length_2 = oseq.length(2)
+
+        self.assertEqual(expected_length_1, obtained_length_1)
+        self.assertEqual(expected_length_2, obtained_length_2)
+
+    def test_oligoseq_nchains_1(self):
+        expected_value = 4
+
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        obtained_value = oseq.nchains()
+
+        self.assertEqual(expected_value, obtained_value)
+
+    def test_oligoseq_nseqs_1(self):
+        expected_value = 2
+
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        obtained_value = oseq.nseqs()
+
+        self.assertEqual(expected_value, obtained_value)
+
+    def test_oligoseq_chainlist_1(self):
+        expected_chains = {'C', 'D', 'E', 'F'}
+
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        obtained_chains = oseq.chainlist()
+
+        self.assertEqual(expected_chains, obtained_chains)
+
+    def test_oligoseq_whatseq_1(self):
+        chains = [{'C', 'D'}, {'E', 'F'}]
+
+        expected_seqnum = ['1', '1', '2', '2']
+
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_6_2.replace("+", ""), header=_HEADER_2)
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        obtained_seqnum = []
+        for aset in chains:
+            for ch in aset:
+                obtained_seqnum.append(oseq.whatseq(ch))
+
+        self.assertListEqual(expected_seqnum, obtained_seqnum)

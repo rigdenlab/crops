@@ -276,8 +276,8 @@ def crop_seq(inseq, segments, cut_type, terms=False):
         else:
             if 'gapseq' in inseq.seqs:
                 for n in range(len(inseq.seqs['gapseq'])):
-                    newchain.seqs['cropgapseq'][n] += '*'
-            newchain.seqs['cropseq'] += '*'
+                    newchain.seqs['cropgapseq'][n] += '+'
+            newchain.seqs['cropseq'] += '+'
 
     newchain.infostring += cut_type
 
