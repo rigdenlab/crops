@@ -8914,7 +8914,7 @@ class TestCropsOps(unittest.TestCase):
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
-                                         cut_type='TermsOffOnly', terms=True)
+                                         cut_type='MyCut')
         oseq = ces.oligoseq(oligomer_id='3ORG')
         oseq.add_sequence(newseq)
 
@@ -8940,7 +8940,7 @@ class TestCropsOps(unittest.TestCase):
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
-                                         cut_type='TermsOffOnly', terms=True)
+                                         cut_type='MyCut')
         oseq = ces.oligoseq(oligomer_id='3ORG')
         oseq.add_sequence(newseq)
 
