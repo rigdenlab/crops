@@ -333,7 +333,7 @@ def parsemap(instream):
     :param instream: String as read from a cropmap file.
     :type instream: str
     :return: A dictionary containing parsed mapping and backmapping coordinates.
-    :rtype: dict [str, dict[str, dict[str, dict[int, int]]]]
+    :rtype: dict [str: dict[str: dict[str: dict[int: int]]]]
 
     """
     mapdict = {}
