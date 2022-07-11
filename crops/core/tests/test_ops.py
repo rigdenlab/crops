@@ -8761,7 +8761,7 @@ class TestCropsOps(unittest.TestCase):
                             497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 571, 572,
                             573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593,
                             594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614,
-                            615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625, 633, 634)
+                            615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625)
 
         pdb = cip.parsestr(_PDB_STRING_2)
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
@@ -8795,7 +8795,7 @@ class TestCropsOps(unittest.TestCase):
                             497, 498, 499, 500, 501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 571, 572,
                             573, 574, 575, 576, 577, 578, 579, 580, 581, 582, 583, 584, 585, 586, 587, 588, 589, 590, 591, 592, 593,
                             594, 595, 596, 597, 598, 599, 600, 601, 602, 603, 604, 605, 606, 607, 608, 609, 610, 611, 612, 613, 614,
-                            615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625, 633, 634)
+                            615, 616, 617, 618, 619, 620, 621, 622, 623, 624, 625)
 
         pdb = cip.parsestr(_PDB_STRING_2)
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
@@ -8818,7 +8818,7 @@ class TestCropsOps(unittest.TestCase):
                         _SEQUENCE_2[618:634])
 
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
-        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 634]])
+        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint, cut_type='MyCut')
 
@@ -8832,7 +8832,7 @@ class TestCropsOps(unittest.TestCase):
         expected_seq = (_SEQUENCE_2[1:634])
 
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
-        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 634]])
+        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
@@ -8851,11 +8851,11 @@ class TestCropsOps(unittest.TestCase):
                             55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 71, 72, 73, 74, 75, 76, 77, 78, 79,
                             80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 112, 113, 114, 115, 116, 117, 118,
                             119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139,
-                            140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 166, 167)
+                            140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158)
 
         pdb = cip.parsestr(_PDB_STRING_2)
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
-        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 634]])
+        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
@@ -8871,11 +8871,11 @@ class TestCropsOps(unittest.TestCase):
                             56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 188, 189, 190, 191, 192, 193, 194, 195, 196,
                             197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 229, 230, 231, 232, 233, 234, 235,
                             236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256,
-                            257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 619, 620, 621, 622, 623, 624, 625, 633, 634)
+                            257, 258, 259, 260, 261, 262, 263, 264, 265, 266, 267, 268, 619, 620, 621, 622, 623, 624, 625)
 
         pdb = cip.parsestr(_PDB_STRING_2)
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
-        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 634]])
+        myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
