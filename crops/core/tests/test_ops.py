@@ -8866,7 +8866,7 @@ class TestCropsOps(unittest.TestCase):
         expected_seq = (_SEQUENCE_2[1:70] + _SEQUENCE_2[187:268] +
                         _SEQUENCE_2[618:634])
 
-        myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG'].seqs['1']
+        myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG'].imer['1']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint, cut_type='MyCut')
@@ -8882,7 +8882,7 @@ class TestCropsOps(unittest.TestCase):
     def test_crop_seq_2(self):
         expected_seq = (_SEQUENCE_2[1:634])
 
-        myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG'].myseq['1']
+        myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG'].imer['1']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
         newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
