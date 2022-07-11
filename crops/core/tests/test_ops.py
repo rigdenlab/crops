@@ -7,6 +7,7 @@ import unittest
 
 from crops.iomod import parsers as cip
 from crops.elements import intervals as cei
+from crops.elements import sequences as ces
 import crops.core.ops
 import os
 
@@ -8910,8 +8911,10 @@ class TestCropsOps(unittest.TestCase):
 
         newseq = crops.core.ops.crop_seq(inseq=myseq['1'], segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
+        oseq = ces.oligoseq(oligomer_id='3ORG')
+        oseq.add_sequence(newseq)
 
-        cropped_pdb = crops.core.ops.crop_pdb(instr=pdb, inseq=newseq)
+        cropped_pdb = crops.core.ops.crop_pdb(instr=pdb, inseq=oseq)
 
         cropped_indexes = tuple((residue.seqid.num for residue in cropped_pdb[0][0]))
         self.assertTupleEqual(cropped_indexes, expected_indexes)
@@ -8930,8 +8933,10 @@ class TestCropsOps(unittest.TestCase):
 
         newseq = crops.core.ops.crop_seq(inseq=myseq['1'], segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
+        oseq = ces.oligoseq(oligomer_id='3ORG')
+        oseq.add_sequence(newseq)
 
-        cropped_pdb = crops.core.ops.crop_pdb(instr=pdb, inseq=newseq, original_id=True)
+        cropped_pdb = crops.core.ops.crop_pdb(instr=pdb, inseq=oseq, original_id=True)
 
         cropped_indexes = tuple((residue.seqid.num for residue in cropped_pdb[0][0]))
         self.assertTupleEqual(cropped_indexes, expected_indexes)
