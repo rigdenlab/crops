@@ -8820,13 +8820,13 @@ class TestCropsOps(unittest.TestCase):
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
-        newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint, cut_type='MyCut')
+        newseq = crops.core.ops.crop_seq(inseq=myseq['1'], segments=myint, cut_type='MyCut')
 
-        cropped_seq = newseq['1'].mainseq()
+        cropped_seq = newseq.mainseq()
 
         self.assertEqual(expected_seq, cropped_seq)
         self.assertTrue('cropseq' in newseq)
-        self.assertEqual(myseq['1'].mainseq(), newseq['1'].seqs['fullseq'])
+        self.assertEqual(myseq['1'].mainseq(), newseq.seqs['fullseq'])
 
     def test_crop_seq_2(self):
         expected_seq = (_SEQUENCE_2[1:634])
@@ -8834,16 +8834,16 @@ class TestCropsOps(unittest.TestCase):
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
-        newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
+        newseq = crops.core.ops.crop_seq(inseq=myseq['1'], segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
 
-        cropped_seq = newseq['1'].mainseq()
+        cropped_seq = newseq.mainseq()
 
         original_seq = myseq['1'].mainseq()
 
         self.assertEqual(expected_seq, cropped_seq)
         self.assertTrue('cropseq' in newseq)
-        self.assertEqual(original_seq, newseq['1'].seqs['fullseq'])
+        self.assertEqual(original_seq, newseq.seqs['fullseq'])
 
     def test_crop_pdb_1(self):
         expected_indexes = (2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28,
@@ -8857,7 +8857,7 @@ class TestCropsOps(unittest.TestCase):
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
-        newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
+        newseq = crops.core.ops.crop_seq(inseq=myseq['1'], segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
 
         cropped_pdb = crops.core.ops.crop_pdb(instr=pdb, inseq=newseq)
@@ -8877,7 +8877,7 @@ class TestCropsOps(unittest.TestCase):
         myseq = cip.parseseq(_FASTA_SEQUENCE_2)['3ORG']
         myint = cei.intinterval(description="myint", subint=[[2, 70], [188, 268], [619, 632]])
 
-        newseq = crops.core.ops.crop_seq(inseq=myseq, segments=myint,
+        newseq = crops.core.ops.crop_seq(inseq=myseq['1'], segments=myint,
                                          cut_type='TermsOffOnly', terms=True)
 
         cropped_pdb = crops.core.ops.crop_pdb(instr=pdb, inseq=newseq, original_id=True)
