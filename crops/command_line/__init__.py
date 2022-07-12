@@ -7,15 +7,18 @@ import logging
 import sys
 from os import linesep
 
-def welcome():
+
+def _welcome():
     msg = "** Running " + __prog__ + " v." + __version__ + ' **' + linesep
     msg += "** " + __description__ + linesep
     msg += "** Developed by " + __author__ + ". Copyright: " + __copyright__ + '.' + linesep
     return msg
 
-def ok():
+
+def _ok():
     msg = "** " + __prog__ + " finished **" + linesep
     return msg
+
 
 def crops_logger(level="info"):
     """Logger setup.

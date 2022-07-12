@@ -68,7 +68,7 @@ def main():
 
     global logger
     logger = ccl.crops_logger(level="info")
-    logger.info(ccl.welcome())
+    logger.info(ccl._welcome())
 
     inseq = check_path(args.input_seqpath[0], 'file')
     indb = check_path(args.input_database[0], 'file')
@@ -253,7 +253,7 @@ if __name__ == "__main__":
 
     try:
         main()
-        logger.info(ccl.ok())
+        logger.info(ccl._ok())
         sys.exit(0)
     except Exception as e:
         if not isinstance(e, SystemExit):
