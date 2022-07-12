@@ -1,4 +1,5 @@
-"""==========
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+
 This script will remove a number of residues from sequence and structure files
 in agreement to the intervals and other details supplied.
 
@@ -19,9 +20,9 @@ from crops import command_line as ccl
 
 logger = None
 
-def create_argument_parser():
-    """Create a parser for the command line arguments used in crops-cropstr"""
 
+def create_argument_parser():
+    """Create a parser for the command line arguments used in crops-cropstr."""
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
     parser.add_argument("input_seqpath", nargs=1, metavar="Sequence_filepath",
@@ -37,7 +38,7 @@ def create_argument_parser():
     parser.add_argument("-p", "--preselect", nargs='+', metavar="Oligoseq_ids", default=None,
                         help="From all the sequences in the input sequence file, just print out this preselected subset.")
     parser.add_argument("-i", "--individual", action='store_true', default=False,
-                          help="One separated output fasta file per each sequence.")
+                        help="One separated output fasta file per each sequence.")
 
     sections = parser.add_mutually_exclusive_group(required=False)
     sections.add_argument("-t", "--terminals", action='store_true', default=False,
@@ -45,17 +46,24 @@ def create_argument_parser():
     sections.add_argument("-u", "--uniprot_threshold", nargs=2, metavar=("Uniprot_ratio_threshold", "Sequence_database"),
                           help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. Threshold: [MIN,MAX)=[0,100). Database path: uniclust##_yyyy_mm_consensus.fasta-path or server-only. The latter requires internet connexion.')
 
-    parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     return parser
 
+
 def main():
+    """Remove a number of residues from sequence and structure files in agreement to the intervals and other details supplied.
+
+    :raises ValueError: For wrong argument values.
+
+    """
+    # INITIALISE AND PARSE ARGUMENTS FROM COMMAND LINE
     parser = create_argument_parser()
     args = parser.parse_args()
 
     global logger
     logger = ccl.crops_logger(level="info")
-    logger.info(ccl.welcome())
+    logger.info(ccl._welcome())
 
     inseq = check_path(args.input_seqpath[0], 'file')
     indb = check_path(args.input_database[0], 'file')
@@ -79,7 +87,8 @@ def main():
         outdir = check_path(os.path.dirname(inseq), 'dir')
     else:
         outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
-    ###########################################
+
+    # PARSE INPUT FILES
     logger.info('Parsing sequence file ' + inseq)
     if args.preselect is not None:
         subset = set(args.preselect)
@@ -115,7 +124,7 @@ def main():
         uniprotset = cin.parseseqfile(insprot, uniprot=uniprotset)
         logger.info('Done'+os.linesep)
 
-    ###########################################
+    # MAIN OPERATION / PRINT OUT RESULTS WITHIN
     gseqset = {}
     strset2 = {}
     logger.info('Renumbering structure(s)...')
@@ -179,7 +188,7 @@ def main():
                         logger.warning('Chain-name ' + key + '_' + str(key3) +
                                        ' not found in database. Cropping not performed.')
 
-                monomer.infostring += '|' + monomer.cropinfo()
+                monomer.update_cropsheader()
 
                 hf = '_' + key2 if args.individual is True else ''
                 ifx = infixlbl["croprenum"] if cropped_seq is True else ''
@@ -216,9 +225,11 @@ def main():
                                     filename=fout, mksubdir=True)
                 monomer.dump(outseq)
 
+    # FINISH
     logger.info('Done'+os.linesep)
 
     return
+
 
 if __name__ == "__main__":
     import sys
@@ -226,7 +237,7 @@ if __name__ == "__main__":
 
     try:
         main()
-        logger.info(ccl.ok())
+        logger.info(ccl._ok())
         sys.exit(0)
     except Exception as e:
         if not isinstance(e, SystemExit):

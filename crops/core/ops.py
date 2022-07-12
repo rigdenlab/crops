@@ -1,3 +1,5 @@
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files."""
+
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
 
@@ -19,17 +21,17 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
     :type sequence_1: str
     :param sequence_2: Second input sequence.
     :type sequence_2: str
-    :param mode: Alignment mode, defaults to global.
+    :param mode: Alignment mode, defaults to 'global'.
     :type mode: str, optional
     :param open_gap_score: Opening gap penalty, defaults to -11.
-    :type open_gap_score: int
+    :type open_gap_score: int, optional
     :param extend_gap_score: Extension gap penalty, defaults to -2.
-    :type extend_gap_score: int
+    :type extend_gap_score: int, optional
+
     :return alignment_dict: Dictionary with the residue mapping between both input sequences.
     :rtype alignment_dict: dict
 
     """
-
     aligner = Align.PairwiseAligner()
     aligner.mode = mode
     aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
@@ -50,23 +52,23 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
 
     return alignment_dict
 
+
 def renumber_pdb_needleman(inseq, instr, seqback=False):
-    """Returns modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch
-    algorithm to perform the sequence alignment
+    """Return modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch algorithm to perform the sequence alignment.
 
     :param inseq: Input sequence.
-    :type inseq: :class:`~crops.elements.sequences.oligoseq`
+    :type inseq: :class:`crops.elements.sequences.oligoseq`
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
-    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
+    :param seqback: If True, it additionally returns the :class:`crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
     :type seqback: bool, optional
+
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
-    :return inseq: Sequence with extra information about gaps, only if seqback==True.
-    :rtype inseq: :class:`~crops.elements.sequences.oligoseq`
+    :return inseq: Sequence with extra information about gaps, only if seqback is True.
+    :rtype inseq: :class:`crops.elements.sequences.oligoseq`
 
     """
-
     renumbered_structure = gemmi.Structure()
     renumbered_structure.name = instr.name
 
@@ -106,19 +108,21 @@ def renumber_pdb_needleman(inseq, instr, seqback=False):
     else:
         return renumbered_structure
 
+
 def renumber_pdb(inseq, instr, seqback=False):
-    """Returns modified :class:`gemmi.Structure` with new residue numbers.
+    """Return modified :class:`gemmi.Structure` with new residue numbers.
 
     :param inseq: Input sequence.
-    :type inseq: :class:`~crops.elements.sequences.oligoseq`
+    :type inseq: :class:`crops.elements.sequences.oligoseq`
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
-    :param seqback: If True, it additionally returns the :class:`~crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
+    :param seqback: If True, it additionally returns the :class:`crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
     :type seqback: bool, optional
+
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
-    :return inseq: Sequence with extra information about gaps, only if seqback==True.
-    :rtype inseq: :class:`~crops.elements.sequences.oligoseq`
+    :return inseq: Sequence with extra information about gaps, only if seqback is True.
+    :rtype inseq: :class:`crops.elements.sequences.oligoseq`
 
     """
     n_chains = 0
@@ -155,8 +159,8 @@ def renumber_pdb(inseq, instr, seqback=False):
                                 gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                                 newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                             pos[n_chains][cnt] = cnt+1+gap+shift
-                            if (ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]
-                                or ressymbol(residue.name,pick=original_seq[cnt+gap+shift]) == 0): #second condition ignores possible gaps in crops.rescodes database
+                            if (ressymbol(residue.name, pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]
+                                    or ressymbol(residue.name, pick=original_seq[cnt+gap+shift]) == 0):  # second condition ignores possible gaps in crops.rescodes database
                                 score += 1
                                 newseq += original_seq[cnt+gap+shift]
                             else:
@@ -167,18 +171,18 @@ def renumber_pdb(inseq, instr, seqback=False):
                                 else:
                                     res_pdbid = pdbseq[cnt].split(",")
                                     if len(res_pdbid) > 1:
-                                        for n in range(1,len(res_pdbid)):
-                                            if ressymbol(res_pdbid[n],pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]:
+                                        for n in range(1, len(res_pdbid)):
+                                            if ressymbol(res_pdbid[n], pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]:
                                                 score += 1
                                                 newseq += original_seq[cnt+gap+shift]
                                                 break
                         cnt += 1
                     if score == len(chain)-nligands:
                         solved = True
-                        if len(newseq)<len(original_seq):
+                        if len(newseq) < len(original_seq):
                             newseq += '-'*(len(original_seq)-len(newseq))
                         break
-                if solved == False:
+                if solved is False:
                     nerr = ("The .fasta sequence and the original "
                             "structure's numbering do not match. The number "
                             "of gaps in the structure must be consistent "
@@ -197,7 +201,7 @@ def renumber_pdb(inseq, instr, seqback=False):
                         ligandwarn = True
                     nligands += 1
                     pos[n_chains][nligands-1] = -nligands
-                if ligandwarn == True:
+                if ligandwarn is True:
                     nwarn = ('Some of the ligands contain Aminoacid or '
                              'Nucleotide residues. Please check whether '
                              'they are actually ligands.')
@@ -224,19 +228,21 @@ def renumber_pdb(inseq, instr, seqback=False):
 
 
 def crop_seq(inseq, segments, cut_type, terms=False):
-    """Returns modified :class:`~crops.elements.sequences.sequence` without specified elements.
+    """Return modified :class:`crops.elements.sequences.sequence` without specified elements.
 
     :param inseq: Input sequence.
-    :type inseq: :class:`~crops.elements.sequences.sequence`
+    :type inseq: :class:`crops.elements.sequences.sequence`
     :param segments: Input preservation interval.
-    :type segments: :class:`~crops.elements.intervals.intinterval`
+    :type segments: :class:`crops.elements.intervals.intinterval`
     :param cut_type: Additional header information.
     :type cut_type: str
     :param terms: If True, only terminal ends are removed, defaults to False.
     :type terms: bool, optional
-    :raises ValueError: If intervals given lie out of the sequence.
+
+    :raises `ValueError`: If intervals given lie out of the sequence.
+
     :return: Cropped sequence.
-    :rtype: :class:`~crops.elements.sequences.sequence`
+    :rtype: :class:`crops.elements.sequences.sequence`
 
     """
     if len(segments.subint) > 0:
@@ -286,15 +292,17 @@ def crop_seq(inseq, segments, cut_type, terms=False):
 
     return newchain
 
+
 def crop_pdb(instr, inseq, original_id=True):
-    """Returns modified :class:`gemmi.Structure` without specified elements.
+    """Return modified :class:`gemmi.Structure` without specified elements.
 
     :param instr: Gemmi structure.
     :type instr: :class:`gemmi.Structure`
     :param inseq: Input previously-cropped-sequence.
-    :type inseq: :class:`~crops.elements.sequences.oligoseq`
-    :param original_id: If True, it will keep residue ids alligned to original sequence, defaults to True
+    :type inseq: :class:`crops.elements.sequences.oligoseq`
+    :param original_id: If True, it will keep residue ids alligned to original sequence, defaults to True.
     :type original_id: bool, optional
+
     :return: Cropped structure.
     :rtype: :class:`gemmi.Structure`
 

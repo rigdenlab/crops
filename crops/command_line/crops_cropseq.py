@@ -1,4 +1,5 @@
-"""==========
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+
 This script will remove a number of residues from a sequence file
 in agreement to the intervals and other details supplied.
 
@@ -22,14 +23,14 @@ import copy
 
 logger = None
 
-def create_argument_parser():
-    """Create a parser for the command line arguments used in crops-cropseq"""
 
+def create_argument_parser():
+    """Create a parser for the command line arguments used in crops-cropseq."""
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
     parser.add_argument("input_seqpath", nargs=1, metavar="Sequence_filepath",
                         help="Input sequence filepath.")
-    parser.add_argument("input_database",nargs=1, metavar="Intervals_database",
+    parser.add_argument("input_database", nargs=1, metavar="Intervals_database",
                         help="Input intervals database filepath.")
 
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
@@ -44,23 +45,30 @@ def create_argument_parser():
     outfiles.add_argument("-i", "--individual", action='store_true', default=False,
                           help="One separated fasta file per each sequence.")
 
-    sections=parser.add_mutually_exclusive_group(required=False)
+    sections = parser.add_mutually_exclusive_group(required=False)
     sections.add_argument("-t", "--terminals", action='store_true', default=False,
                           help="Ignore interval discontinuities and only crop the ends off.")
     sections.add_argument("-u", "--uniprot_threshold", nargs=2, metavar=("Uniprot_ratio_threshold", "Sequence_database"),
                           help='Act if SIFTS database is used as intervals source AND %% residues from single Uniprot sequence is above threshold. Threshold: [MIN,MAX)=[0,100). Database path: uniclust##_yyyy_mm_consensus.fasta-path or server-only. The latter requires internet connexion.')
-    parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     return parser
 
+
 def main():
+    """Remove a number of residues from a sequence file in agreement to the intervals and other details supplied.
+
+    :raises ValueError: For wrong argument values.
+
+    """
+    # INITIALISE AND PARSE ARGUMENTS FROM COMMAND LINE
     starttime = time.time()
     parser = create_argument_parser()
     args = parser.parse_args()
 
     global logger
     logger = ccl.crops_logger(level="info")
-    logger.info(ccl.welcome())
+    logger.info(ccl._welcome())
 
     inseq = check_path(args.input_seqpath[0], 'file')
     indb = check_path(args.input_database[0], 'file')
@@ -90,12 +98,12 @@ def main():
                 args.sort[0].lower() != 'ncropsin' and
                 args.sort[0].lower() != 'percentin'):
             logger.critical("Arguments for sorting option can only be "
-                             "either 'ncrops' or 'percent'.")
+                            "either 'ncrops' or 'percent'.")
             raise ValueError
         else:
             sorter = args.sort[0].lower()
 
-    ###########################################
+    # PARSE INPUT FILES
     logger.info('Parsing sequence file ' + inseq)
     if args.preselect is not None:
         subset = set(args.preselect)
@@ -127,6 +135,7 @@ def main():
         uniprotset = cin.parseseqfile(insprot, uniprot=uniprotset)
         logger.info('Done'+os.linesep)
 
+    # MAIN OPERATION
     logger.info('Cropping sequence(s)...')
     if len(seqset) > 1 and args.sort is not None:
         sorted_outseq = {}
@@ -163,7 +172,7 @@ def main():
                         monomer.cropmap[n] = n
                         monomer.cropbackmap = copy.deepcopy(monomer.cropmap)
 
-            monomer.infostring += '|' + monomer.cropinfo()
+            monomer.update_cropsheader()
             if args.individual is True:
                 fout = (key + '_' + key2 + infixlbl["croprenum"] +
                         os.path.splitext(os.path.basename(inseq))[1])
@@ -202,6 +211,7 @@ def main():
                 if monomer.cropmap is not None:
                     monomer.dumpmap(outmap)
 
+    # PRINT OUT THE RESULTS AND FINISH
     croptime = time.time()
     logger.debug('Crop time = ' + str(croptime-starttime) + ' s')
     logger.info('Done'+os.linesep)
@@ -236,13 +246,14 @@ def main():
 
     return
 
+
 if __name__ == "__main__":
     import sys
     import traceback
 
     try:
         main()
-        logger.info(ccl.ok())
+        logger.info(ccl._ok())
         sys.exit(0)
     except Exception as e:
         if not isinstance(e, SystemExit):

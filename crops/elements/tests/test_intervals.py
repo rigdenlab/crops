@@ -1,4 +1,7 @@
-"""Testing facilities for crops.elements.intervals"""
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+
+Testing facilities for crops.elements.intervals
+"""
 
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
@@ -18,6 +21,7 @@ _INTEGER_LIST_4 = [20, 22]
 _INTEGER_LIST_5 = [11, 25]
 _STRING_1 = 'test string'
 _STRING_2 = 'test tag'
+
 
 class TestCropsIntervals(unittest.TestCase):
     def test_intervalise_1(self):
@@ -240,7 +244,7 @@ class TestCropsIntervals(unittest.TestCase):
         self.assertListEqual(calc_subint, expected_subint)
 
     def test_intinterval_subtract_8(self):
-        expected_subint =[[5, 10]]
+        expected_subint = [[5, 10]]
 
         interval = cei._intervalise(_INTEGER_LIST_1)
         interval = interval.union(_INTEGER_LIST_4)

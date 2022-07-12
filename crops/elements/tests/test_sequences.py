@@ -1,4 +1,7 @@
-"""Testing facilities for crops.elements.intervals"""
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+
+Testing facilities for crops.elements.intervals
+"""
 
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
@@ -166,6 +169,7 @@ class TestCropsSequences(unittest.TestCase):
 
     def test_sequence_dumpmap_1(self):
         expected_output = (">crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|" +
+                           "#Residues cropped: 3 (2 not from terminal segments) ; % cropped: 23.08 (15.38 not from terminal segments)" +
                            os.linesep + "1  0" + os.linesep + "2  1" + os.linesep +
                            "3  2" + os.linesep + "4  0" + os.linesep + "5  3" +
                            os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +
@@ -186,7 +190,8 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_dumpmap_2(self):
-        expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info" +
+        expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info|" +
+                           "#Residues cropped: 3 (2 not from terminal segments) ; % cropped: 23.08 (15.38 not from terminal segments)" +
                            os.linesep + "1  0" + os.linesep + "2  1" + os.linesep +
                            "3  2" + os.linesep + "4  0" + os.linesep + "5  3" +
                            os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +
@@ -290,7 +295,7 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_cropinfo_1(self):
-        expected_info = '#Residues cropped: 3 (2 not from terminals) ; % cropped: 23.08 (15.38 not from terminals)'
+        expected_info = '#Residues cropped: 3 (2 not from terminal segments) ; % cropped: 23.08 (15.38 not from terminal segments)'
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
 
@@ -465,3 +470,19 @@ class TestCropsSequences(unittest.TestCase):
                 obtained_seqnum.append(oseq.whatseq(ch))
 
         self.assertListEqual(expected_seqnum, obtained_seqnum)
+
+    def test_oligoseq_write_1(self):
+        expected_output = (">crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|" +
+                           os.linesep + "GATACTNAGATAG" + os.linesep +
+                           ">crops|1IXY_2|Chains E,F|Source: RCSB PDB|5'-D(*CP*TP*AP*TP*CP*TP*GP*AP*GP*TP*AP*TP*C)-3'|" +
+                           os.linesep + "CTATCTGAGTATC" + os.linesep)
+
+        seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
+        seq_2 = ces.sequence(seq=_SEQUENCE_5_2, header=_HEADER_2)
+
+        oseq = ces.oligoseq(oligomer_id=seq.oligomer_id, imer={seq.name: seq})
+        oseq.add_sequence(seq_2)
+
+        returned_output = oseq.write(outdir='string')
+
+        self.assertEqual(expected_output, returned_output)
