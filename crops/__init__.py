@@ -1,4 +1,4 @@
-"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files"""
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files."""
 
 import datetime
 
@@ -10,5 +10,5 @@ __contributing_authors__ = "Filomeno Sánchez"
 __date__ = "Jul 2020"
 __copyright__ = '2020-{}, University of Liverpool'.format(datetime.datetime.now().year)
 
-__version_info__ = (0, 2, 2)
+__version_info__ = (0, 5, 0)
 __version__ = ".".join(map(str, __version_info__))
