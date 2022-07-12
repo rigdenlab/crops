@@ -1,4 +1,7 @@
-"""Testing facilities for crops.core.ops"""
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+
+Testing facilities for crops.core.ops
+"""
 
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
@@ -8752,6 +8755,7 @@ _SEQUENCE_2 = "MGSLMYLLRLVCFLTLLGVTAALFIFAVDLAVHGLEELRMKISRLAGRFAGYILYVVSGVALCLL
 _HEADER_2 = ">3ORG:A|PDBID|CHAIN|SEQUENCE"
 _FASTA_SEQUENCE_2 = _HEADER_2 + os.linesep + _SEQUENCE_2
 
+
 class TestCropsOps(unittest.TestCase):
     def test_renumber_pdb_needleman_1(self):
         expected_indexes = (30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50,
@@ -8781,6 +8785,8 @@ class TestCropsOps(unittest.TestCase):
         self.assertTrue('gapseq' in updated_seq.imer[nseq].seqs)
 
         renumbered_indexes = tuple((residue.seqid.num for residue in renumbered_pdb[0][0]))
+        self.assertTupleEqual(renumbered_indexes, expected_indexes)
+
         partial_seq = ''
         for n in renumbered_indexes:
             partial_seq += updated_seq.imer[nseq].seqs['gapseq'][0][n-1]
