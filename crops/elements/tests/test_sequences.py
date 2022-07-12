@@ -169,6 +169,7 @@ class TestCropsSequences(unittest.TestCase):
 
     def test_sequence_dumpmap_1(self):
         expected_output = (">crops|1IXY_1|Chains C,D|Source: RCSB PDB|5'-D(*GP*AP*TP*AP*CP*TP*3DRP*AP*GP*AP*TP*AP*G)-3'|" +
+                           "#Residues cropped: 3 (2 not from terminal segments) ; % cropped: 23.08 (15.38 not from terminal segments)" +
                            os.linesep + "1  0" + os.linesep + "2  1" + os.linesep +
                            "3  2" + os.linesep + "4  0" + os.linesep + "5  3" +
                            os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +
@@ -190,6 +191,7 @@ class TestCropsSequences(unittest.TestCase):
 
     def test_sequence_dumpmap_2(self):
         expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info" +
+                           "#Residues cropped: 3 (2 not from terminal segments) ; % cropped: 23.08 (15.38 not from terminal segments)" +
                            os.linesep + "1  0" + os.linesep + "2  1" + os.linesep +
                            "3  2" + os.linesep + "4  0" + os.linesep + "5  3" +
                            os.linesep + "6  4" + os.linesep + "7  5" + os.linesep +

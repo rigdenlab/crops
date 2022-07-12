@@ -146,7 +146,7 @@ class sequence:
     >>> myseq.cropinfo()
     '#Residues cropped: 4 (1 not from terminals) ; % cropped: 66.67 (16.67 not from terminal segments)'
     >>> myseq.dump(out='string')
-    '>crops|exampleID_1|Chains A,B|Source: Example||#Residues cropped: 4 (1 not from terminal segments) ; % cropped: 66.67 (16.67 not from terminal segments)\nAT\n'
+    '>crops|exampleID_1|Chains A,B|Source: Example|#Residues cropped: 4 (1 not from terminal segments) ; % cropped: 66.67 (16.67 not from terminal segments)\nAT\n'
 
     :example:
 
@@ -676,7 +676,9 @@ class sequence:
             tag1 = self.oligomer_id
         tag2 = self.infostring
         if self.ncrops() > 0:
-            tag2 += '|' + self.cropinfo()
+            if tag2[-1] != "|":
+                tag2 += '|'
+            tag2 += self.cropinfo()
 
         self.crops_header = makeheader(mainid=tag1,
                                        seqid=self.name,
