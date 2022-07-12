@@ -122,7 +122,7 @@ class sequence:
     >>> myseq.mainseq('GATTACA')
     >>> myseq.mainseq()
     'GATTACA'
-    >>> myseq.chains = {'A'}
+    >>> myseq.chains = {'A', 'B'}
     >>> myseq.addseq('gapseq','GAT--C-')
     >>> myseq.addseq('cobra','TACATACA')
     >>> myseq.length()
@@ -132,7 +132,7 @@ class sequence:
     >>> myseq.guess_biotype()
     'DNA'
     >>> print(myseq)
-    Sequence object >EXAMPLEID_1|Chain A (seq=GATTACA, type=DNA, length=7)
+    Sequence object >EXAMPLEID_1|Chains A,B (seq=GATTACA, type=DNA, length=7)
     >>> myseq.source = 'Example'
     >>> myseq.addseq('cropseq', '+A+T++')
     >>> myseq.addseq('cropgapseq', '+A+-++')
@@ -140,11 +140,13 @@ class sequence:
     7
     >>> myseq.mainseq('AT')
     'AT'
+    >>> myseq.ncrops()
+    4
     >>> myseq.update_cropsheader()
     >>> myseq.cropinfo()
     '#Residues cropped: 4 (1 not from terminals) ; % cropped: 66.67 (16.67 not from terminal segments)'
     >>> myseq.dump(out='string')
-    '>crops|exampleID_1|Chain A|Source: Example||#Residues cropped: 4 (1 not from terminal segments) ; % cropped: 66.67 (16.67 not from terminal segments)\nAT\n'
+    '>crops|exampleID_1|Chains A,B|Source: Example||#Residues cropped: 4 (1 not from terminal segments) ; % cropped: 66.67 (16.67 not from terminal segments)\nAT\n'
 
     :example:
 
@@ -709,25 +711,25 @@ class sequence:
 
 
 class oligoseq:
-    """A :class:`crops.elements.sequences.oligoseq` object grouping several
-    :class:`crops.elements.sequences.sequence` objects pertaining to a
-    common oligomer.
+    """An object grouping several :class:`crops.elements.sequences.sequence` objects pertaining to a common oligomer.
 
     :param oligomer_id: Oligomer identifier (e.g. PDB id), defaults to None.
     :type oligomer_id: str
-    :param imer: Container of several :class:`~crops.elements.sequences.sequence` objects making up the oligomer, defaults to empty dict.
-    :type imer: dict [str, :class:`~crops.elements.sequences.sequence`], optional
-    :ivar seq_id: Sequence identifier (e.g. PDB id).
-    :vartype seq_id: str
-    :ivar imer: Container of several :class:`~crops.elements.sequence.monomer_sequence` making up the oligomer.
-    :vartype imer: dict [str, :class:`~crops.elements.sequence.monomer_sequence`]
-    :ivar source: Information concerning the source of the :class:`~crops.elements.sequence.Sequence` (e.g. Uniprot).
-    :vartype source: str
+    :param imer: Container of several :class:`crops.elements.sequences.sequence` objects making up the oligomer, defaults to empty dict.
+    :type imer: dict [str: :class:`crops.elements.sequences.sequence`], optional
+
+    :ivar id: Oligomer sequence identifier (e.g. PDB id).
+    :vartype id: str
+    :ivar imer: Container of several :class:`crops.elements.sequence.monomer_sequence` making up the oligomer.
+    :vartype imer: dict [str, :class:`crops.elements.sequence.monomer_sequence`]
+
+    :raises `TypeError`: If the input formats are wrong.
 
     :example:
 
-    >>> from crops.elements import Sequence
-    >>> my_sequence = Sequence(seq_id='example_id', source='docs')
+    >>> from crops.elements import sequences as ces
+    >>> my_oligoseq = ces.oligoseq(oligomer_id='exampleID')
+    >>> my_oligoseq.add_monomer
     >>> my_sequence.add_monomer('header_example','GATTACA',nid='mychain')
     >>> my_sequence.add_monomer('another_header','TACATACA')
     >>> my_sequence.nchains()
@@ -744,8 +746,8 @@ class oligoseq:
     """
     _kind = 'Multiple sequence'
     __slots__ = ['id', 'imer']
-    def __init__(self, oligomer_id=None, imer=None):
 
+    def __init__(self, oligomer_id=None, imer=None):
         if not isinstance(oligomer_id, str) and oligomer_id is not None:
             logging.critical("'oligomer_id' should be a string.")
             raise TypeError
@@ -765,6 +767,12 @@ class oligoseq:
         string = self._kind+" object: (id="+ str(self.id) + ", sequences = "+str(self.imer)+")"
         return string
 
+    def __getitem__(self, key):
+        return self.imer[key]
+
+    def __len__(self):
+        return len(self.imer)
+
     def __iter__(self):
         return iter(self.imer.values())
 
@@ -775,19 +783,19 @@ class oligoseq:
         return copy.deepcopy(self)
 
     def purge(self):
-        """Clears the :class:`~crops.elements.sequences.oligoseq` without deleting the object itself.
-
-        """
+        """Clear the object's content without deleting the object itself."""
         self.id = None
         self.imer.clear()
 
     def add_sequence(self, newseq):
-        """Adds a new :class:`~crops.elements.sequences.sequence` to the :class:`~crops.elements.sequences.oligoseq`.
+        """Add a new :class:`crops.elements.sequences.sequence` to the object.
 
         :param newseq: Sequence object.
-        :type newseq: :class:`~crops.elements.sequences.sequence`
-        :raises TypeError: If 'newseq' is not a :class:`~crops.elements.sequences.sequence` object.
-        :raises Exception: If sequence content is incompatible with that in oligoseq.
+        :type newseq: :class:`crops.elements.sequences.sequence`
+
+        :raises `TypeError`: If `newseq` is not a :class:`crops.elements.sequences.sequence` object.
+        :raises `Exception`: If sequence content is incompatible with that in oligoseq (oligomer id, other sequences, etc).
+
         """
         addall = None
         errormsg = ('Sequence content is incompatible with oligoseq ' +
@@ -859,11 +867,12 @@ class oligoseq:
         return
 
     def del_sequence(self, seqid):
-        """Removes the selected :class:`~crops.elements.sequences.sequence` from the :class:`~crops.elements.sequences.oligoseq`.
+        """Remove the selected :class:`crops.elements.sequences.sequence` from the object.
 
         :param seqid: Doomed sequence's identifier.
         :type seqid: str
-        :raises TypeError: When 'seqid' is not a string.
+
+        :raises `TypeError`: If `seqid` is not a string.
 
         """
         if isinstance(seqid, int):
@@ -879,13 +888,14 @@ class oligoseq:
         return
 
     def set_cropmaps(self, mapdict, cropmain=False):
-        """Sets the parsed cropmaps from :class:`~crops.iomod.parsers.parsemapfile`.
+        """Sets the parsed cropmaps from :class:`crops.iomod.parsers.parsemapfile`.
 
-        :param mapdict: Parsed maps for this specific :class:`~crops.elements.sequences.oligoseq`.
+        :param mapdict: Parsed maps for this specific object.
         :type mapdict: dict [str, dict [str, dict [int, int]]]
-        :param cropmain: If 'mainseq' is the original sequence (otherwise, this operation will yield wrong results), perform cropping from cropmap, defaults to False
+        :param cropmain: If True, it will crop 'mainseq' and generate 'fullseq' and 'cropseq'. If 'mainseq' has been edited before this operation will yield wrong results, defaults to False.
         :type cropmain: bool, optional
-        :raises TypeError: When 'mapdict' has not the appropriate format.
+
+        :raises `TypeError`: When `mapdict` has not the appropriate format.
 
         """
         if not isinstance(mapdict, dict):
@@ -921,9 +931,8 @@ class oligoseq:
 
         return
 
-
     def write(self, outdir, infix="", split=False, oneline=False):
-        """Writes all :class:`~crops.elements.sequences.sequence` objects to .fasta file.
+        """Write all :class:`crops.elements.sequences.sequence` objects to .fasta file or string.
 
         :param outdir: Output directory.
         :type outdir: str
@@ -933,28 +942,38 @@ class oligoseq:
         :type split: bool, optional
         :param oneline: If True, sequences are not split in 80 residue-lines, defaults to False.
         :type oneline: bool, optional
-        :raises FileNotFoundError: Output directory not found.
-        """
 
+        :raises `FileNotFoundError`: Output directory not found.
+
+        """
         if not os.path.isdir(outdir):
             logging.critical(outdir + ' directory not found.')
             raise FileNotFoundError
 
-        outpath = os.path.join(outdir, self.seq_id + infix + ".fasta")
-        for seq in self.imer:
-            seq.dump(outpath, split=split, oneline=oneline)
+        if outdir == 'string':
+            outpath = 'string'
+            outstring = ""
+            for seq in self.imer:
+                outstring += seq.dump(outpath, split=split, oneline=oneline)
 
-        return
+            return outstring
+        else:
+            outpath = os.path.join(outdir, self.seq_id + infix + ".fasta")
+            for seq in self.imer:
+                seq.dump(outpath, split=split, oneline=oneline)
 
+            return
 
     def length(self, seqid):
-        """Returns the length of a certain sequence.
+        """Return the length of a certain sequence.
 
-        :param seqid: ID of :class:`~crops.elements.sequences.sequence`.
+        :param seqid: ID of :class:`crops.elements.sequences.sequence`.
         :type seqid: str
-        :raises TypeError: When 'seqid' is not a string.
-        :raises KeyError: Specific sequence not found in :class:`~crops.elements.sequences.oligoseq`.
-        :return: Length of :class:`~crops.elements.sequences.sequence`.
+
+        :raises `TypeError`: When 'seqid' is not a string.
+        :raises `KeyError`: Specific sequence not found in :class:`crops.elements.sequences.oligoseq`.
+
+        :return: Length of :class:`crops.elements.sequences.sequence`.
         :rtype: int
 
         """
@@ -970,9 +989,9 @@ class oligoseq:
             raise KeyError
 
     def nchains(self):
-        """Returns number of chains in :class:`~crops.elements.sequences.oligoseq`.
+        """Return number of chains in object, counting all sequence objects contained.
 
-        :return: Number of chains in all :class:`~crops.elements.sequences.sequence` of :class:`~crops.elements.sequences.oligoseq`.
+        :return: Number of chains in object, counting al :class:`crops.elements.sequences.sequence` contained.
         :rtype: int
         """
         n = 0
@@ -982,17 +1001,17 @@ class oligoseq:
         return n
 
     def nseqs(self):
-        """Returns number of :class:`~crops.elements.sequences.sequence` objects in :class:`~crops.elements.sequences.oligseq`.
+        """Return number of sequence objects in object.
 
-        :return: Number of :class:`~crops.elements.sequences.sequence` objects in :class:`~crops.elements.sequences.oligoseq`.
+        :return: Number of :class:`crops.elements.sequences.sequence` objects in object.
         :rtype: int
         """
         return len(self.imer)
 
     def chainlist(self):
-        """Returns a set with all the chain names in the :class:`~crops.elements.sequences.oligseq`.
+        """Return a set with all the chain names in the object.
 
-        :return: Chain names in :class:`~crops.elements.sequences.oligseq`.
+        :return: Chain names in :class:`crops.elements.sequences.oligoseq`.
         :rtype: set [str]
 
         """
@@ -1003,11 +1022,12 @@ class oligoseq:
         return newset
 
     def whatseq(self, chain):
-        """Returns the sequence number corresponding to a chain.
+        """Return the sequence number corresponding to a given chain.
 
         :param chain: The chain ID.
         :type chain: str
-        :return: The :class:`~crops.elements.sequences.sequence` of that chain.
+
+        :return: The :class:`crops.elements.sequences.sequence` of that chain.
         :rtype: str
 
         """
