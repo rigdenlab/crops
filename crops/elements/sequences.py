@@ -959,7 +959,7 @@ class oligoseq:
         if outdir == 'string':
             outpath = 'string'
             outstring = ""
-            for seq in self.imer:
+            for seq in self.imer.values():
                 outstring += seq.dump(outpath, split=split, oneline=oneline)
 
             return outstring

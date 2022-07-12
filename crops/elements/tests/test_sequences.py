@@ -190,7 +190,7 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_dumpmap_2(self):
-        expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info" +
+        expected_output = (">crops|2IXY_2|Chains A,C|Source: MADEUP|No info|" +
                            "#Residues cropped: 3 (2 not from terminal segments) ; % cropped: 23.08 (15.38 not from terminal segments)" +
                            os.linesep + "1  0" + os.linesep + "2  1" + os.linesep +
                            "3  2" + os.linesep + "4  0" + os.linesep + "5  3" +
