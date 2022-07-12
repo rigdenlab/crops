@@ -293,7 +293,7 @@ class TestCropsSequences(unittest.TestCase):
         self.assertEqual(expected_output, returned_output)
 
     def test_sequence_cropinfo_1(self):
-        expected_info = '#Residues cropped: 3 (2 not from terminals) ; % cropped: 23.08 (15.38 not from terminals)'
+        expected_info = '#Residues cropped: 3 (2 not from terminal segments) ; % cropped: 23.08 (15.38 not from terminal segments)'
 
         seq = ces.sequence(seq=_SEQUENCE_5, header=_HEADER_1)
 

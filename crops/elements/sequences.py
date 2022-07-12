@@ -533,7 +533,7 @@ class sequence:
         for ch in chset:
             outheader.append(makeheader(mainid=tag1,
                                         seqid=self.name,
-                                        chains=chset,
+                                        chains=ch,
                                         source=self.source,
                                         extrainfo=tag2))
         output = ''
@@ -946,7 +946,7 @@ class oligoseq:
         :raises `FileNotFoundError`: Output directory not found.
 
         """
-        if not os.path.isdir(outdir):
+        if not os.path.isdir(outdir) and outdir != 'string':
             logging.critical(outdir + ' directory not found.')
             raise FileNotFoundError
 
