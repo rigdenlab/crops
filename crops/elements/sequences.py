@@ -446,7 +446,9 @@ class sequence:
             tag1 = self.oligomer_id
         tag2 = self.infostring
         if self.ncrops() > 0:
-            tag2 += '|' + self.cropinfo()
+            if self.infostring[-1] != "|":
+                tag2 += '|'
+            tag2 += self.cropinfo()
 
         for ch in chset:
             outheader.append(makeheader(mainid=tag1,
@@ -528,7 +530,9 @@ class sequence:
             tag1 = self.oligomer_id
         tag2 = self.infostring
         if self.ncrops() > 0:
-            tag2 += '|' + self.cropinfo()
+            if self.infostring[-1] != "|":
+                tag2 += '|'
+            tag2 += self.cropinfo()
 
         for ch in chset:
             outheader.append(makeheader(mainid=tag1,
@@ -961,7 +965,7 @@ class oligoseq:
             return outstring
         else:
             outpath = os.path.join(outdir, self.seq_id + infix + ".fasta")
-            for seq in self.imer:
+            for seq in self.imer.values():
                 seq.dump(outpath, split=split, oneline=oneline)
 
             return
