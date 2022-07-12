@@ -1,4 +1,5 @@
-"""==========
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+
 This script will renumber a structure file in agreement with the
 residue positions in the sequence file corresponding to that structure.
 Non-polymer elements are numbered starting right after the final (TER) residue.
@@ -21,9 +22,9 @@ from crops import command_line as ccl
 
 logger = None
 
-def create_argument_parser():
-    """Create a parser for the command line arguments used in crops-renumber"""
 
+def create_argument_parser():
+    """Create a parser for the command line arguments used in crops-renumber."""
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
 
@@ -44,8 +45,17 @@ def create_argument_parser():
 
     return parser
 
-def main():
 
+def main():
+    """Renumber a structure file in agreement with the residue positions in the sequence file corresponding to that structure.
+
+    Non-polymer elements are numbered starting right after the final (TER) residue.
+    IMPORTANT: If the input sequence and the input structure files are not from the
+    same source (e.g. RCSB PDB) a source conflict might occur making the
+    renumbering operation unsuccessful even if the program does not crash.
+
+    """
+    # INITIALISE AND PARSE ARGUMENTS FROM COMMAND LINE
     parser = create_argument_parser()
     args = parser.parse_args()
 
@@ -53,15 +63,16 @@ def main():
     logger = ccl.crops_logger(level="info")
     logger.info(ccl.welcome())
 
-    inseq = check_path(args.input_seqpath[0],'file')
+    inseq = check_path(args.input_seqpath[0], 'file')
     instr = check_path(args.input_strpath[0])
 
     if args.outdir is None:
         outdir = check_path(os.path.dirname(inseq), 'dir')
     else:
         outdir = check_path(os.path.join(args.outdir[0], ''), 'dir')
-    infixlbl=".crops.seq"
+    infixlbl = ".crops.seq"
 
+    # PARSE INPUT FILES
     logger.info('Parsing sequence file '+inseq)
     if args.preselect is not None:
         subset = set(args.preselect)
@@ -74,6 +85,7 @@ def main():
     strset, fileset = cin.parsestrfile(instr)
     logger.info('Done')
 
+    # MAIN OPERATION / PRINT OUT RESULTS WITHIN
     logger.info('Renumbering structure(s)...')
     for pdbid, structure in strset.items():
         found = False
@@ -90,7 +102,7 @@ def main():
                         newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure)
                     else:
                         logger.critical('Unable to renumber the structure, exiting now. '
-                                         'Try again with -f option to force the alignment.')
+                                        'Try again with -f option to force the alignment.')
                         return
 
                 fout = finalid+infixlbl+os.path.splitext(instr)[1]
@@ -101,9 +113,11 @@ def main():
         if found is False:
             logger.warning("Identifier '"+pdbid+"' not found in sequence input.")
 
+    # FINISH
     logger.info('Done' + os.linesep)
 
     return
+
 
 if __name__ == "__main__":
     import sys

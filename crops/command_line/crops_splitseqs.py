@@ -1,4 +1,5 @@
-"""==========
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+
 This script will take a sequence (fasta) file as an input and produce
 several different fasta files, one per sequence/chain.
 """
@@ -12,14 +13,13 @@ import os
 from crops.iomod import check_path
 from crops.iomod import outpathgen
 from crops.iomod import parsers as cin
-from crops.core import ops as cop
 from crops import command_line as ccl
 
 logger = None
 
-def create_argument_parser():
-    """Create a parser for the command line arguments used in crops-splitseqs"""
 
+def create_argument_parser():
+    """Create a parser for the command line arguments used in crops-splitseqs."""
     parser = argparse.ArgumentParser(prog=__prog__, formatter_class=argparse.RawDescriptionHelpFormatter,
                                      description=__description__+' ('+__prog__+')  v.'+__version__+os.linesep+__doc__)
 
@@ -34,11 +34,14 @@ def create_argument_parser():
 
     parser.add_argument("-o", "--outdir", nargs=1, metavar="Output_Directory",
                         help="Set output directory path. If not supplied, default is the one containing the input sequence.")
-    parser.add_argument('--version', action='version', version='%(prog)s '+ __version__)
+    parser.add_argument('--version', action='version', version='%(prog)s ' + __version__)
 
     return parser
 
+
 def main():
+    """Take a sequence (fasta) file as an input and produce several different fasta files, one per sequence/chain."""
+    # INITIALISE AND PARSE ARGUMENTS FROM COMMAND LINE
     parser = create_argument_parser()
     args = parser.parse_args()
 
@@ -53,6 +56,7 @@ def main():
     else:
         outdir = check_path(args.outdir[0], 'dir')
 
+    # PARSE INPUT FILES
     logger.info('Parsing sequence file '+inseq)
     if args.preselect is not None:
         subset = set(args.preselect)
@@ -61,6 +65,7 @@ def main():
     seqset = cin.parseseqfile(seq_input=inseq, inset=subset)
     logger.info('Done'+os.linesep)
 
+    # MAIN OPERATION / PRINT OUT RESULTS WITHIN
     logger.info('Printing sequences out...')
 
     for key, S in seqset.items():
@@ -72,9 +77,11 @@ def main():
             outseq = outpathgen(outdir, filename=fout)
             monomer.dump(outseq)
 
+    # FINISH
     logger.info('Done' + os.linesep)
 
     return
+
 
 if __name__ == "__main__":
     import sys
