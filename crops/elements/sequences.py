@@ -1,3 +1,5 @@
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files."""
+
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
 
@@ -14,10 +16,11 @@ from crops.elements.intervals import intinterval
 
 
 def guess_type(inseq):
-    """Returns the biological type of the sequence as guessed from residue types.
+    """Return the biological type of the sequence as guessed from residue types.
 
     :param inseq: Sequence to be evaluated.
     :type inseq: str
+
     :return: Sequence type ('Protein' or 'DNA' or 'RNA' or 'Unknown').
     :rtype: str
 
@@ -59,32 +62,67 @@ def guess_type(inseq):
 
 
 class sequence:
-    """A :class:`~crops.elements.sequences.sequence` object representing a single chain sequence.
-    The :class:`~crops.elements.sequences.sequence` class represents a data structure to hold all
+    """A :class:`crops.elements.sequences.sequence` object representing a single chain sequence.
+    The :class:`crops.elements.sequences.sequence` class represents a data structure to hold all
     sequence versions and other useful information characterising it.
     It contains functions to store, manipulate and organise sequence versions.
 
-    :param seqid: Sequence identifier. Can be used alone or together with oligomer ID.
+    :param seqid: Sequence identifier. Can be used alone or together with oligomer ID, defaults to None.
     :type seqid: str
-    :param oligomer: Oligomer identifier. Sometimes as important as seqid.
+    :param oligomer: Oligomer identifier. Sometimes as important as seqid, defaults to None.
     :type oligomer: str, optional
-    :param seq: Sequence string.
+    :param seq: Sequence string, defaults to None.
     :type seq: str, optional
-
-    :param header: Standard .fasta header, starting with ">".
+    :param chains: The names of chains having this sequence, defaults to None.
+    :type chains: set [str], optional
+    :param source: Source of the sequence, defaults to None
+    :type source: str, optional
+    :param header: Standard .fasta header, starting with ">", defaults to None.
     :type header: str, optional
-    :ivar info: Useful information of the :class:`~crops.elements.sequence.monomer_sequence`.
-    :vartype info: dict [str, any]
-    :ivar seqs: The set of sequences, including default "mainseq", in :class:`~crops.elements.sequence.monomer_sequence`.
+    :param biotype: Type of molecule ('Protein', 'DNA', 'RNA'...), defaults to None.
+    :type biotype: str, optional
+    :param extrainfo: Other useful information about the sequence, defaults to None.
+    :type extrainfo: str, optional
+
+    :ivar name: Sequence identifier.
+    :vartype name: str
+    :ivar oligomer_id: Oligomer identifier.
+    :vartype oligomer_id: str
+    :ivar chains: The names of chains having this sequence.
+    :vartype chains: set [str]
+    :ivar seqs: The set of sequences, including default "mainseq".
     :vartype seqs: dict [str, str]
+    :ivar source: Source of the sequence.
+    :vartype source: str
+    :ivar source_headers: A list of headers from input files.
+    :vartype source_headers: list [str]
+    :ivar crops_header: A new header containing the information from the object that will be used when printing sequence and cropmap.
+    :vartype crops_header: str
+    :ivar biotype: Type of molecule ('Protein', 'DNA', 'RNA'...).
+    :vartype biotype: str
+    :ivar infostring: Other useful information about the sequence.
+    :vartype infostring: str
+    :ivar cropmap: A dictionary mapping residue numbers from original sequence to cropped sequence.
+    :vartype cropmap: dict [int, int]
+    :ivar cropbackmap: A dictionary mapping residue numbers from cropped sequence to original sequence.
+    :vartype cropbackmap: dict [int, int]
+    :ivar msa: A free variable not used by CROPS itself.
+    :vartype msa: any
+    :ivar cropmsa: A free variable not used by CROPS itself.
+    :vartype cropmsa: any
+    :ivar intervals: The integer interval object containing the cropping information.
+    :vartype intervals: :class:`crops.elements.intervals.intinterval`
+
+    :raises `TypeError`: For wrong input formats.
 
     :example:
 
-    >>> from crops.elements import sequences as csq
-    >>> myseq = csq.sequence('exampleID')
-    >>> mysq.mainseq('GATTACA')
+    >>> from crops.elements import sequences as ces
+    >>> myseq = ces.sequence(seqid='1', oligomer = 'exampleID')
+    >>> myseq.mainseq('GATTACA')
     >>> myseq.mainseq()
     'GATTACA'
+    >>> myseq.chains = {'A'}
     >>> myseq.addseq('gapseq','GAT--C-')
     >>> myseq.addseq('cobra','TACATACA')
     >>> myseq.length()
@@ -94,13 +132,25 @@ class sequence:
     >>> myseq.guess_biotype()
     'DNA'
     >>> print(myseq)
-    Sequence object: ('>exampleID|Chain exampleID', seq='GATTACA', type='DNA', length=7)
+    Sequence object >EXAMPLEID_1|Chain A (seq=GATTACA, type=DNA, length=7)
+    >>> myseq.source = 'Example'
+    >>> myseq.addseq('cropseq', '+A+T++')
+    >>> myseq.addseq('cropgapseq', '+A+-++')
+    >>> myseq.full_length()
+    7
+    >>> myseq.mainseq('AT')
+    'AT'
+    >>> myseq.update_cropsheader()
+    >>> myseq.cropinfo()
+    '#Residues cropped: 4 (1 not from terminals) ; % cropped: 66.67 (16.67 not from terminal segments)'
+    >>> myseq.dump(out='string')
+    '>crops|exampleID_1|Chain A|Source: Example||#Residues cropped: 4 (1 not from terminal segments) ; % cropped: 66.67 (16.67 not from terminal segments)\nAT\n'
 
     :example:
 
-    >>> from crops.elements import sequences as csq
-    >>> from crops.iomod import parsers as csp
-    >>> myseq = csp.parseseqfile('7M6C.fasta')
+    >>> from crops.elements import sequences as ces
+    >>> from crops.iomod import parsers as cip
+    >>> myseq = cip.parseseqfile('7M6C.fasta')
     >>> myseq
     Sequence object: (>7M6C_1|Chain A, seq=MRTLWIMAVL[...]KPLCKKADPC, type=Undefined, length=138)
     >>> myseq.guess_biotype()
@@ -113,6 +163,7 @@ class sequence:
     __slots__ = ['oligomer_id', 'name', 'chains', 'source', 'seqs', 'biotype',
                  'source_headers', 'crops_header', 'cropmap', 'cropbackmap',
                  'infostring', 'msa', 'cropmsa', 'intervals']
+
     def __init__(self, seqid=None, oligomer=None, seq=None, chains=None,
                  source=None, header=None, biotype=None, extrainfo=None):
         self.oligomer_id = None
@@ -157,7 +208,7 @@ class sequence:
                 if 'seqid' in header_info:
                     self.name = header_info['seqid']
             else:
-                self.name='1'
+                self.name = '1'
 
         if seq is not None:
             if isinstance(seq, str):
@@ -224,6 +275,8 @@ class sequence:
             if header_info is not None:
                 if 'comments' in header_info:
                     self.infostring = header_info['comments']
+            else:
+                self.infostring = ""
 
         if oligomer is None:
             self.crops_header = makeheader(mainid='NOID', seqid=self.name,
@@ -261,15 +314,16 @@ class sequence:
     def deepcopy(self):
         return copy.deepcopy(self)
 
-    def addseq(self,newid,newseq):
-        """Add sequence to :class:`~crops.elements.sequences.sequence`.
+    def addseq(self, newid, newseq):
+        """Add sequence to `seqs` dictionary.
 
         :param newid: New sequence's identifier.
         :type newid: str
         :param newseq: New sequence.
         :type newseq: str
-        :raises TypeError: If newid is not a string.
-        :raises KeyError: If sequence is not a string.
+
+        :raises `TypeError`: If newid is not a string.
+        :raises `KeyError`: If newseq is not a string.
 
         """
         if not isinstance(newid, str):
@@ -285,13 +339,14 @@ class sequence:
         self.seqs[newid] = newseq
 
     def delseq(self, delid=None, wipeall=False):
-        """Deletes sequence(s) from :class:`~crops.elements.sequences.sequence`.
+        """Delete sequence(s) from the `seqs` dictionary.
 
         :param delid: ID of sequence to be deleted, defaults to None.
         :type delid: str, optional
         :param wipeall: If True, all the sequences are deleted, defaults to False.
         :type wipeall: bool, optional
-        :raises TypeError: If delid is not a string.
+
+        :raises `TypeError`: If delid is not a string or wipeall is not a boolean.
 
         """
         if not isinstance(delid, str) and delid is not None:
@@ -314,12 +369,14 @@ class sequence:
             self.seqs.pop(delid)
 
     def mainseq(self, add=None):
-        """Returns or modifies the main sequence.
+        """Return or modifies the main sequence.
 
-        :param add: If given main sequence is changed to 'add' sequence, defaults to None.
+        :param add: If given, the main sequence is replaced by 'add', defaults to None.
         :type add: str, optional
-        :raises TypeError: If 'add' is given and is not a string.
-        :return: If 'add' is None, the main sequence is returned.
+
+        :raises `TypeError`: If 'add' is given and is not a string.
+
+        :return: The (new) main sequence.
         :rtype: str
 
         """
@@ -333,7 +390,7 @@ class sequence:
         return self.seqs['mainseq']
 
     def guess_biotype(self):
-        """Saves the guessed biotype and returns it.
+        """Save the guessed biotype and return it.
 
         :return: Guessed biotype.
         :rtype: str
@@ -347,7 +404,7 @@ class sequence:
         return self.biotype
 
     def dump(self, out, split=False, oneline=False):
-        """Writes header and main sequence to a file. If file exists, output is appended.
+        """Write header and main sequence to a file. If the file exists, output is appended.
 
         :param out: An output filepath (str), 'string', or an open file.
         :type out: str, file
@@ -355,10 +412,11 @@ class sequence:
         :type split: bool, optional
         :param oneline: If True, sequences are not split in 80 residue-lines, defaults to False.
         :type oneline: bool, optional
-        :raises TypeError: If out is neither a string nor an open file.
-        :raises KeyError: If :obj:`~crops.elements.sequences.sequence` contains no chains.
 
-        :return: A string containing the text to dump if and only if out=='string'.
+        :raises `TypeError`: If `out` is neither a string nor an open file.
+        :raises `KeyError`: If object contains no chains.
+
+        :return: A string containing the output if and only if out=='string'.
         :rtype: str
 
         """
@@ -374,19 +432,26 @@ class sequence:
         outheader = []
 
         if split:
+            chset = []
             for ch in self.chains:
-                outheader.append(makeheader(mainid=self.oligomer_id,
-                                            seqid=self.name,
-                                            chains={ch},
-                                            source=self.source,
-                                            extrainfo=self.infostring))
+                chset.append({ch})
         else:
+            chset = [self.chains]
 
-            outheader.append(makeheader(mainid=self.oligomer_id,
+        if self.oligomer_id is None:
+            tag1 = 'NoID'
+        else:
+            tag1 = self.oligomer_id
+        tag2 = self.infostring
+        if self.ncrops() > 0:
+            tag2 += '|' + self.cropinfo()
+
+        for ch in chset:
+            outheader.append(makeheader(mainid=tag1,
                                         seqid=self.name,
-                                        chains=self.chains,
+                                        chains=ch,
                                         source=self.source,
-                                        extrainfo=self.infostring))
+                                        extrainfo=tag2))
 
         if not oneline:
             lenseq = len(self.seqs['mainseq'])
@@ -418,7 +483,7 @@ class sequence:
         return
 
     def dumpmap(self, out, split=False):
-        """Writes header and cropmap to a file. If file exists, output is appended.
+        """Write header and cropmap to a file. If file exists, output is appended.
 
         :param out: An output filepath (str) or an open file.
         :type out: str, file
@@ -426,9 +491,10 @@ class sequence:
         :type backmap: bool, optional
         :param split: If True, identical sequences are dumped for every chain, defaults to False.
         :type split: bool, optional
-        :raises TypeError: If out is neither a string nor an open file.
-        :raises ValueError: If self.cropmap / self.cropbackmap does not exist.
-        :raises KeyError: If :obj:`~crops.elements.sequences.sequence` contains no chains.
+
+        :raises `TypeError`: If `out` is neither a string nor an open file.
+        :raises `ValueError`: If one or both of `cropmap` and `cropbackmap` are empty.
+        :raises `KeyError`: If object contains no chains.
 
         """
         if not isinstance(out, str) and not isinstance(out, io.IOBase):
@@ -448,19 +514,26 @@ class sequence:
         outheader = []
 
         if split:
+            chset = []
             for ch in self.chains:
-                outheader.append(makeheader(mainid=self.oligomer_id,
-                                            seqid=self.name,
-                                            chains={ch},
-                                            source=self.source,
-                                            extrainfo=self.infostring))
+                chset.append({ch})
         else:
-            outheader.append(makeheader(mainid=self.oligomer_id,
-                                        seqid=self.name,
-                                        chains=self.chains,
-                                        source=self.source,
-                                        extrainfo=self.infostring))
+            chset = [self.chains]
 
+        if self.oligomer_id is None:
+            tag1 = 'NoID'
+        else:
+            tag1 = self.oligomer_id
+        tag2 = self.infostring
+        if self.ncrops() > 0:
+            tag2 += '|' + self.cropinfo()
+
+        for ch in chset:
+            outheader.append(makeheader(mainid=tag1,
+                                        seqid=self.name,
+                                        chains=chset,
+                                        source=self.source,
+                                        extrainfo=tag2))
         output = ''
         for header in outheader:
             if isinstance(out, io.IOBase):
@@ -489,17 +562,17 @@ class sequence:
         return
 
     def length(self):
-        """Returns the length of the main sequence.
+        """Return the length of the main sequence.
 
         :return: Length of the main sequence.
         :rtype: int
 
         """
-
         return len(self.seqs['mainseq'])
 
     def full_length(self):
-        """Returns the length of the full sequence. If not found, the length of the main sequence is returned.
+        """Return the length of the full sequence. If not found, the main sequence
+        will be considered the full sequence, and will be saved as so.
 
         :return: Length of the full sequence.
         :rtype: int
@@ -511,12 +584,14 @@ class sequence:
         return len(self.seqs['fullseq'])
 
     def ngaps(self, seqid='gapseq'):
-        """Returns the number of gaps ('-') in a sequence.
+        """Return the number of gaps ('-') in a sequence.
 
         :param seqid: The ID of the sequence containing the gaps, defaults to 'gapseq'.
         :type seqid: str, optional
-        :raises TypeError: If seqid is not a string.
-        :return: Number of gaps in seqid. If 'gapseq' is a list of several models, a list is returned. If seqid not found, ngaps=0.
+
+        :raises `TypeError`: If seqid is not a string.
+
+        :return: Number of gaps in `seqid`. If 'gapseq' is a list of several models, a list is returned. If `seqid` not found, 0 is returned.
         :rtype: int or list [int]
 
         """
@@ -543,17 +618,18 @@ class sequence:
         return ng
 
     def ncrops(self, seqid='cropseq', offterminals=False, offmidseq=False):
-
-        """Returns the number of cropped elements ('+','*') in a sequence.
+        """Return the number of cropped elements ('+','*') in a sequence.
 
         :param seqid: The ID of the sequence containing the cropped elements, defaults to 'cropseq'.
         :type seqid: str, optional
-        :param offterminals: Count those removed from terminals only, defaults to False.
+        :param offterminals: Count those removed from terminal segments only, defaults to False.
         :type offterminals: bool, optional
-        :param offmidseq: Count those removed NOT from terminals only, defaults to False.
+        :param offmidseq: Count those removed NOT from terminal segments only, defaults to False.
         :type offmidseq: bool, optional
-        :raises TypeError: If seqid is not a string.
-        :return: Number of cropped elements in seqid according to interval chosen. If seqid not found, ncrops=0.
+
+        :raises `TypeError`: If `seqid` is not a string, or `offterminals`, `offmidseq` are not boolean.
+
+        :return: Number of cropped elements in `seqid` according to interval chosen. If `seqid` not found, 0 is returned.
         :rtype: int
 
         """
@@ -591,30 +667,25 @@ class sequence:
             return nterms
 
     def update_cropsheader(self):
-        """Update cropsheader. Useful after updating any information from the sequence.
-
-        :return: Updates self.crops_header
-        :rtype: str
-
-        """
+        """Update `cropsheader`. Useful after updating any information from the sequence."""
         if self.oligomer_id is None:
-            self.crops_header = makeheader(mainid='NOID',
-                                           seqid=self.name,
-                                           chains=self.chains,
-                                           source=self.source,
-                                           extrainfo=self.infostring)
+            tag1 = 'NoID'
         else:
-            self.crops_header = makeheader(mainid=self.oligomer_id,
-                                           seqid=self.name,
-                                           chains=self.chains,
-                                           source=self.source,
-                                           extrainfo=self.infostring)
+            tag1 = self.oligomer_id
+        tag2 = self.infostring
+        if self.ncrops() > 0:
+            tag2 += '|' + self.cropinfo()
+
+        self.crops_header = makeheader(mainid=tag1,
+                                       seqid=self.name,
+                                       chains=self.chains,
+                                       source=self.source,
+                                       extrainfo=tag2)
 
     def cropinfo(self):
-        """
-        Returns a string containing statistics about the cropped residues.
+        """Return a string containing statistics about the cropped residues.
 
-        :return: Information, number of crops
+        :return: Information, number of crops.
         :rtype: str
 
         """
@@ -626,11 +697,11 @@ class sequence:
             else:
                 cropstr += (str(self.ncrops()) + ' (' +
                             str(self.ncrops(offmidseq=True)) +
-                            ' not from terminals) ' +
+                            ' not from terminal segments) ' +
                             '; % cropped: ' +
                             str(round(100*self.ncrops()/len(self.seqs['cropseq']), 2)) +
                             ' (' + str(round(100*self.ncrops(offmidseq=True)/len(self.seqs['cropseq']), 2)) +
-                            ' not from terminals)')
+                            ' not from terminal segments)')
         else:
             pass
 
@@ -638,8 +709,8 @@ class sequence:
 
 
 class oligoseq:
-    """A :class:`~crops.elements.sequences.oligoseq` object grouping several
-    :class:`~crops.elements.sequences.sequence` objects pertaining to a
+    """A :class:`crops.elements.sequences.oligoseq` object grouping several
+    :class:`crops.elements.sequences.sequence` objects pertaining to a
     common oligomer.
 
     :param oligomer_id: Oligomer identifier (e.g. PDB id), defaults to None.

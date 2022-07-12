@@ -172,7 +172,7 @@ def main():
                         monomer.cropmap[n] = n
                         monomer.cropbackmap = copy.deepcopy(monomer.cropmap)
 
-            monomer.infostring += '|' + monomer.cropinfo()
+            monomer.update_cropsheader()
             if args.individual is True:
                 fout = (key + '_' + key2 + infixlbl["croprenum"] +
                         os.path.splitext(os.path.basename(inseq))[1])

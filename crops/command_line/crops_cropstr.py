@@ -188,7 +188,7 @@ def main():
                         logger.warning('Chain-name ' + key + '_' + str(key3) +
                                        ' not found in database. Cropping not performed.')
 
-                monomer.infostring += '|' + monomer.cropinfo()
+                monomer.update_cropsheader()
 
                 hf = '_' + key2 if args.individual is True else ''
                 ifx = infixlbl["croprenum"] if cropped_seq is True else ''
