@@ -19,6 +19,28 @@ The output directory argument is optional. If not provided, the results will be 
 
 --------------------------------------------------------------
 
+From a large fasta file and a directory containing several *.pdb* structure file, from which only a few are required, the option ``--preselect`` or ``-p`` allows to preselect as many molecule ids as needed:
+
+.. code-block:: shell-session
+
+   crops-splitseqs PDBall.fasta AllPDBs/ --output mydir/ --preselect 7m6c 4n5b 1o98
+
+This command will create new files only for the three pdb ids inserted, regardless of the number of sequences contained within the input *.fasta* file or the number of structures within the *AllPDBs/* directory.
+
+--------------------------------------------------------------
+
+Additionally, the option to separate the sequence files by unique sequence is also available by typing ``--individual`` or ``-i``:
+
+.. code-block:: shell-session
+
+   crops-splitseqs 3org.fasta 3org.pdb dbs/pdb_chain_uniprot.csv --output mydir/ --individual
+
+This command produces new sequence files of the format ``mydir/PDBID_X.fasta`` containing just a single sequence of Protein ID PDBID and (numerical) sequence id X.
+
+Options ``--preselect`` and ``--individual`` can be combined to produce individual sequence files only from the selected molecules.
+
+--------------------------------------------------------------
+
 Additionally, one of these mutually exclusive conditions can also be imposed:
 
 1. To produce sequences that only discard the *non-Uniprot* (or custom criteria) segments at each of the chains' ends, the option ``--terminals`` or ``-t`` can be added to the command line instruction so only the unwanted parts at the ends are removed:

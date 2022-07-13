@@ -1,22 +1,37 @@
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files."""
+
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
 
 import os
 import logging
 
+
 def target_format(inpath, terms=False, th=0):
-    """Returns extra information for .fasta headers.
+    """Return information about the interval source for .fasta headers.
 
     :param inpath: Path to interval database used.
     :type inpath: str
-    :param terms: Are only terminal ends discarded?, defaults to False.
+    :param terms: Only discard terminal segments, defaults to False.
     :type terms: bool, optional
     :param th: Uniprot threshold, defaults to 0.
-    :type th: int, float, optional
+    :type th: int or float, optional
+
+    :raises TypeError: If `th` is not a numeric (int, float) value.
+    :raises TypeError: If `terms` is not boolean.
+
     :return: Extra information for .fasta headers
     :rtype: str
 
     """
+    try:
+        th = float(th)
+    except Exception:
+        logging.critical('The threshold must be a numeric (int, float) value.')
+        raise TypeError
+    if isinstance(terms, bool) is False:
+        logging.critical("The 'terms' variable must have a boolean value.")
+        raise TypeError
 
     if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
         outcome = '|CROPS (UniProt via SIFTS)'
@@ -29,17 +44,25 @@ def target_format(inpath, terms=False, th=0):
 
     return outcome
 
+
 def infix_gen(inpath, terms=False):
-    """Returns filename tag for outputs.
+    """Return information about the interval source for file names.
 
     :param inpath: Path to interval database used.
     :type inpath: str
-    :param terms: Are terminal ends the only segments to be discarded?, defaults to False.
+    :param terms: Only discard terminal segments, defaults to False.
     :type terms: bool, optional
-    :return: Filename tag.
+
+    :raises TypeError: If `terms` is not boolean.
+
+    :return: Filename's infix tag.
     :rtype: str
 
     """
+    if isinstance(terms, bool) is False:
+        logging.critical("The 'terms' variable must have a boolean value.")
+        raise TypeError
+
     if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
         cut = ".to_uniprot"
     else:
@@ -56,17 +79,19 @@ def infix_gen(inpath, terms=False):
 
     return infix_out
 
+
 def retrieve_id(seqheader):
-    """Extracts sequence IDs and additional comments from a standard .fasta header.
+    """Extract sequence IDs and additional comments from a standard .fasta header.
 
     :param seqheader: Standard .fasta header, starting with ">".
     :type seqheader: str
-    :raises ValueError: If seqheader is not a string.
-    :return: A list with the two sequence identifiers (e.g. [pdb ID, chain ID]) or a single string if extrainfo==True.
-    :rtype: list [str], str
+
+    :raises ValueError: If `seqheader` is not a string.
+
+    :return: A dictionary with the sequence identifiers ('mainid', 'chains', 'seqid', 'source', 'comments').
+    :rtype: dict [str, str or set]
 
     """
-
     if not isinstance(seqheader, str):
         logging.critical('Argument is not a string.')
         raise ValueError
@@ -311,23 +336,26 @@ def retrieve_id(seqheader):
 
     return headerinfo
 
+
 def makeheader(mainid=None, seqid=None, chains=None,
                source=None, extrainfo=None, short=False):
-    """Returns a fasta header of the format ">MainID_seqID|Chains chain list|extrainfo".
+    """Return a fasta header of the format ">crops|MainID_seqID|Chains chain list|extrainfo".
 
-    :param mainid: PDB ID, or Uniprot ID, etc.
+    :param mainid: PDB ID, Uniprot ID, etc.
     :type mainid: str
     :param seqid: Sequence Identifier, usually a natural number: "1", "2", etc, defaults to None.
     :type seqid: str, optional
     :param chains: A set containing the chain IDs of monomers sharing the same sequence, defaults to None.
     :type chains: set [str], optional
-    :param source: A set containing the chain IDs of monomers sharing the same sequence, defaults to None.
+    :param source: The source of the sequence ('RCSB PDB', 'UniProtKB/SwissProt', 'PDBe', etc).
     :type source: str, optional
     :param extrainfo: Additional information to be included in the header, defaults to None.
     :type extrainfo: str, optional
-    :param short: If selected, it returns a header of format '>main_seq|Chains A,B,C', defaults to False.
+    :param short: If True, a short version of the header ('>MainID_seqID|Chains chain list') is returned, defaults to False.
     :type extrainfo: bool, optional
-    :raises ValueError: If any of mainid, seqid, extrainfo or elements of chains are not strings, or chains is not a set.
+
+    :raises ValueError: If any of `mainid`, `seqid`, `extrainfo` or elements of `chains` are not strings, or `chains` is not a set.
+
     :return: A fasta header.
     :rtype: str
 

@@ -7,16 +7,19 @@ import os
 import argparse
 import logging
 
-def check_path(path, typeofpath=None):
-    """Returns full path if correct.
 
-    :param path: Input (local) path.
+def check_path(path, typeofpath=None):
+    """Return full path if correct.
+
+    :param path: Path to file or directory.
     :type path: str
-    :param typeofpath: The type of path, 'dir' or 'file', defaults to None.
+    :param typeofpath: The type of path, 'dir' or 'file'. All types are considered if not value is given, defaults to None.
     :type typeofpath: str, optional
-    :raises ValueError: When given typeofpath is neither 'dir' nor 'file'.
-    :raises argparse: If wrong path given.
-    :return: Complete checked path.
+
+    :raises ValueError: If given `typeofpath` is neither 'dir' nor 'file'.
+    :raises argparse: If given `path` is not found.
+
+    :return: Absolute path.
     :rtype: str
 
     """
@@ -47,8 +50,9 @@ def check_path(path, typeofpath=None):
         logging.critical(f"readable_dir:{path} is not a valid path")
         raise argparse.ArgumentTypeError
 
+
 def outpathgen(globaldir, subdir=None, filename=None, mksubdir=False):
-    """Returns the desired output filepath.
+    """Build a filepath in an existing directory and create subdirectory if requested.
 
     :param globaldir: General output dir.
     :type globaldir: str
@@ -56,14 +60,15 @@ def outpathgen(globaldir, subdir=None, filename=None, mksubdir=False):
     :type subdir: str, optional
     :param filename: File name, defaults to None.
     :type filename: str, optional.
-    :param mksubdir: Create directory if not existing, defaults to False.
+    :param mksubdir: Create directory if it does not exist, defaults to False.
     :type mksubdir: bool, optional
-    :raises FileNotFoundError: Directory does not exist and mksubdir is False.
+
+    :raises FileNotFoundError: If directory does not exist and mksubdir is False.
+
     :return: Output filepath.
     :rtype: str
 
     """
-
     newpath = check_path(globaldir, 'dir')
 
     if subdir is not None:
@@ -76,6 +81,6 @@ def outpathgen(globaldir, subdir=None, filename=None, mksubdir=False):
                 logging.critical('Directory does not exist')
                 raise FileNotFoundError
     if filename is not None:
-        newpath = os.path.join(newpath,filename)
+        newpath = os.path.join(newpath, filename)
 
     return newpath

@@ -29,7 +29,7 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
     :type extend_gap_score: int, optional
 
     :return alignment_dict: Dictionary with the residue mapping between both input sequences.
-    :rtype alignment_dict: dict
+    :rtype alignment_dict: dict [int, int]
 
     """
     aligner = Align.PairwiseAligner()

@@ -6,13 +6,15 @@ from crops import __date__, __version__, __copyright__
 from crops.libs import rescodes as rc
 import logging
 
+
 def ressymbol(name, pick=None):
-    """Conversion from residue 3-letter symbol to 1-letter symbol.
+    """Convert residue name from 3-letter formt to 1-letter format.
 
     :param name: Residue symbol (3-letter convention) or Nucleotide symbol (1,2-letter convention).
     :type name: str
-    :param pick: If three-letter code yields multiple results, pick this one (if among results), defaults to None.
+    :param pick: If three-letter code yields multiple results, pick this one (if among results), otherwise the most standard is returned, defaults to None.
     :type pick: str, optional
+
     :return: Residue/Nucleotide symbol (1-letter convention).
     :rtype: str
 
