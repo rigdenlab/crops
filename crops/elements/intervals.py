@@ -75,7 +75,7 @@ class intinterval:
     :type subint: list [int], optional
 
     :ivar tags: Useful information of the :class:`crops.elements.intervals.intinterval`, including the default 'description'.
-    :vartype tags: dict [any]
+    :vartype tags: dict [Any]
     :ivar subint: The list of sub-intervals in :class:`crops.elements.intervals.intinterval`.
     :vartype subint: list [list [int]]
 
@@ -151,7 +151,7 @@ class intinterval:
         :param tag: Key argument.
         :type tag: str
         :param value: Value argument.
-        :type value: any
+        :type value: Any
 
         :raises `TypeError`: If tag is not a string.
 

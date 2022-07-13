@@ -63,6 +63,7 @@ def guess_type(inseq):
 
 class sequence:
     """A :class:`crops.elements.sequences.sequence` object representing a single chain sequence.
+
     The :class:`crops.elements.sequences.sequence` class represents a data structure to hold all
     sequence versions and other useful information characterising it.
     It contains functions to store, manipulate and organise sequence versions.
@@ -107,9 +108,9 @@ class sequence:
     :ivar cropbackmap: A dictionary mapping residue numbers from cropped sequence to original sequence.
     :vartype cropbackmap: dict [int, int]
     :ivar msa: A free variable not used by CROPS itself.
-    :vartype msa: any
+    :vartype msa: Any
     :ivar cropmsa: A free variable not used by CROPS itself.
-    :vartype cropmsa: any
+    :vartype cropmsa: Any
     :ivar intervals: The integer interval object containing the cropping information.
     :vartype intervals: :class:`crops.elements.intervals.intinterval`
 
@@ -146,7 +147,7 @@ class sequence:
     >>> myseq.cropinfo()
     '#Residues cropped: 4 (1 not from terminals) ; % cropped: 66.67 (16.67 not from terminal segments)'
     >>> myseq.dump(out='string')
-    '>crops|exampleID_1|Chains A,B|Source: Example|#Residues cropped: 4 (1 not from terminal segments) ; % cropped: 66.67 (16.67 not from terminal segments)\nAT\n'
+    '>crops|exampleID_1|Chains A,B|Source: Example|#Residues cropped: 4 (1 not from terminal segments) ; % cropped: 66.67 (16.67 not from terminal segments)\\nAT\\n'
 
     :example:
 
@@ -693,7 +694,7 @@ class sequence:
     def cropinfo(self):
         """Return a string containing statistics about the cropped residues.
 
-        :return: Information, number of crops.
+        :return: Statistics on number of crops.
         :rtype: str
 
         """
@@ -722,7 +723,7 @@ class oligoseq:
     :param oligomer_id: Oligomer identifier (e.g. PDB id), defaults to None.
     :type oligomer_id: str
     :param imer: Container of several :class:`crops.elements.sequences.sequence` objects making up the oligomer, defaults to empty dict.
-    :type imer: dict [str: :class:`crops.elements.sequences.sequence`], optional
+    :type imer: dict [str, :class:`crops.elements.sequences.sequence`], optional
 
     :ivar id: Oligomer sequence identifier (e.g. PDB id).
     :vartype id: str
