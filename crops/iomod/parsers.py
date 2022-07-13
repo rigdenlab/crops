@@ -12,7 +12,6 @@ import logging
 
 from crops.elements.sequences import oligoseq
 from crops.elements.sequences import sequence
-from crops.elements.sequences import guess_type
 from crops.iomod.taggers import retrieve_id
 from crops.elements.intervals import intinterval
 
