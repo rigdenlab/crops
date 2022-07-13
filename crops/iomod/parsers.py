@@ -31,8 +31,7 @@ def parse_db(instream, pdbset=None):
     :param pdbset: Molecule IDs to return, if None it returns them all, defaults to None.
     :type pdbset: str or set or dict, optional
 
-    :raises TypeError: When pdbset is given and is not one of a string, set or dictionary.
-        It will also raise this error when the database is not from SIFTS or a minimal file (4 elements per line).
+    :raises TypeError: When pdbset is given and is not one of a string, set or dictionary. It will also raise this error when the database is not from SIFTS or a minimal file (4 elements per line).
 
     :return: A dictionary containing :class:`crops.elements.intervals.intinterval` objects.
     :rtype: dict [str, :class:`crops.elements.intervals.intinterval`]
