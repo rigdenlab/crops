@@ -1,3 +1,5 @@
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files."""
+
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
 
@@ -19,17 +21,21 @@ def parse_db(instream, pdbset=None):
     """Import intervals database from csv-formatted string.
 
     If imported file is not 'pdb_chain_uniprot.csv' from SIFTS database,
-    the columns must contain molecule ID, chain ID, lower element of subset,
-    and higher element of subset, in this order.
+    the columns must contain, in this order, molecule ID, chain ID,
+    lower element of subset, and higher element of subset, in this order.
+    More than one row with the same molecule and chain IDs are used to indicate
+    a discontinuous interval with more than one subset.
+
     :param instream: Interval database, csv-formatted string.
-    :type intream: str
-    :param pdbset: Chain ID(s). If given, the imported values
-        will be filtered to contain only IDs provided, defaults to None.
-    :type pdbset: str, set, dict, optional
-    :raises TypeError: When pdbset is given and is neither a string nor a dictionary.
-        Also when database is not SIFTS or minimal (4 elements per line).
-    :return: dict [str, :class:`~crops.elements.intervals.intinterval`im]
-    :rtype: A dictionary of :class:`~crops.elements.intervals.intinterval`.
+    :type instream: str
+    :param pdbset: Molecule IDs to return, if None it returns them all, defaults to None.
+    :type pdbset: str or set or dict, optional
+
+    :raises TypeError: When pdbset is given and is not one of a string, set or dictionary.
+        It will also raise this error when the database is not from SIFTS or a minimal file (4 elements per line).
+
+    :return: A dictionary containing :class:`crops.elements.intervals.intinterval` objects.
+    :rtype: dict [str, :class:`crops.elements.intervals.intinterval`]
 
     """
     database_out = {}
@@ -94,18 +100,19 @@ def parse_db(instream, pdbset=None):
 
 
 def import_db(inpath, pdb_in=None):
-    """Imports intervals database. Input must be a .csv file (filepath).
+    """Import intervals database from a .csv file.
 
-    If imported file is not 'pdb_chain_uniprot.csv' from SIFTS database,
-    the columns must contain molecule ID, chain ID, lower element of subset,
+    If the imported file is not 'pdb_chain_uniprot.csv' from the SIFTS database,
+    the .csv file must be formatted as follows: four columns containing molecule ID, chain ID, lower element of subset,
     and higher element of subset, in this order.
-    :param inpath: Path to interval database used.
+
+    :param inpath: Path to the interval database to be imported.
     :type inpath: str
-    :param pdb_in: Chain ID(s). If given, the imported values
-        will be filtered to contain only IDs provided, defaults to None.
-    :type pdb_in: str, set, dict, optional
-    :return: dict [str, :class:`~crops.elements.intervals.intinterval`im]
-    :rtype: A dictionary of :class:`~crops.elements.intervals.intinterval`.
+    :param pdb_in: Molecule IDs to return, if None it returns them all, defaults to None.
+    :type pdb_in: str or set or dict, optional
+
+    :return: Parsed interval database.
+    :rtype: dict [str,  :class:`crops.elements.intervals.intinterval`]
 
     """
     with open(inpath, 'r') as f:
@@ -117,23 +124,34 @@ def import_db(inpath, pdb_in=None):
 
 
 def parsestr(instream):
+    """Parse structure file from a string.
 
+    :param instream: Imported-to-string structure file.
+    :type instream: str
+
+    :return: Parsed structure
+    :rtype: :obj:`gemmi.Structure`
+
+    """
     strout = gemmi.read_pdb_string(instream)
 
     return strout
 
+
 def parsestrfile(str_input, intype='path'):
-    """Structure file(s) parser.
+    """Parse structure file(s).
 
     :param str_input: Either a directory or file path or a structure in string format.
     :type str_input: str
     :param intype: One of 'path' or 'string', defaults to 'path'.
     :type intype: str, optional
-    :raises KeyError: More than one structure file containing same identifier.
-    raises ValueError: If the argument 'intype' has an invalid value.
-    :return strdict: A dictionary containing imported :obj:`~gemmi.Structure` objects.
-    :rtype strdict: dict [str, :obj:`~gemmi.Structure`]
-    :return filedict: A dictionary containing file names.
+
+    :raises KeyError: If more than one structure file contains the same identifier.
+    :raises ValueError: If the argument 'intype' has an invalid value.
+
+    :return strdict: A dictionary containing parsed structures.
+    :rtype strdict: dict [str, :obj:`gemmi.Structure`]
+    :return filedict: A dictionary containing the structure file name(s).
     :rtype filedict: dict [str, str]
 
     """
@@ -186,13 +204,15 @@ def parsestrfile(str_input, intype='path'):
 def parseseq(instream, inset=None):
     """Parse sequence(s).
 
-    :param instream: Sequence file content.
+    :param instream: Imported-to-string sequence file content (fasta format).
     :type instream: str
-    :param inset: Sequence IDs to return, if None it returns all, defaults to None.
-    :type inset: set, optional
+    :param inset: Sequence IDs to return, if None it returns them all, defaults to None.
+    :type inset: set or dict or str, optional
+
     :raises TypeError: When inset a set [str]; or instream is not a string.
+
     :return: Parsed sequences.
-    :rtype: dict [str, :obj:`~crops.elements.sequences.oligoseq`]
+    :rtype: dict [str, :class:`crops.elements.sequences.oligoseq`]
 
     """
     if isinstance(instream, str) is False:
@@ -255,25 +275,31 @@ def parseseq(instream, inset=None):
 
     return newseqs
 
-# TO DO: ADD use_PDBserver argument
+
+# TODO: ADD use_PDBserver argument
 def parseseqfile(seq_input='server-only', inset=None, use_UPserver=False):
-    """Sequence file parser.
+    """Parse sequence file containing one or more sequences.
+
+    If 'server-only' is inserted instead of a local file name,
 
     :param seq_input: Sequence file path, defaults to 'server-only'.
     :type seq_input: str, optional
-    :param inset: A dictionary or set of Protein codes, defaults to None.
-    :type inset: set, optional
-    :param use_UPserver: Those ids not found in seq_input, defaults to False.
+    :param inset: Sequence IDs to return, if None it returns them all, defaults to None.
+    :type inset: set or dict or str, optional
+    :param use_UPserver: Use UniProt server as a backup for those ids not found in `seq_input` (all of them if `seq_input` == 'server-only'), defaults to False.
     :type use_UPserver: bool, optional
-    :raises TypeError: When uniprot is not a str, set [str] or dict [str, str]; or seq_input=='server-only' but uniprot is None.
+
+    :raises TypeError: If `inset` is not a str or set [str] or dict [str, str].
+    :raises ValueError: If seq_input`=='server-only' but `use_UPserver` is False or `inset` is None.
+
     :return: Parsed sequences.
-    :rtype: dict [str, :obj:`~crops.elements.sequences.oligoseq`]
+    :rtype: dict [str, :class:`crops.elements.sequences.oligoseq`]
 
     """
     if ((seq_input == 'server-only' and use_UPserver is False) or
             (seq_input == 'server-only' and inset is None)):
         logging.critical("Input argument seq_input cannot be 'server-only' "
-                        "if no inset is given and use server is False.")
+                         "if no inset is given and use server is False.")
         raise ValueError
 
     if inset is not None:
@@ -302,13 +328,13 @@ def parseseqfile(seq_input='server-only', inset=None, use_UPserver=False):
     else:
         newseqs = {}
 
-    inseq=''
+    inseq = ''
     if use_UPserver:
         for upcode in upperset:
             if upcode not in newseqs:
                 try:
                     download = ur.urlopen('https://www.uniprot.org/uniprot/' +
-                                           upcode.upper() + '.fasta')
+                                          upcode.upper() + '.fasta')
                     inseq += download + os.linesep
                 except Exception:
                     if seq_input == 'server-only':
@@ -328,12 +354,13 @@ def parseseqfile(seq_input='server-only', inset=None, use_UPserver=False):
 
 
 def parsemap(instream):
-    """Cropmap parser.
+    """Parse cropmap from string.
 
-    :param instream: String as read from a cropmap file.
+    :param instream: Imported-to-string cropmap file content.
     :type instream: str
-    :return: A dictionary containing parsed mapping and backmapping coordinates.
-    :rtype: dict [str: dict[str: dict[str: dict[int: int]]]]
+
+    :return: Mapping and backmapping coordinates.
+    :rtype: dict [str, dict [str, dict [str, dict [int, int]]]]
 
     """
     mapdict = {}
@@ -376,11 +403,13 @@ def parsemap(instream):
 
     return mapdict
 
+
 def parsemapfile(input_map):
     """Cropmap file parser.
 
     :param input_map: Cropmap file path.
     :type input_map: str
+
     :return: Mapping and backmapping coordinates.
     :rtype: dict [str, dict[str, dict[str, dict[int, int]]]]
 
