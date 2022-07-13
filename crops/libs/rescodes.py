@@ -1,7 +1,10 @@
+"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files."""
+
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__
 
-reslist =	{
+
+reslist = {
   "ALA": "A",
   "ARG": "R",
   "ASN": "N",
@@ -26,7 +29,7 @@ reslist =	{
   "PYL": "O"
 }
 
-mod_reslist =	{
+mod_reslist = {
   "ABA": "A",  "AIB": "A",  "ALC": "A",  "AYA": "A",  "DAB": "A",  "MAA": "A",
   "ORN": "A",
   "2MR": "R",  "AAR": "R",  "AGM": "R",  "ARO": "R",  "CIR": "R",  "DA2": "R",
@@ -65,7 +68,7 @@ mod_reslist =	{
   "PSU": "U"
 }
 
-multiple_reslist =	{
+multiple_reslist = {
   "XAA": ["X"]+list(reslist.values()),
   "UNK": ["X"]+list(reslist.values()),
   "ASX": ["B", "D", "N"],
@@ -84,7 +87,7 @@ multiple_reslist =	{
   "SC2": ["X", "C"],  "SIN": ["X", "C"]
 }
 
-nuclist =	{
+nuclist = {
   "A": "A",  "DA": "A",
   "T": "T",  "DT": "T",
   "C": "C",  "DC": "C",
@@ -93,7 +96,7 @@ nuclist =	{
   "I": "I",  "DI": "I"
 }
 
-mod_nuclist =	{
+mod_nuclist = {
   "1MA": "A",  "2MA": "A",  "6MZ": "A",  "MA6": "A",  "MIA": "A",
   "4OC": "C",  "5CM": "C",  "CBR": "C",  "DOC": "C",
   "YG":  "G",  "1MG": "G",  "2MG": "G",  "7MG": "G",  "8OG": "G",  "M2G": "G",
@@ -102,7 +105,7 @@ mod_nuclist =	{
   "C5P": "X",  "U5P": "X"
 }
 
-multiple_nuclist =	{
+multiple_nuclist = {
   "R": ["R", "A", "G"],
   "Y": ["Y", "C", "T", "U"],
   "K": ["K", "G", "T", "U"],
