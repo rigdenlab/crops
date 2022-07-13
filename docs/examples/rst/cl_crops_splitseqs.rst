@@ -21,9 +21,11 @@ From a large fasta file where only a few sequences are required, the option ``--
 
    crops-splitseqs PDBall.fasta --output mydir/ --preselect 7m6c 4n5b 1o98
 
+This command will create new files only for the three pdb ids inserted, regardless of the number of sequences contained within the input *.fasta* file.
+
 --------------------------------------------------------------
 
-Additionally, the option to separate the sequences by sequence is also available by typing ``--individual`` or ``-i``:
+Additionally, the option to separate the sequence files by unique sequence is also available by typing ``--individual`` or ``-i``:
 
 .. code-block:: shell-session
 

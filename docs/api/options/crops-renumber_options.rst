@@ -4,6 +4,6 @@ crops-renumber options
 ----------------------
 
 .. argparse::
-   :module: crops.command_line.crops-renumber
+   :module: crops.command_line.crops_renumber
    :func: create_argument_parser
    :prog: crops-renumber

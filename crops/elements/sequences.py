@@ -494,7 +494,7 @@ class sequence:
         :type out: str, file
         :param backmap: If True, the output will be self.cropbackmap, defaults to False.
         :type backmap: bool, optional
-        :param split: If True, identical sequences are dumped for every chain, defaults to False.
+        :param split: If True, identical maps are dumped for every chain, defaults to False.
         :type split: bool, optional
 
         :raises `TypeError`: If `out` is neither a string nor an open file.
