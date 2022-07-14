@@ -941,7 +941,7 @@ class oligoseq:
     def write(self, outdir, infix="", split=False, oneline=False):
         """Write all :class:`crops.elements.sequences.sequence` objects to .fasta file or string.
 
-        :param outdir: Output directory.
+        :param outdir: Output directory or 'string'.
         :type outdir: str
         :param infix: Filename tag to distinguish from original input file, defaults to "".
         :type infix: str, optional
@@ -958,6 +958,8 @@ class oligoseq:
             raise FileNotFoundError
 
         if outdir == 'string':
+            if infix != "":
+                logging.warning("Writing sequences to a string, 'infix' value ignored.")
             outpath = 'string'
             outstring = ""
             for seq in self.imer.values():
