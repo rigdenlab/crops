@@ -1,9 +1,4 @@
-"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
-
-This script will remove a number of residues from sequence and structure files
-in agreement to the intervals and other details supplied.
-
-"""
+"""This script will remove a number of residues from sequence and structure files in agreement to the intervals and other details supplied."""
 
 from crops import __prog__, __description__, __author__
 from crops import __date__, __version__, __copyright__

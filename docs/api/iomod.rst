@@ -1,5 +1,5 @@
-IO package
-==========
+IO subpackage
+=============
 
 .. automodule:: crops.iomod
    :members:

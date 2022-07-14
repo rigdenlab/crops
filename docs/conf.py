@@ -356,5 +356,6 @@ intersphinx_mapping = {
 #    'numpy': ('https://docs.scipy.org/doc/numpy/', None),
 #    'pandas': ('https://pandas.pydata.org', None),
 #    'pyjob': ('https://pyjob.readthedocs.io', None),
-    'gemmi': ('https://gemmi.readthedocs.io', None)
+    'gemmi': ('https://gemmi.readthedocs.io', None),
+    'biopython': ('https://biopython.org/wiki/Documentation', None)
 }

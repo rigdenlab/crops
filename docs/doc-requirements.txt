@@ -1,3 +1,4 @@
 gemmi
+biopython
 sphinx-argparse
 sphinx_bootstrap_theme

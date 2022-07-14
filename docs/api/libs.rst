@@ -1,5 +1,5 @@
-Libs package
-============
+Libs subpackage
+===============
 
 .. automodule:: crops.libs
    :members:
@@ -10,4 +10,3 @@ Libs package
    :glob:
 
    generated/crops.libs.*
-

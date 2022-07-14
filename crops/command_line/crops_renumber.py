@@ -1,9 +1,8 @@
-"""This is CROPS: Cropping and Renumbering Operations for PDB structure and Sequence files.
+"""This script will renumber a structure file in agreement with the residue positions in the sequence file corresponding to that structure.
 
-This script will renumber a structure file in agreement with the
-residue positions in the sequence file corresponding to that structure.
 Non-polymer elements are numbered starting right after the final (TER) residue.
-IMPORTANT: If the input sequence and the input structure files are not from the
+
+WARNING: If the input sequence and the input structure files are not from the
 same source (e.g. RCSB PDB) a source conflict might occur making the
 renumbering operation unsuccessful even if the program does not crash.
 """
