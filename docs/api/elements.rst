@@ -1,5 +1,5 @@
-Elements package
-================
+Elements subpackage
+===================
 
 .. automodule:: crops.elements
    :members:
@@ -10,4 +10,3 @@ Elements package
    :glob:
 
    generated/crops.elements.*
-
