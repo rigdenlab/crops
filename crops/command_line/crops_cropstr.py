@@ -64,7 +64,7 @@ def main():
     indb = check_path(args.input_database[0], 'file')
     instr = check_path(args.input_strpath[0])
     if args.uniprot_threshold is not None:
-        if args.uniprot_threshold != 'server-only':
+        if args.uniprot_threshold[1] != 'server-only':
             insprot = check_path(args.uniprot_threshold[1])
         else:
             insprot = 'server-only'
@@ -73,6 +73,9 @@ def main():
 
     if args.uniprot_threshold is not None:
         minlen = float(args.uniprot_threshold[0])
+        if minlen < 0.0 or minlen > 100.0:
+            logger.critical('The UniProt threshold is a percentage and, therefore, it must fulfil 0 < threshold < 100.')
+            raise ValueError
     else:
         minlen = 0.0
     targetlbl = ctg.target_format(indb, terms=args.terminals, th=minlen)
@@ -116,7 +119,8 @@ def main():
                         if key.upper() not in uniprotset:
                             uniprotset.add(key.upper())
 
-        uniprotset = cin.parseseqfile(insprot, uniprot=uniprotset)
+        upserver = True if insprot == 'server-only' else False
+        uniprotset = cin.parseseqfile(insprot, inset=uniprotset, use_UPserver=upserver)
         logger.info('Done'+os.linesep)
 
     # MAIN OPERATION / PRINT OUT RESULTS WITHIN
