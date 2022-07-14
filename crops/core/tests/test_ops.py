@@ -9649,7 +9649,7 @@ class TestCropsOps(unittest.TestCase):
                             16, 17, 18, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36)
 
         pdb = cip.parsestr(_PDB_STRING_3)
-        seq = cip.parseseq(_FASTA_SEQUENCE_2)['1TZ5']
+        seq = cip.parseseq(_FASTA_SEQUENCE_6)['1TZ5']
         renumbered_pdb, updated_seq = crops.core.ops.renumber_pdb(seq, pdb, seqback=True)
 
         myseq = updated_seq.imer['1']
@@ -9685,7 +9685,7 @@ class TestCropsOps(unittest.TestCase):
                             27, 28, 29, 30, 31, 32, 33, 34, 35, 36)
 
         pdb = cip.parsestr(_PDB_STRING_3)
-        seq = cip.parseseq(_FASTA_SEQUENCE_2)['1TZ5']
+        seq = cip.parseseq(_FASTA_SEQUENCE_6)['1TZ5']
         renumbered_pdb, updated_seq = crops.core.ops.renumber_pdb(seq, pdb, seqback=True)
 
         myseq = updated_seq.imer['1']
