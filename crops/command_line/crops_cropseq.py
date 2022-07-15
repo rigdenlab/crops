@@ -239,8 +239,8 @@ def main():
                                     key=lambda x: x[1].ncrops(offmidseq=True)/x[1].full_length(),
                                     reverse=True)
         del sorted_outseq
-        for monomer in sorted_outseq2:
-            monomer.dump(outseq)
+        for keymonomer in sorted_outseq2:
+            keymonomer[1].dump(outseq)
         logger.debug('Sort time = '+str(time.time()-croptime)+ ' s')
         logger.info('Done'+os.linesep)
 
