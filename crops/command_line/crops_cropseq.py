@@ -131,7 +131,7 @@ def main():
                             uniprotset.add(key.upper())
 
         upserver = True if insprot == 'server-only' else False
-        uniprotset = cin.parseseqfile(insprot, inset=uniprotset, use_UPserver=upserver)
+        uniprotset = cin.parseseqfile(seq_input=insprot, inset=uniprotset, use_UPserver=upserver)
         logger.info('Done'+os.linesep)
 
     # MAIN OPERATION
@@ -153,8 +153,9 @@ def main():
                         newinterval.subint = []
                         unilbl = ' uniprot chains included: '
                         for unicode, uniintervals in intervals[key][key3].tags['uniprot'].items():
+                            uniseq = uniprotset[unicode].imer['1']
                             val = 100*uniintervals.n_elements()
-                            val = val / uniprotset[unicode].imer['1'].length()
+                            val = val / uniseq.length()
                             if val >= minlen:
                                 newinterval = newinterval.union(intervals[key][key3].intersection(uniintervals))
                                 unilbl += unicode

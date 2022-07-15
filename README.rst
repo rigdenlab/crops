@@ -41,7 +41,7 @@ Requirements
 ++++++++++++
 
 * **Gemmi:** `gemmi.readthedocs.io <https://gemmi.readthedocs.io>`_,
-* **BioPython:** `biopython.org <https://biopython.org>`_,
+* **BioPython:** `biopython.org <https://biopython.org>`_.
 
 Read the Docs !!
 ++++++++++++++++

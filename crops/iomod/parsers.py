@@ -333,7 +333,9 @@ def parseseqfile(seq_input='server-only', inset=None, use_UPserver=False):
                 try:
                     download = ur.urlopen('https://www.uniprot.org/uniprot/' +
                                           upcode.upper() + '.fasta')
-                    inseq += download + os.linesep
+                    for line in download:
+                        decoded_line = line.decode("utf-8")
+                        inseq += decoded_line
                 except Exception:
                     if seq_input == 'server-only':
                         msg = ('Uniprot sequence ' + upcode +

@@ -120,7 +120,7 @@ def main():
                             uniprotset.add(key.upper())
 
         upserver = True if insprot == 'server-only' else False
-        uniprotset = cin.parseseqfile(insprot, inset=uniprotset, use_UPserver=upserver)
+        uniprotset = cin.parseseqfile(seq_input=insprot, inset=uniprotset, use_UPserver=upserver)
         logger.info('Done'+os.linesep)
 
     # MAIN OPERATION / PRINT OUT RESULTS WITHIN
@@ -165,12 +165,13 @@ def main():
                             newinterval[key3].subint = []
                             unilbl = ' uniprot chains included: '
                             for unicode, uniintervals in intervals[key][key3].tags['uniprot'].items():
-                                if 100*uniintervals.n_elements()/uniprotset.imer[unicode].length() >= minlen:
+                                uniseq = uniprotset[unicode].imer['1']
+                                if 100*uniintervals.n_elements()/uniseq.length() >= minlen:
                                     newinterval[key3] = newinterval[key3].union(intervals[key][key3].intersection(uniintervals))
                                     unilbl += unicode + '|'
                             if cropped_seq is False:
                                 monomer = cop.crop_seq(monomer,
-                                                       newinterval[key2],
+                                                       newinterval[key3],
                                                        targetlbl+unilbl,
                                                        terms=args.terminals)
                                 cropped_seq = True
