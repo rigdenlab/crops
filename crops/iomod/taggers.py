@@ -14,7 +14,7 @@ def target_format(inpath, terms=False, th=0):
     :type inpath: str
     :param terms: Only discard terminal segments, defaults to False.
     :type terms: bool, optional
-    :param th: Uniprot threshold, defaults to 0.
+    :param th: Uniprot threshold (% of original UP sequence below which segment is removed), defaults to 0.
     :type th: int or float, optional
 
     :raises TypeError: If `th` is not a numeric (int, float) value.
@@ -35,7 +35,7 @@ def target_format(inpath, terms=False, th=0):
 
     if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
         outcome = '|CROPS (UniProt via SIFTS)'
-        outcome += ' - Min = ' + str(th) + ' %'
+        outcome += ' - UPmin = ' + str(th) + ' %'
     else:
         outcome = '|CROPS (Custom database)'
     if terms is True and th == 0:
