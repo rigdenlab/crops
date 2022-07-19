@@ -35,8 +35,7 @@ def target_format(inpath, terms=False, th=0):
 
     if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
         outcome = '|CROPS (UniProt via SIFTS)'
-        if th > 0:
-            outcome += ' - UniProt chain included threshold = ' + str(th)
+        outcome += ' - Min = ' + str(th) + ' %'
     else:
         outcome = '|CROPS (Custom database)'
     if terms is True and th == 0:

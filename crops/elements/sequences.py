@@ -680,7 +680,9 @@ class sequence:
         else:
             tag1 = self.oligomer_id
         tag2 = self.infostring
-        if self.ncrops() > 0:
+        if self.ncrops() == 0 and 'cropseq' not in self.seqs:
+            pass
+        else:
             if tag2[-1] != "|":
                 tag2 += '|'
             tag2 += self.cropinfo()

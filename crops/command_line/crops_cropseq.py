@@ -151,7 +151,7 @@ def main():
                         newinterval = intervals[key][key3].deepcopy()
                         newinterval.tags['description'] += ' - Uniprot threshold'
                         newinterval.subint = []
-                        unilbl = ' uniprot chains included: '
+                        unilbl = ' - UP segments included: '
                         for unicode, uniintervals in intervals[key][key3].tags['uniprot'].items():
                             uniseq = uniprotset[unicode].imer['1']
                             val = 100*uniintervals.n_elements()
