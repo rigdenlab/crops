@@ -446,7 +446,9 @@ class sequence:
         else:
             tag1 = self.oligomer_id
         tag2 = self.infostring
-        if self.ncrops() > 0:
+        if self.ncrops() == 0 and 'cropseq' not in self.seqs:
+            pass
+        else:
             if self.infostring[-1] != "|":
                 tag2 += '|'
             tag2 += self.cropinfo()
@@ -530,7 +532,9 @@ class sequence:
         else:
             tag1 = self.oligomer_id
         tag2 = self.infostring
-        if self.ncrops() > 0:
+        if self.ncrops() == 0 and 'cropseq' not in self.seqs:
+            pass
+        else:
             if self.infostring[-1] != "|":
                 tag2 += '|'
             tag2 += self.cropinfo()
@@ -652,8 +656,7 @@ class sequence:
             if char == '+' or char == '*':
                 n += 1
 
-        if ((offterminals is False and offmidseq is False) or
-                (offterminals is True and offmidseq is True)):
+        if offterminals is offmidseq:
             return n
         else:
             nterms = 0
@@ -680,7 +683,9 @@ class sequence:
         else:
             tag1 = self.oligomer_id
         tag2 = self.infostring
-        if self.ncrops() > 0:
+        if self.ncrops() == 0 and 'cropseq' not in self.seqs:
+            pass
+        else:
             if tag2[-1] != "|":
                 tag2 += '|'
             tag2 += self.cropinfo()
@@ -700,7 +705,7 @@ class sequence:
         """
         cropstr = ""
         if 'cropseq' in self.seqs:
-            cropstr += ('#Residues cropped: ')
+            cropstr += '#Residues cropped: '
             if self.ncrops() == 0:
                 cropstr += '0'
             else:

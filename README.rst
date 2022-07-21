@@ -6,10 +6,20 @@
 Cropping and Renumbering Operations for PDB structure and Sequence files
 ************************************************************************
 
+.. image:: https://img.shields.io/pypi/v/crops
+   :target: https://pypi.org/project/CROPS/
+   :alt: Latest PyPi release
+.. image:: https://img.shields.io/github/license/rigdenlab/crops
+   :target: https://github.com/rigdenlab/crops/blob/master/LICENSE
+   :alt: License
+.. image::https://img.shields.io/pypi/pyversions/crops
+   :target: https://pypi.org/project/CROPS/
+   :alt: PyPI - Python Version
 .. image:: https://readthedocs.org/projects/crops/badge/?version=latest
    :target: http://crops.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
+[![GitHub]()]()
 About CROPS
 +++++++++++
 
