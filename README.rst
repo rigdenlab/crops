@@ -19,7 +19,6 @@ Cropping and Renumbering Operations for PDB structure and Sequence files
    :target: http://crops.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
 
-[![GitHub]()]()
 About CROPS
 +++++++++++
 
