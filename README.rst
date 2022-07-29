@@ -44,7 +44,7 @@ Supported Formats
 
 * **Sequences:**  *FASTA* --several header formats recognised.
 * **Structures:** *PDB*. *mmCIF* to be implemented.
-* **Databases:**  *CSV*.
+* **Databases:**  *CSV* (interval information), *FASTA* (UniProt).
 
 Requirements
 ++++++++++++

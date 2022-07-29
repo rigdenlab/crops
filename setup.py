@@ -3,7 +3,6 @@
 import setuptools
 from crops import __prog__, __description__, __version__
 from crops import __author__, __date__, __copyright__
-import os
 
 import glob
 import logging
@@ -12,12 +11,7 @@ import sys
 from unittest import TestLoader, TextTestRunner, TestSuite
 import argparse
 
-from distutils.command.build import build
 from distutils.util import convert_path
-from setuptools import setup, Extension
-
-from Cython.Distutils import build_ext
-import numpy as np
 
 ROOT_DIR = os.path.join(os.path.dirname(__file__), 'crops', '')
 PACKAGES = ["core", "iomod", "elements"]
