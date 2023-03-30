@@ -7,7 +7,7 @@ import os
 import logging
 
 
-def target_format(inpath, terms=False, th=0):
+def target_format(inpath, terms=False, th=0, notfound=False):
     """Return information about the interval source for .fasta headers.
 
     :param inpath: Path to interval database used.
@@ -33,13 +33,14 @@ def target_format(inpath, terms=False, th=0):
         logging.critical("The 'terms' variable must have a boolean value.")
         raise TypeError
 
-    if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
-        outcome = '|CROPS (UniProt via SIFTS)'
-        outcome += ' - UPmin = ' + str(th) + ' %'
     else:
-        outcome = '|CROPS (Custom database)'
-    if terms is True and th == 0:
-        outcome += ' - Only terminals removed'
+        if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
+            outcome = '|CROPS (UniProt via SIFTS)'
+            outcome += ' - UPmin = ' + str(th) + ' %'
+        else:
+            outcome = '|CROPS (Custom database)'
+        if terms is True and th == 0:
+            outcome += ' - Only terminals removed'
 
     return outcome
 
