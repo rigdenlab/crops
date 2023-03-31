@@ -79,6 +79,7 @@ def main():
     else:
         minlen = 0.0
     targetlbl = ctg.target_format(indb, terms=args.terminals, th=minlen)
+    missedtargetlbl = ctg.target_format(indb, notfound=True)
     infixlbl = ctg.infix_gen(indb, terms=args.terminals)
 
     if args.outdir is None:
@@ -150,6 +151,7 @@ def main():
     outseq = os.path.join(outdir, os.path.splitext(os.path.basename(inseq))[0] +
                           infixlbl["croprenum"] +
                           os.path.splitext(os.path.basename(inseq))[1])
+
     for key, S in gseqset.items():
         newS = S.deepcopy()
         if key in intervals:
@@ -223,6 +225,8 @@ def main():
                 fout = key + hf + os.path.splitext(os.path.basename(inseq))[1]
                 outseq = outpathgen(outdir, subdir=key,
                                     filename=fout, mksubdir=True)
+                monomer.infostring += missedtargetlbl
+                monomer.update_cropsheader()
                 monomer.dump(outseq)
 
     # FINISH

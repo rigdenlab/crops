@@ -16,6 +16,8 @@ def target_format(inpath, terms=False, th=0, notfound=False):
     :type terms: bool, optional
     :param th: Uniprot threshold (% of original UP sequence below which segment is removed), defaults to 0.
     :type th: int or float, optional
+    :param notfound: The sequence was not found in interval source, defaults to False.
+    :type notfound: bool, optional
 
     :raises TypeError: If `th` is not a numeric (int, float) value.
     :raises TypeError: If `terms` is not boolean.
@@ -32,13 +34,22 @@ def target_format(inpath, terms=False, th=0, notfound=False):
     if isinstance(terms, bool) is False:
         logging.critical("The 'terms' variable must have a boolean value.")
         raise TypeError
+    if isinstance(notfound, bool) is False:
+        logging.critical("The 'notfound' variable must have a boolean value.")
+        raise TypeError
 
+    if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
+        src = 'SIFTS database'
+    else:
+        src = 'Custom database'
+    if notfound is True:
+        outcome = '|CROPS Unaltered sequence - reference not found in ' + src + '.)'
     else:
         if os.path.basename(inpath) == 'pdb_chain_uniprot.csv':
-            outcome = '|CROPS (UniProt via SIFTS)'
+            outcome = '|CROPS (UniProt via ' + src + ')'
             outcome += ' - UPmin = ' + str(th) + ' %'
         else:
-            outcome = '|CROPS (Custom database)'
+            outcome = '|CROPS (' + src + ')'
         if terms is True and th == 0:
             outcome += ' - Only terminals removed'
 
