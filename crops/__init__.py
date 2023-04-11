@@ -10,5 +10,5 @@ __contributing_authors__ = "Filomeno Sánchez"
 __date__ = "Jul 2020"
 __copyright__ = '2020-{}, University of Liverpool'.format(datetime.datetime.now().year)
 
-__version_info__ = (1, 0, 0)
+__version_info__ = (1, 0, 1)
 __version__ = ".".join(map(str, __version_info__))

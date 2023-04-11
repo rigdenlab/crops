@@ -83,6 +83,7 @@ def main():
     else:
         minlen = 0.0
     targetlbl = ctg.target_format(indb, terms=args.terminals, th=minlen)
+    missedtargetlbl = ctg.target_format(indb, notfound=True)
     infixlbl = ctg.infix_gen(indb, terms=args.terminals)
 
     if args.outdir is None:
@@ -166,11 +167,13 @@ def main():
                         monomer = cop.crop_seq(monomer, intervals[key][key3],
                                                targetlbl, terms=args.terminals)
                 else:
-                    monomer.infostring += (targetlbl + ' (reference not found in database)')
+                    monomer.infostring += missedtargetlbl
                     monomer.cropmap = {}
                     for n in range(1, monomer.length()+1):
                         monomer.cropmap[n] = n
                         monomer.cropbackmap = copy.deepcopy(monomer.cropmap)
+            else:
+                monomer.infostring += missedtargetlbl
 
             monomer.update_cropsheader()
             if args.individual is True:
