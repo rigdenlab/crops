@@ -34,6 +34,8 @@ def create_argument_parser():
                         help="From all the sequences in the input sequence file, just print out this preselected subset.")
     parser.add_argument("-i", "--individual", action='store_true', default=False,
                         help="One separated output fasta file per each sequence.")
+    parser.add_argument("-f", "--force_alignment", action='store_true', default=False,
+                        help="Use Needleman-Wunsch algorithm to try to bypass small disagreements between fasta and pdb sequences.")
 
     sections = parser.add_mutually_exclusive_group(required=False)
     sections.add_argument("-t", "--terminals", action='store_true', default=False,
@@ -133,9 +135,22 @@ def main():
             if ((seqname in key) or
                     (len(seqset) == 1 and len(strset) == 1)):
                 finalid = seqname
-                newstructure, gseqset[seqname] = cop.renumber_pdb(seqset[seqname],
-                                                                  structure,
-                                                                  seqback=True)
+                try:
+                    newstructure, gseqset[seqname] = cop.renumber_pdb(seqset[seqname],
+                                                                      structure,
+                                                                      seqback=True)
+                except (AttributeError, IndexError) as e:
+                    logger.warning('Something has gone wrong during renumbering:\n{}'.format(e))
+                    if args.force_alignment:
+                        logger.info('Attempting Needleman-Wunsch...')
+                        newstructure, gseqset[seqname] = cop.renumber_pdb_needleman(seqset[seqname],
+                                                                                    structure,
+                                                                                    seqback=True)
+                    else:
+                        logger.critical('Unable to renumber the structure, exiting now. '
+                                        'Try again with -f option to force the alignment.')
+                        return
+
                 fout = finalid + infixlbl["renumber"] + os.path.splitext(instr)[1]
                 outstr = outpathgen(outdir, subdir=finalid,
                                     filename=fout, mksubdir=True)
