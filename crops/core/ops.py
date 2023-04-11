@@ -82,7 +82,11 @@ def renumber_pdb_needleman(inseq, instr, seqback=False):
             renumbered_chain = gemmi.Chain(chain.name)
             nseq = inseq.whatseq(chain.name)
             original_seq = inseq.imer[nseq].seqs['mainseq']
-            model_seq = ''.join([ressymbol(x.name) for x in chain])
+            model_seq = ''
+            for x in chain:
+                rs = ressymbol(x.name)
+                if isinstance(rs, str):
+                    model_seq += rs
             aligned_dict = get_sequence_alignment(original_seq, model_seq)
             if aligned_dict is None:
                 logging.warning('Alignment failed for chain {}, it will be excluded'.format(chain.name))
@@ -159,11 +163,10 @@ def renumber_pdb(inseq, instr, seqback=False):
                                 gap += (chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                                 newseq += '-'*(chain[cnt].seqid.num-chain[cnt-1].seqid.num-1)
                             pos[n_chains][cnt] = cnt+1+gap+shift
-                            if (ressymbol(residue.name, pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]
-                                    or ressymbol(residue.name, pick=original_seq[cnt+gap+shift]) == 0):  # second condition ignores possible gaps in crops.rescodes database
+                            if (ressymbol(residue.name, pick=original_seq[cnt+gap+shift]) == original_seq[cnt+gap+shift]):
                                 score += 1
                                 newseq += original_seq[cnt+gap+shift]
-                            else:
+                            else:  # IF ressymbol == 0 as a result of not being in the library, it will be considered a ligand. If wrong, it might make the script crash.
                                 pdbseq = instr.get_entity(chain.name).full_sequence
                                 if cnt > len(pdbseq):
                                     nligands += 1
