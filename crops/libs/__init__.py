@@ -19,6 +19,12 @@ def ressymbol(name, pick=None):
     :rtype: str
 
     """
+    if len(name) > 3:
+        logging.warning('Chemical ' + name + ' not a residue. '
+                        'Assigning 1 to it (ligand).')
+        oneletter = 1
+        return
+
     wholelist = {**rc.reslist, **rc.mod_reslist, **rc.multiple_reslist,
                  **rc.nuclist, **rc.mod_nuclist, **rc.multiple_nuclist}
     try:
@@ -30,7 +36,7 @@ def ressymbol(name, pick=None):
                 oneletter = oneletter[0]
     except Exception:
         logging.warning('Residue ' + name + ' not found in library. '
-                        'Assigning 0 to it.')
+                        'Assigning 0 to it (unknown).')
         oneletter = 0
 
     return oneletter

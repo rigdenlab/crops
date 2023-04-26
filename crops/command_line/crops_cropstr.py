@@ -140,7 +140,7 @@ def main():
                     newstructure, gseqset[seqname] = cop.renumber_pdb(seqset[seqname],
                                                                       structure,
                                                                       seqback=True)
-                except (AttributeError, IndexError) as e:
+                except (AttributeError, IndexError, ValueError) as e:
                     logger.warning('Something has gone wrong during renumbering:\n{}'.format(e))
                     if args.force_alignment:
                         logger.info('Attempting Needleman-Wunsch...')
