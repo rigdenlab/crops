@@ -53,7 +53,7 @@ def get_sequence_alignment(sequence_1, sequence_2, mode='global', open_gap_score
     return alignment_dict
 
 
-def renumber_pdb_needleman(inseq, instr, seqback=False):
+def renumber_pdb_needleman(inseq, instr, seqback=False, remove_ligands=False):
     """Return modified :class:`gemmi.Structure` with new residue numbers. It uses Needleman-Wunsch algorithm to perform the sequence alignment.
 
     :param inseq: Input sequence.
@@ -62,6 +62,8 @@ def renumber_pdb_needleman(inseq, instr, seqback=False):
     :type instr: :class:`gemmi.Structure`
     :param seqback: If True, it additionally returns the :class:`crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
     :type seqback: bool, optional
+    :param remove_ligands: If True, use :func:`gemmi.Structure.remove_ligands_and_waters` and :func:`gemmi.Structure.remove_empty_chains` prior to operation, defaults to False.
+    :type remove_ligands: bool, optional
 
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
@@ -76,6 +78,9 @@ def renumber_pdb_needleman(inseq, instr, seqback=False):
         for monkey in inseq.imer:
             inseq.imer[monkey].seqs['gapseq'] = []
 
+    if remove_ligands:
+        instr.remove_ligands_and_waters()
+        instr.remove_empty_chains
     for model in instr:
         renumbered_model = gemmi.Model(model.name)
         for chain in model:
@@ -113,7 +118,7 @@ def renumber_pdb_needleman(inseq, instr, seqback=False):
         return renumbered_structure
 
 
-def renumber_pdb(inseq, instr, seqback=False):
+def renumber_pdb(inseq, instr, seqback=False, remove_ligands=False):
     """Return modified :class:`gemmi.Structure` with new residue numbers.
 
     :param inseq: Input sequence.
@@ -122,6 +127,8 @@ def renumber_pdb(inseq, instr, seqback=False):
     :type instr: :class:`gemmi.Structure`
     :param seqback: If True, it additionally returns the :class:`crops.elements.sequences.oligoseq` with the gaps found in the structure, defaults to False.
     :type seqback: bool, optional
+    :param remove_ligands: If True, use :func:`gemmi.Structure.remove_ligands_and_waters` and :func:`gemmi.Structure.remove_empty_chains` prior to operation, defaults to False.
+    :type remove_ligands: bool, optional
 
     :return instr: Renumbered structure.
     :rtype instr: :class:`gemmi.Structure`
@@ -131,6 +138,9 @@ def renumber_pdb(inseq, instr, seqback=False):
     """
     n_chains = 0
     n_resmax = 0
+    if remove_ligands:
+        instr.remove_ligands_and_waters()
+        instr.remove_empty_chains()
     for model in instr:
         n_chains += len(model)
         for chain in model:

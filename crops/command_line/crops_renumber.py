@@ -32,6 +32,8 @@ def create_argument_parser():
     parser.add_argument("input_strpath", nargs=1, metavar="Structure_filepath",
                         help="Input structure filepath or dir. If a directory is inserted, it will act on all structure files in such directory.")
 
+    parser.add_argument("-r", "--remove_ligands", action='store_true', default=False,
+                        help="Remove ligands and water molecules from structure to prevent certain errors during renumbering.")
     parser.add_argument("-f", "--force_alignment", action='store_true', default=False,
                         help="Use Needleman-Wunsch algorithm to try to bypass small disagreements between fasta and pdb sequences.")
 
@@ -93,12 +95,14 @@ def main():
                     (len(seqset) == 1 and len(strset) == 1)):
                 finalid = seqname
                 try:
-                    newstructure = cop.renumber_pdb(seqset[seqname], structure)
+                    newstructure = cop.renumber_pdb(seqset[seqname], structure,
+                                                    remove_ligands=args.remove_ligands)
                 except (AttributeError, IndexError, ValueError) as e:
                     logger.warning('Something has gone wrong during renumbering:\n{}'.format(e))
                     if args.force_alignment:
                         logger.info('Attempting Needleman-Wunsch...')
-                        newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure)
+                        newstructure = cop.renumber_pdb_needleman(seqset[seqname], structure,
+                                                        remove_ligands=args.remove_ligands)
                     else:
                         logger.critical('Unable to renumber the structure, exiting now. '
                                         'Try again with -f option to force the alignment.')
