@@ -148,7 +148,7 @@ def retrieve_id(seqheader):
                 headerinfo['mainid'] = seqheader[chi:i].upper()
                 if headerinfo['chains'] is None:
                     headerinfo['chains'] = set()
-                headerinfo['chains'].add(headerinfo['mainid'])
+                headerinfo['chains'].add('A')
                 break
 
     # UniParc
