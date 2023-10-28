@@ -134,7 +134,7 @@ def retrieve_id(seqheader):
                 headerinfo['mainid'] += seqheader[i].upper()
         if headerinfo['chains'] is None:
             headerinfo['chains'] = set()
-        headerinfo['chains'].add(headerinfo['mainid'])
+        headerinfo['chains'].add('A')
 
     # UniRef
     elif seqheader.startswith('>UniRef'):
@@ -161,7 +161,7 @@ def retrieve_id(seqheader):
                 headerinfo['mainid'] = seqheader[1:i].upper()
                 if headerinfo['chains'] is None:
                     headerinfo['chains'] = set()
-                headerinfo['chains'].add(headerinfo['mainid'])
+                headerinfo['chains'].add('A')
                 break
 
     # UniClust
