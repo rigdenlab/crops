@@ -819,7 +819,7 @@ class oligoseq:
 
         if newseq.name is not None:
             if newseq.name in self.imer:
-                if self[newseq.name].imer.seqs['mainseq'] == newseq.seqs['mainseq']:
+                if self.imer[newseq.name].seqs['mainseq'] == newseq.seqs['mainseq']:
                     addall = False
                 else:
                     logging.critical(errormsg)
