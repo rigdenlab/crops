@@ -972,7 +972,7 @@ class oligoseq:
 
             return outstring
         else:
-            outpath = os.path.join(outdir, self.seq_id + infix + ".fasta")
+            outpath = os.path.join(outdir, self.oligoseq_id + infix + ".fasta")
             for seq in self.imer.values():
                 seq.dump(outpath, split=split, oneline=oneline)
 
